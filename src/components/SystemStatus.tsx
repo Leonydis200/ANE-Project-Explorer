@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useRealTimeMetrics } from '../hooks/useRealTimeMetrics';
 
 export function SystemStatus() {
-  const { metrics, health, alerts } = useRealTimeMetrics();
+  const { metrics, health, alerts, feedback, sendUserCommand } = useRealTimeMetrics();
 
   return (
     <motion.div
@@ -29,6 +29,15 @@ export function SystemStatus() {
       <div className="stat-card">
         <h3>Performance</h3>
         <PerformanceGraph data={metrics.performance} />
+      </div>
+
+      <div className="stat-card">
+        <h3>User Actions</h3>
+        <button onClick={() => sendUserCommand('diagnostics', {})}>Run Diagnostics</button>
+        <button onClick={() => sendUserCommand('repair', {})}>Run Self-Repair</button>
+        <button onClick={() => sendUserCommand('improvement', {})}>Run Self-Improvement</button>
+        <button onClick={() => sendUserCommand('update', {})}>Run Self-Update</button>
+        <div className="mt-2 text-sm text-primary">{feedback}</div>
       </div>
     </motion.div>
   );

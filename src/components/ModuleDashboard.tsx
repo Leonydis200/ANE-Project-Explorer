@@ -24,7 +24,7 @@ type Module = {
 }
 
 export default function ModuleDashboard() {
-	const { metrics, systemHealth, error, refreshData, loading, tab, setTab, connectionStatus, update } = useLiveMetrics()
+	const { metrics, systemHealth, error, refreshData, loading, tab, setTab, connectionStatus, update, feedback, improvementHistory, triggerUserImprovement } = useLiveMetrics()
 	const [autoRefresh, setAutoRefresh] = useState(true)
 
 	useEffect(() => {
@@ -80,22 +80,27 @@ export default function ModuleDashboard() {
 				))}
 			</div>
 			<div className="flex gap-3 mb-4">
+				<button className="btn btn-ghost" onClick={triggerUserImprovement}>
+					Run Self-Improvement
+				</button>
 				<button className="btn btn-ghost" onClick={() => dataStream.triggerSelfDiagnostics()}>
 					Run Diagnostics
 				</button>
 				<button className="btn btn-ghost" onClick={() => dataStream.triggerSelfRepair()}>
 					Run Self-Repair
 				</button>
-				<button className="btn btn-ghost" onClick={() => dataStream.triggerSelfImprovement()}>
-					Run Self-Improvement
-				</button>
 				<button className="btn btn-ghost" onClick={() => dataStream.triggerSelfUpdate()}>
 					Run Self-Update
 				</button>
 			</div>
-			{update && (
-				<div className="mb-4 bg-success/10 text-success p-2 rounded">
-					Update Status: {JSON.stringify(update)}
+			{feedback && (
+				<div className="mb-4 bg-info/10 text-info p-2 rounded">
+					Feedback: {feedback}
+				</div>
+			)}
+			{improvementHistory.length > 0 && (
+				<div className="mb-4 bg-accent/10 text-accent p-2 rounded">
+					Improvement History: {JSON.stringify(improvementHistory)}
 				</div>
 			)}
 			<div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">

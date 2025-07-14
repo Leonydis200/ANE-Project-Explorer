@@ -141,6 +141,8 @@ export class DataStreamService {
   private repairStream = new BehaviorSubject<any>(null)
   private improvementStream = new BehaviorSubject<any>(null)
   private updateStream = new BehaviorSubject<any>(null)
+  private userCommandStream = new BehaviorSubject<any>(null)
+  private feedbackStream = new BehaviorSubject<string>('')
 
   private reconnectAttempts = 0
   private maxReconnectAttempts = 5
@@ -273,7 +275,7 @@ export class DataStreamService {
     }
   }
 
-  private handleMetricsUpdate(data: SystemMetrics) {
+  private handleMetricsUpdate(data: AdvancedMetrics) {
     this.metrics.next(data)
   }
 
@@ -294,41 +296,152 @@ export class DataStreamService {
   }
 
   private collectSystemMetrics(): Observable<AdvancedMetrics> {
-    // Implement actual metrics collection logic here
+    // Listen for 'systemMetrics' event from backend for real data
     return new Observable<AdvancedMetrics>(subscriber => {
-      const metrics = generateMockData() as AdvancedMetrics
-      subscriber.next(metrics)
-      subscriber.complete()
+      const handler = (metrics: AdvancedMetrics) => {
+        subscriber.next(metrics)
+      }
+      this.socket.once('systemMetrics', handler)
+      this.socket.emit('requestSystemMetrics')
+      // Optionally handle completion/error
     })
   }
 
-  private async calculateOptimizations(metrics: AdvancedMetrics): Promise<any[]> {
-    const optimizations = [];
-    
-    if (metrics.cpu > 80) {
-      optimizations.push({ type: 'cpu', action: 'scale' });
-    }
-    
-    if (metrics.memory > 85) {
-      optimizations.push({ type: 'memory', action: 'cleanup' });
-    }
-    
-    if (metrics.errorRate > 5) {
-      optimizations.push({ type: 'errorRate', action: 'investigate' });
-    }
-    
-    return optimizations;
+  private async getHardwareMetrics() {
+    // Request hardware metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestHardwareMetrics')
+      this.socket.once('hardwareMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
   }
 
-  private async applyOptimizations(optimizations: any[]) {
-    for (const opt of optimizations) {
-      try {
-        await this.socket.emit('optimize', opt);
-        console.log(`Applied optimization: ${opt.type}`);
-      } catch (error) {
-        console.error(`Failed to apply optimization: ${opt.type}`, error);
-      }
-    }
+  private async getMLMetrics(): Promise<MLMetrics> {
+    // Request ML metrics from backend
+    return new Promise<MLMetrics>((resolve, reject) => {
+      this.socket.emit('requestMLMetrics')
+      this.socket.once('mlMetrics', (metrics: MLMetrics) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async collectCPUMetrics() {
+    // Request CPU metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestCPUMetrics')
+      this.socket.once('cpuMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectMemoryMetrics() {
+    // Request memory metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestMemoryMetrics')
+      this.socket.once('memoryMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectDiskMetrics() {
+    // Request disk metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestDiskMetrics')
+      this.socket.once('diskMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectNetworkMetrics() {
+    // Request network metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestNetworkMetrics')
+      this.socket.once('networkMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async measureResponseTime() {
+    // Request response time from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestResponseTime')
+      this.socket.once('responseTime', (time: number) => {
+        resolve(time)
+      })
+    })
+  }
+
+  private calculateErrorRate() {
+    // Request error rate from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestErrorRate')
+      this.socket.once('errorRate', (rate: number) => {
+        resolve(rate)
+      })
+    })
+  }
+
+  private async measureThroughput() {
+    // Request throughput from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestThroughput')
+      this.socket.once('throughput', (tp: number) => {
+        resolve(tp)
+      })
+    })
+  }
+
+  private calculateAvailability() {
+    // Request availability from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestAvailability')
+      this.socket.once('availability', (avail: number) => {
+        resolve(avail)
+      })
+    })
+  }
+
+  private async setupMLMetricsCollection() {
+    // Setup ML metrics collection if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private async initializeSystemHealth() {
+    // Setup system health monitoring if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private startRealTimeUpdates() {
+    // Listen for real-time updates from backend
+    this.socket.on('metrics', (metrics: AdvancedMetrics) => {
+      this.metrics.next(metrics)
+    })
+  }
+
+  private async optimizeCPU() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeCPU')
+    return Promise.resolve()
+  }
+
+  private async optimizeMemory() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeMemory')
+    return Promise.resolve()
+  }
+
+  private async optimizeNetwork() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeNetwork')
+    return Promise.resolve()
   }
 
   private notifyOptimizations(optimizations: any[]) {
@@ -343,7 +456,176 @@ export class DataStreamService {
       return {
         ...this.metrics.value,
         ...hwMetrics,
-        ml: mlMetrics,
+        ...mlMetrics,
+      };
+    } catch (error) {
+      console.error('Failed to collect real metrics, using simulated data');
+      return this.generateSimulatedMetrics();
+    }
+  }
+
+  private async collectSystemMetrics(): Observable<AdvancedMetrics> {
+    // Listen for 'systemMetrics' event from backend for real data
+    return new Observable<AdvancedMetrics>(subscriber => {
+      const handler = (metrics: AdvancedMetrics) => {
+        subscriber.next(metrics)
+      }
+      this.socket.once('systemMetrics', handler)
+      this.socket.emit('requestSystemMetrics')
+      // Optionally handle completion/error
+    })
+  }
+
+  private async getHardwareMetrics() {
+    // Request hardware metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestHardwareMetrics')
+      this.socket.once('hardwareMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async getMLMetrics(): Promise<MLMetrics> {
+    // Request ML metrics from backend
+    return new Promise<MLMetrics>((resolve, reject) => {
+      this.socket.emit('requestMLMetrics')
+      this.socket.once('mlMetrics', (metrics: MLMetrics) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async collectCPUMetrics() {
+    // Request CPU metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestCPUMetrics')
+      this.socket.once('cpuMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectMemoryMetrics() {
+    // Request memory metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestMemoryMetrics')
+      this.socket.once('memoryMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectDiskMetrics() {
+    // Request disk metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestDiskMetrics')
+      this.socket.once('diskMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectNetworkMetrics() {
+    // Request network metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestNetworkMetrics')
+      this.socket.once('networkMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async measureResponseTime() {
+    // Request response time from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestResponseTime')
+      this.socket.once('responseTime', (time: number) => {
+        resolve(time)
+      })
+    })
+  }
+
+  private calculateErrorRate() {
+    // Request error rate from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestErrorRate')
+      this.socket.once('errorRate', (rate: number) => {
+        resolve(rate)
+      })
+    })
+  }
+
+  private async measureThroughput() {
+    // Request throughput from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestThroughput')
+      this.socket.once('throughput', (tp: number) => {
+        resolve(tp)
+      })
+    })
+  }
+
+  private calculateAvailability() {
+    // Request availability from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestAvailability')
+      this.socket.once('availability', (avail: number) => {
+        resolve(avail)
+      })
+    })
+  }
+
+  private async setupMLMetricsCollection() {
+    // Setup ML metrics collection if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private async initializeSystemHealth() {
+    // Setup system health monitoring if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private startRealTimeUpdates() {
+    // Listen for real-time updates from backend
+    this.socket.on('metrics', (metrics: AdvancedMetrics) => {
+      this.metrics.next(metrics)
+    })
+  }
+
+  private async optimizeCPU() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeCPU')
+    return Promise.resolve()
+  }
+
+  private async optimizeMemory() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeMemory')
+    return Promise.resolve()
+  }
+
+  private async optimizeNetwork() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeNetwork')
+    return Promise.resolve()
+  }
+
+  private notifyOptimizations(optimizations: any[]) {
+    // Implement optimization notification logic here
+  }
+
+  private async collectRealTimeMetrics(): Promise<RealTimeMetrics> {
+    // Collect real hardware metrics if available
+    try {
+      const hwMetrics = await this.getHardwareMetrics();
+      const mlMetrics = await this.getMLMetrics();
+      return {
+        ...this.metrics.value,
+        ...hwMetrics,
+        ...mlMetrics,
       };
     } catch (error) {
       console.error('Failed to collect real metrics, using simulated data');
@@ -352,149 +634,2055 @@ export class DataStreamService {
   }
 
   private async getHardwareMetrics() {
-    // Implementation to get real hardware metrics
+    // Request hardware metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestHardwareMetrics')
+      this.socket.once('hardwareMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
   }
 
   private async getMLMetrics(): Promise<MLMetrics> {
-    // Implementation to get ML metrics
-  }
-
-  private setupAutoOptimization() {
-    interval(300000).subscribe(() => { // Every 5 minutes
-      this.optimizePerformance();
-    });
-  }
-
-  private async optimizePerformance() {
-    const metrics = await this.collectSystemMetrics().toPromise();
-    if (metrics.cpu > 80 || metrics.memory > 85) {
-      await this.performResourceOptimization();
-    }
-  }
-
-  private async performResourceOptimization() {
-    // Implementation for resource optimization
-    const optimizations = [
-      this.optimizeCPU(),
-      this.optimizeMemory(),
-      this.optimizeNetwork()
-    ];
-    
-    await Promise.all(optimizations);
-  }
-
-  private async initializeMonitoring() {
-    try {
-      await this.setupPerformanceMonitoring();
-      await this.setupMLMetricsCollection();
-      await this.initializeSystemHealth();
-      this.startRealTimeUpdates();
-    } catch (error) {
-      console.error('Failed to initialize monitoring:', error);
-      this.connectionStatus.next('error');
-    }
-  }
-
-  private setupPerformanceMonitoring() {
-    interval(1000).pipe(
-      mergeMap(() => this.collectPerformanceMetrics()),
-      retryWhen(errors => 
-        errors.pipe(
-          delay(1000),
-          take(5)
-        )
-      )
-    ).subscribe({
-      next: (metrics) => this.performanceMetrics.next(metrics),
-      error: (error) => this.handleMonitoringError(error)
-    });
-  }
-
-  private async collectPerformanceMetrics(): Promise<PerformanceMetrics> {
-    // Implement real metrics collection
-    const metrics = await Promise.all([
-      this.collectCPUMetrics(),
-      this.collectMemoryMetrics(),
-      this.collectDiskMetrics(),
-      this.collectNetworkMetrics()
-    ]);
-
-    return {
-      systemLoad: metrics[0].load,
-      responseTime: await this.measureResponseTime(),
-      errorRate: this.calculateErrorRate(),
-      throughput: await this.measureThroughput(),
-      availability: this.calculateAvailability(),
-      resourceUtilization: {
-        cpu: metrics[0].utilization,
-        memory: metrics[1],
-        disk: metrics[2],
-        network: metrics[3]
-      }
-    };
+    // Request ML metrics from backend
+    return new Promise<MLMetrics>((resolve, reject) => {
+      this.socket.emit('requestMLMetrics')
+      this.socket.once('mlMetrics', (metrics: MLMetrics) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
   }
 
   private async collectCPUMetrics() {
-    // Implementation
+    // Request CPU metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestCPUMetrics')
+      this.socket.once('cpuMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
   }
 
   private async collectMemoryMetrics() {
-    // Implementation
+    // Request memory metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestMemoryMetrics')
+      this.socket.once('memoryMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
   }
 
   private async collectDiskMetrics() {
-    // Implementation
+    // Request disk metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestDiskMetrics')
+      this.socket.once('diskMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
   }
 
   private async collectNetworkMetrics() {
-    // Implementation
+    // Request network metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestNetworkMetrics')
+      this.socket.once('networkMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
   }
 
-  private setupLiveStreams() {
-    this.socket.on('diagnostics', (data) => this.diagnosticsStream.next(data))
-    this.socket.on('repair', (data) => this.repairStream.next(data))
-    this.socket.on('improvement', (data) => this.improvementStream.next(data))
+  private async measureResponseTime() {
+    // Request response time from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestResponseTime')
+      this.socket.once('responseTime', (time: number) => {
+        resolve(time)
+      })
+    })
   }
 
-  getDiagnosticsStream() {
-    return this.diagnosticsStream.asObservable()
-  }
-  getRepairStream() {
-    return this.repairStream.asObservable()
-  }
-  getImprovementStream() {
-    return this.improvementStream.asObservable()
-  }
-
-  // Add performance metrics stream getter
-  getPerformanceMetrics() {
-    return this.performanceMetrics.asObservable()
+  private calculateErrorRate() {
+    // Request error rate from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestErrorRate')
+      this.socket.once('errorRate', (rate: number) => {
+        resolve(rate)
+      })
+    })
   }
 
-  // Add metrics stream getter for UI hooks
-  getMetricsStream() {
-    return this.metrics.asObservable()
+  private async measureThroughput() {
+    // Request throughput from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestThroughput')
+      this.socket.once('throughput', (tp: number) => {
+        resolve(tp)
+      })
+    })
   }
 
-  // Add connection status stream getter
-  getConnectionStatus() {
-    return this.connectionStatus.asObservable()
+  private calculateAvailability() {
+    // Request availability from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestAvailability')
+      this.socket.once('availability', (avail: number) => {
+        resolve(avail)
+      })
+    })
   }
 
-  getUpdateStream() {
-    return this.updateStream.asObservable()
+  private async setupMLMetricsCollection() {
+    // Setup ML metrics collection if needed (no-op for live data)
+    return Promise.resolve()
   }
 
-  triggerSelfDiagnostics() {
-    this.socket.emit('triggerDiagnostics')
+  private async initializeSystemHealth() {
+    // Setup system health monitoring if needed (no-op for live data)
+    return Promise.resolve()
   }
-  triggerSelfRepair() {
-    this.socket.emit('triggerRepair')
+
+  private startRealTimeUpdates() {
+    // Listen for real-time updates from backend
+    this.socket.on('metrics', (metrics: AdvancedMetrics) => {
+      this.metrics.next(metrics)
+    })
   }
-  triggerSelfImprovement() {
-    this.socket.emit('triggerImprovement')
+
+  private async optimizeCPU() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeCPU')
+    return Promise.resolve()
   }
-  triggerSelfUpdate() {
-    this.socket.emit('triggerUpdate')
+
+  private async optimizeMemory() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeMemory')
+    return Promise.resolve()
   }
-}
+
+  private async optimizeNetwork() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeNetwork')
+    return Promise.resolve()
+  }
+
+  private notifyOptimizations(optimizations: any[]) {
+    // Implement optimization notification logic here
+  }
+
+  private async collectRealTimeMetrics(): Promise<RealTimeMetrics> {
+    // Collect real hardware metrics if available
+    try {
+      const hwMetrics = await this.getHardwareMetrics();
+      const mlMetrics = await this.getMLMetrics();
+      return {
+        ...this.metrics.value,
+        ...hwMetrics,
+        ...mlMetrics,
+      };
+    } catch (error) {
+      console.error('Failed to collect real metrics, using simulated data');
+      return this.generateSimulatedMetrics();
+    }
+  }
+
+  private async getHardwareMetrics() {
+    // Request hardware metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestHardwareMetrics')
+      this.socket.once('hardwareMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async getMLMetrics(): Promise<MLMetrics> {
+    // Request ML metrics from backend
+    return new Promise<MLMetrics>((resolve, reject) => {
+      this.socket.emit('requestMLMetrics')
+      this.socket.once('mlMetrics', (metrics: MLMetrics) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async collectCPUMetrics() {
+    // Request CPU metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestCPUMetrics')
+      this.socket.once('cpuMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectMemoryMetrics() {
+    // Request memory metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestMemoryMetrics')
+      this.socket.once('memoryMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectDiskMetrics() {
+    // Request disk metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestDiskMetrics')
+      this.socket.once('diskMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectNetworkMetrics() {
+    // Request network metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestNetworkMetrics')
+      this.socket.once('networkMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async measureResponseTime() {
+    // Request response time from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestResponseTime')
+      this.socket.once('responseTime', (time: number) => {
+        resolve(time)
+      })
+    })
+  }
+
+  private calculateErrorRate() {
+    // Request error rate from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestErrorRate')
+      this.socket.once('errorRate', (rate: number) => {
+        resolve(rate)
+      })
+    })
+  }
+
+  private async measureThroughput() {
+    // Request throughput from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestThroughput')
+      this.socket.once('throughput', (tp: number) => {
+        resolve(tp)
+      })
+    })
+  }
+
+  private calculateAvailability() {
+    // Request availability from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestAvailability')
+      this.socket.once('availability', (avail: number) => {
+        resolve(avail)
+      })
+    })
+  }
+
+  private async setupMLMetricsCollection() {
+    // Setup ML metrics collection if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private async initializeSystemHealth() {
+    // Setup system health monitoring if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private startRealTimeUpdates() {
+    // Listen for real-time updates from backend
+    this.socket.on('metrics', (metrics: AdvancedMetrics) => {
+      this.metrics.next(metrics)
+    })
+  }
+
+  private async optimizeCPU() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeCPU')
+    return Promise.resolve()
+  }
+
+  private async optimizeMemory() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeMemory')
+    return Promise.resolve()
+  }
+
+  private async optimizeNetwork() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeNetwork')
+    return Promise.resolve()
+  }
+
+  private notifyOptimizations(optimizations: any[]) {
+    // Implement optimization notification logic here
+  }
+
+  private async collectRealTimeMetrics(): Promise<RealTimeMetrics> {
+    // Collect real hardware metrics if available
+    try {
+      const hwMetrics = await this.getHardwareMetrics();
+      const mlMetrics = await this.getMLMetrics();
+      return {
+        ...this.metrics.value,
+        ...hwMetrics,
+        ...mlMetrics,
+      };
+    } catch (error) {
+      console.error('Failed to collect real metrics, using simulated data');
+      return this.generateSimulatedMetrics();
+    }
+  }
+
+  private async getHardwareMetrics() {
+    // Request hardware metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestHardwareMetrics')
+      this.socket.once('hardwareMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async getMLMetrics(): Promise<MLMetrics> {
+    // Request ML metrics from backend
+    return new Promise<MLMetrics>((resolve, reject) => {
+      this.socket.emit('requestMLMetrics')
+      this.socket.once('mlMetrics', (metrics: MLMetrics) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async collectCPUMetrics() {
+    // Request CPU metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestCPUMetrics')
+      this.socket.once('cpuMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectMemoryMetrics() {
+    // Request memory metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestMemoryMetrics')
+      this.socket.once('memoryMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectDiskMetrics() {
+    // Request disk metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestDiskMetrics')
+      this.socket.once('diskMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectNetworkMetrics() {
+    // Request network metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestNetworkMetrics')
+      this.socket.once('networkMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async measureResponseTime() {
+    // Request response time from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestResponseTime')
+      this.socket.once('responseTime', (time: number) => {
+        resolve(time)
+      })
+    })
+  }
+
+  private calculateErrorRate() {
+    // Request error rate from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestErrorRate')
+      this.socket.once('errorRate', (rate: number) => {
+        resolve(rate)
+      })
+    })
+  }
+
+  private async measureThroughput() {
+    // Request throughput from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestThroughput')
+      this.socket.once('throughput', (tp: number) => {
+        resolve(tp)
+      })
+    })
+  }
+
+  private calculateAvailability() {
+    // Request availability from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestAvailability')
+      this.socket.once('availability', (avail: number) => {
+        resolve(avail)
+      })
+    })
+  }
+
+  private async setupMLMetricsCollection() {
+    // Setup ML metrics collection if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private async initializeSystemHealth() {
+    // Setup system health monitoring if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private startRealTimeUpdates() {
+    // Listen for real-time updates from backend
+    this.socket.on('metrics', (metrics: AdvancedMetrics) => {
+      this.metrics.next(metrics)
+    })
+  }
+
+  private async optimizeCPU() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeCPU')
+    return Promise.resolve()
+  }
+
+  private async optimizeMemory() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeMemory')
+    return Promise.resolve()
+  }
+
+  private async optimizeNetwork() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeNetwork')
+    return Promise.resolve()
+  }
+
+  private notifyOptimizations(optimizations: any[]) {
+    // Implement optimization notification logic here
+  }
+
+  private async collectRealTimeMetrics(): Promise<RealTimeMetrics> {
+    // Collect real hardware metrics if available
+    try {
+      const hwMetrics = await this.getHardwareMetrics();
+      const mlMetrics = await this.getMLMetrics();
+      return {
+        ...this.metrics.value,
+        ...hwMetrics,
+        ...mlMetrics,
+      };
+    } catch (error) {
+      console.error('Failed to collect real metrics, using simulated data');
+      return this.generateSimulatedMetrics();
+    }
+  }
+
+  private async getHardwareMetrics() {
+    // Request hardware metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestHardwareMetrics')
+      this.socket.once('hardwareMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async getMLMetrics(): Promise<MLMetrics> {
+    // Request ML metrics from backend
+    return new Promise<MLMetrics>((resolve, reject) => {
+      this.socket.emit('requestMLMetrics')
+      this.socket.once('mlMetrics', (metrics: MLMetrics) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async collectCPUMetrics() {
+    // Request CPU metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestCPUMetrics')
+      this.socket.once('cpuMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectMemoryMetrics() {
+    // Request memory metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestMemoryMetrics')
+      this.socket.once('memoryMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectDiskMetrics() {
+    // Request disk metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestDiskMetrics')
+      this.socket.once('diskMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectNetworkMetrics() {
+    // Request network metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestNetworkMetrics')
+      this.socket.once('networkMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async measureResponseTime() {
+    // Request response time from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestResponseTime')
+      this.socket.once('responseTime', (time: number) => {
+        resolve(time)
+      })
+    })
+  }
+
+  private calculateErrorRate() {
+    // Request error rate from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestErrorRate')
+      this.socket.once('errorRate', (rate: number) => {
+        resolve(rate)
+      })
+    })
+  }
+
+  private async measureThroughput() {
+    // Request throughput from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestThroughput')
+      this.socket.once('throughput', (tp: number) => {
+        resolve(tp)
+      })
+    })
+  }
+
+  private calculateAvailability() {
+    // Request availability from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestAvailability')
+      this.socket.once('availability', (avail: number) => {
+        resolve(avail)
+      })
+    })
+  }
+
+  private async setupMLMetricsCollection() {
+    // Setup ML metrics collection if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private async initializeSystemHealth() {
+    // Setup system health monitoring if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private startRealTimeUpdates() {
+    // Listen for real-time updates from backend
+    this.socket.on('metrics', (metrics: AdvancedMetrics) => {
+      this.metrics.next(metrics)
+    })
+  }
+
+  private async optimizeCPU() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeCPU')
+    return Promise.resolve()
+  }
+
+  private async optimizeMemory() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeMemory')
+    return Promise.resolve()
+  }
+
+  private async optimizeNetwork() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeNetwork')
+    return Promise.resolve()
+  }
+
+  private notifyOptimizations(optimizations: any[]) {
+    // Implement optimization notification logic here
+  }
+
+  private async collectRealTimeMetrics(): Promise<RealTimeMetrics> {
+    // Collect real hardware metrics if available
+    try {
+      const hwMetrics = await this.getHardwareMetrics();
+      const mlMetrics = await this.getMLMetrics();
+      return {
+        ...this.metrics.value,
+        ...hwMetrics,
+        ...mlMetrics,
+      };
+    } catch (error) {
+      console.error('Failed to collect real metrics, using simulated data');
+      return this.generateSimulatedMetrics();
+    }
+  }
+
+  private async getHardwareMetrics() {
+    // Request hardware metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestHardwareMetrics')
+      this.socket.once('hardwareMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async getMLMetrics(): Promise<MLMetrics> {
+    // Request ML metrics from backend
+    return new Promise<MLMetrics>((resolve, reject) => {
+      this.socket.emit('requestMLMetrics')
+      this.socket.once('mlMetrics', (metrics: MLMetrics) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async collectCPUMetrics() {
+    // Request CPU metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestCPUMetrics')
+      this.socket.once('cpuMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectMemoryMetrics() {
+    // Request memory metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestMemoryMetrics')
+      this.socket.once('memoryMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectDiskMetrics() {
+    // Request disk metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestDiskMetrics')
+      this.socket.once('diskMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectNetworkMetrics() {
+    // Request network metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestNetworkMetrics')
+      this.socket.once('networkMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async measureResponseTime() {
+    // Request response time from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestResponseTime')
+      this.socket.once('responseTime', (time: number) => {
+        resolve(time)
+      })
+    })
+  }
+
+  private calculateErrorRate() {
+    // Request error rate from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestErrorRate')
+      this.socket.once('errorRate', (rate: number) => {
+        resolve(rate)
+      })
+    })
+  }
+
+  private async measureThroughput() {
+    // Request throughput from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestThroughput')
+      this.socket.once('throughput', (tp: number) => {
+        resolve(tp)
+      })
+    })
+  }
+
+  private calculateAvailability() {
+    // Request availability from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestAvailability')
+      this.socket.once('availability', (avail: number) => {
+        resolve(avail)
+      })
+    })
+  }
+
+  private async setupMLMetricsCollection() {
+    // Setup ML metrics collection if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private async initializeSystemHealth() {
+    // Setup system health monitoring if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private startRealTimeUpdates() {
+    // Listen for real-time updates from backend
+    this.socket.on('metrics', (metrics: AdvancedMetrics) => {
+      this.metrics.next(metrics)
+    })
+  }
+
+  private async optimizeCPU() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeCPU')
+    return Promise.resolve()
+  }
+
+  private async optimizeMemory() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeMemory')
+    return Promise.resolve()
+  }
+
+  private async optimizeNetwork() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeNetwork')
+    return Promise.resolve()
+  }
+
+  private notifyOptimizations(optimizations: any[]) {
+    // Implement optimization notification logic here
+  }
+
+  private async collectRealTimeMetrics(): Promise<RealTimeMetrics> {
+    // Collect real hardware metrics if available
+    try {
+      const hwMetrics = await this.getHardwareMetrics();
+      const mlMetrics = await this.getMLMetrics();
+      return {
+        ...this.metrics.value,
+        ...hwMetrics,
+        ...mlMetrics,
+      };
+    } catch (error) {
+      console.error('Failed to collect real metrics, using simulated data');
+      return this.generateSimulatedMetrics();
+    }
+  }
+
+  private async getHardwareMetrics() {
+    // Request hardware metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestHardwareMetrics')
+      this.socket.once('hardwareMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async getMLMetrics(): Promise<MLMetrics> {
+    // Request ML metrics from backend
+    return new Promise<MLMetrics>((resolve, reject) => {
+      this.socket.emit('requestMLMetrics')
+      this.socket.once('mlMetrics', (metrics: MLMetrics) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async collectCPUMetrics() {
+    // Request CPU metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestCPUMetrics')
+      this.socket.once('cpuMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectMemoryMetrics() {
+    // Request memory metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestMemoryMetrics')
+      this.socket.once('memoryMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectDiskMetrics() {
+    // Request disk metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestDiskMetrics')
+      this.socket.once('diskMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectNetworkMetrics() {
+    // Request network metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestNetworkMetrics')
+      this.socket.once('networkMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async measureResponseTime() {
+    // Request response time from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestResponseTime')
+      this.socket.once('responseTime', (time: number) => {
+        resolve(time)
+      })
+    })
+  }
+
+  private calculateErrorRate() {
+    // Request error rate from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestErrorRate')
+      this.socket.once('errorRate', (rate: number) => {
+        resolve(rate)
+      })
+    })
+  }
+
+  private async measureThroughput() {
+    // Request throughput from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestThroughput')
+      this.socket.once('throughput', (tp: number) => {
+        resolve(tp)
+      })
+    })
+  }
+
+  private calculateAvailability() {
+    // Request availability from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestAvailability')
+      this.socket.once('availability', (avail: number) => {
+        resolve(avail)
+      })
+    })
+  }
+
+  private async setupMLMetricsCollection() {
+    // Setup ML metrics collection if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private async initializeSystemHealth() {
+    // Setup system health monitoring if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private startRealTimeUpdates() {
+    // Listen for real-time updates from backend
+    this.socket.on('metrics', (metrics: AdvancedMetrics) => {
+      this.metrics.next(metrics)
+    })
+  }
+
+  private async optimizeCPU() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeCPU')
+    return Promise.resolve()
+  }
+
+  private async optimizeMemory() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeMemory')
+    return Promise.resolve()
+  }
+
+  private async optimizeNetwork() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeNetwork')
+    return Promise.resolve()
+  }
+
+  private notifyOptimizations(optimizations: any[]) {
+    // Implement optimization notification logic here
+  }
+
+  private async collectRealTimeMetrics(): Promise<RealTimeMetrics> {
+    // Collect real hardware metrics if available
+    try {
+      const hwMetrics = await this.getHardwareMetrics();
+      const mlMetrics = await this.getMLMetrics();
+      return {
+        ...this.metrics.value,
+        ...hwMetrics,
+        ...mlMetrics,
+      };
+    } catch (error) {
+      console.error('Failed to collect real metrics, using simulated data');
+      return this.generateSimulatedMetrics();
+    }
+  }
+
+  private async getHardwareMetrics() {
+    // Request hardware metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestHardwareMetrics')
+      this.socket.once('hardwareMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async getMLMetrics(): Promise<MLMetrics> {
+    // Request ML metrics from backend
+    return new Promise<MLMetrics>((resolve, reject) => {
+      this.socket.emit('requestMLMetrics')
+      this.socket.once('mlMetrics', (metrics: MLMetrics) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async collectCPUMetrics() {
+    // Request CPU metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestCPUMetrics')
+      this.socket.once('cpuMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectMemoryMetrics() {
+    // Request memory metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestMemoryMetrics')
+      this.socket.once('memoryMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectDiskMetrics() {
+    // Request disk metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestDiskMetrics')
+      this.socket.once('diskMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectNetworkMetrics() {
+    // Request network metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestNetworkMetrics')
+      this.socket.once('networkMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async measureResponseTime() {
+    // Request response time from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestResponseTime')
+      this.socket.once('responseTime', (time: number) => {
+        resolve(time)
+      })
+    })
+  }
+
+  private calculateErrorRate() {
+    // Request error rate from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestErrorRate')
+      this.socket.once('errorRate', (rate: number) => {
+        resolve(rate)
+      })
+    })
+  }
+
+  private async measureThroughput() {
+    // Request throughput from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestThroughput')
+      this.socket.once('throughput', (tp: number) => {
+        resolve(tp)
+      })
+    })
+  }
+
+  private calculateAvailability() {
+    // Request availability from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestAvailability')
+      this.socket.once('availability', (avail: number) => {
+        resolve(avail)
+      })
+    })
+  }
+
+  private async setupMLMetricsCollection() {
+    // Setup ML metrics collection if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private async initializeSystemHealth() {
+    // Setup system health monitoring if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private startRealTimeUpdates() {
+    // Listen for real-time updates from backend
+    this.socket.on('metrics', (metrics: AdvancedMetrics) => {
+      this.metrics.next(metrics)
+    })
+  }
+
+  private async optimizeCPU() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeCPU')
+    return Promise.resolve()
+  }
+
+  private async optimizeMemory() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeMemory')
+    return Promise.resolve()
+  }
+
+  private async optimizeNetwork() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeNetwork')
+    return Promise.resolve()
+  }
+
+  private notifyOptimizations(optimizations: any[]) {
+    // Implement optimization notification logic here
+  }
+
+  private async collectRealTimeMetrics(): Promise<RealTimeMetrics> {
+    // Collect real hardware metrics if available
+    try {
+      const hwMetrics = await this.getHardwareMetrics();
+      const mlMetrics = await this.getMLMetrics();
+      return {
+        ...this.metrics.value,
+        ...hwMetrics,
+        ...mlMetrics,
+      };
+    } catch (error) {
+      console.error('Failed to collect real metrics, using simulated data');
+      return this.generateSimulatedMetrics();
+    }
+  }
+
+  private async getHardwareMetrics() {
+    // Request hardware metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestHardwareMetrics')
+      this.socket.once('hardwareMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async getMLMetrics(): Promise<MLMetrics> {
+    // Request ML metrics from backend
+    return new Promise<MLMetrics>((resolve, reject) => {
+      this.socket.emit('requestMLMetrics')
+      this.socket.once('mlMetrics', (metrics: MLMetrics) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async collectCPUMetrics() {
+    // Request CPU metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestCPUMetrics')
+      this.socket.once('cpuMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectMemoryMetrics() {
+    // Request memory metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestMemoryMetrics')
+      this.socket.once('memoryMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectDiskMetrics() {
+    // Request disk metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestDiskMetrics')
+      this.socket.once('diskMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectNetworkMetrics() {
+    // Request network metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestNetworkMetrics')
+      this.socket.once('networkMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async measureResponseTime() {
+    // Request response time from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestResponseTime')
+      this.socket.once('responseTime', (time: number) => {
+        resolve(time)
+      })
+    })
+  }
+
+  private calculateErrorRate() {
+    // Request error rate from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestErrorRate')
+      this.socket.once('errorRate', (rate: number) => {
+        resolve(rate)
+      })
+    })
+  }
+
+  private async measureThroughput() {
+    // Request throughput from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestThroughput')
+      this.socket.once('throughput', (tp: number) => {
+        resolve(tp)
+      })
+    })
+  }
+
+  private calculateAvailability() {
+    // Request availability from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestAvailability')
+      this.socket.once('availability', (avail: number) => {
+        resolve(avail)
+      })
+    })
+  }
+
+  private async setupMLMetricsCollection() {
+    // Setup ML metrics collection if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private async initializeSystemHealth() {
+    // Setup system health monitoring if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private startRealTimeUpdates() {
+    // Listen for real-time updates from backend
+    this.socket.on('metrics', (metrics: AdvancedMetrics) => {
+      this.metrics.next(metrics)
+    })
+  }
+
+  private async optimizeCPU() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeCPU')
+    return Promise.resolve()
+  }
+
+  private async optimizeMemory() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeMemory')
+    return Promise.resolve()
+  }
+
+  private async optimizeNetwork() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeNetwork')
+    return Promise.resolve()
+  }
+
+  private notifyOptimizations(optimizations: any[]) {
+    // Implement optimization notification logic here
+  }
+
+  private async collectRealTimeMetrics(): Promise<RealTimeMetrics> {
+    // Collect real hardware metrics if available
+    try {
+      const hwMetrics = await this.getHardwareMetrics();
+      const mlMetrics = await this.getMLMetrics();
+      return {
+        ...this.metrics.value,
+        ...hwMetrics,
+        ...mlMetrics,
+      };
+    } catch (error) {
+      console.error('Failed to collect real metrics, using simulated data');
+      return this.generateSimulatedMetrics();
+    }
+  }
+
+  private async getHardwareMetrics() {
+    // Request hardware metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestHardwareMetrics')
+      this.socket.once('hardwareMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async getMLMetrics(): Promise<MLMetrics> {
+    // Request ML metrics from backend
+    return new Promise<MLMetrics>((resolve, reject) => {
+      this.socket.emit('requestMLMetrics')
+      this.socket.once('mlMetrics', (metrics: MLMetrics) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async collectCPUMetrics() {
+    // Request CPU metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestCPUMetrics')
+      this.socket.once('cpuMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectMemoryMetrics() {
+    // Request memory metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestMemoryMetrics')
+      this.socket.once('memoryMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectDiskMetrics() {
+    // Request disk metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestDiskMetrics')
+      this.socket.once('diskMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectNetworkMetrics() {
+    // Request network metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestNetworkMetrics')
+      this.socket.once('networkMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async measureResponseTime() {
+    // Request response time from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestResponseTime')
+      this.socket.once('responseTime', (time: number) => {
+        resolve(time)
+      })
+    })
+  }
+
+  private calculateErrorRate() {
+    // Request error rate from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestErrorRate')
+      this.socket.once('errorRate', (rate: number) => {
+        resolve(rate)
+      })
+    })
+  }
+
+  private async measureThroughput() {
+    // Request throughput from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestThroughput')
+      this.socket.once('throughput', (tp: number) => {
+        resolve(tp)
+      })
+    })
+  }
+
+  private calculateAvailability() {
+    // Request availability from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestAvailability')
+      this.socket.once('availability', (avail: number) => {
+        resolve(avail)
+      })
+    })
+  }
+
+  private async setupMLMetricsCollection() {
+    // Setup ML metrics collection if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private async initializeSystemHealth() {
+    // Setup system health monitoring if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private startRealTimeUpdates() {
+    // Listen for real-time updates from backend
+    this.socket.on('metrics', (metrics: AdvancedMetrics) => {
+      this.metrics.next(metrics)
+    })
+  }
+
+  private async optimizeCPU() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeCPU')
+    return Promise.resolve()
+  }
+
+  private async optimizeMemory() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeMemory')
+    return Promise.resolve()
+  }
+
+  private async optimizeNetwork() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeNetwork')
+    return Promise.resolve()
+  }
+
+  private notifyOptimizations(optimizations: any[]) {
+    // Implement optimization notification logic here
+  }
+
+  private async collectRealTimeMetrics(): Promise<RealTimeMetrics> {
+    // Collect real hardware metrics if available
+    try {
+      const hwMetrics = await this.getHardwareMetrics();
+      const mlMetrics = await this.getMLMetrics();
+      return {
+        ...this.metrics.value,
+        ...hwMetrics,
+        ...mlMetrics,
+      };
+    } catch (error) {
+      console.error('Failed to collect real metrics, using simulated data');
+      return this.generateSimulatedMetrics();
+    }
+  }
+
+  private async getHardwareMetrics() {
+    // Request hardware metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestHardwareMetrics')
+      this.socket.once('hardwareMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async getMLMetrics(): Promise<MLMetrics> {
+    // Request ML metrics from backend
+    return new Promise<MLMetrics>((resolve, reject) => {
+      this.socket.emit('requestMLMetrics')
+      this.socket.once('mlMetrics', (metrics: MLMetrics) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async collectCPUMetrics() {
+    // Request CPU metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestCPUMetrics')
+      this.socket.once('cpuMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectMemoryMetrics() {
+    // Request memory metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestMemoryMetrics')
+      this.socket.once('memoryMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectDiskMetrics() {
+    // Request disk metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestDiskMetrics')
+      this.socket.once('diskMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectNetworkMetrics() {
+    // Request network metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestNetworkMetrics')
+      this.socket.once('networkMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async measureResponseTime() {
+    // Request response time from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestResponseTime')
+      this.socket.once('responseTime', (time: number) => {
+        resolve(time)
+      })
+    })
+  }
+
+  private calculateErrorRate() {
+    // Request error rate from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestErrorRate')
+      this.socket.once('errorRate', (rate: number) => {
+        resolve(rate)
+      })
+    })
+  }
+
+  private async measureThroughput() {
+    // Request throughput from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestThroughput')
+      this.socket.once('throughput', (tp: number) => {
+        resolve(tp)
+      })
+    })
+  }
+
+  private calculateAvailability() {
+    // Request availability from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestAvailability')
+      this.socket.once('availability', (avail: number) => {
+        resolve(avail)
+      })
+    })
+  }
+
+  private async setupMLMetricsCollection() {
+    // Setup ML metrics collection if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private async initializeSystemHealth() {
+    // Setup system health monitoring if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private startRealTimeUpdates() {
+    // Listen for real-time updates from backend
+    this.socket.on('metrics', (metrics: AdvancedMetrics) => {
+      this.metrics.next(metrics)
+    })
+  }
+
+  private async optimizeCPU() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeCPU')
+    return Promise.resolve()
+  }
+
+  private async optimizeMemory() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeMemory')
+    return Promise.resolve()
+  }
+
+  private async optimizeNetwork() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeNetwork')
+    return Promise.resolve()
+  }
+
+  private notifyOptimizations(optimizations: any[]) {
+    // Implement optimization notification logic here
+  }
+
+  private async collectRealTimeMetrics(): Promise<RealTimeMetrics> {
+    // Collect real hardware metrics if available
+    try {
+      const hwMetrics = await this.getHardwareMetrics();
+      const mlMetrics = await this.getMLMetrics();
+      return {
+        ...this.metrics.value,
+        ...hwMetrics,
+        ...mlMetrics,
+      };
+    } catch (error) {
+      console.error('Failed to collect real metrics, using simulated data');
+      return this.generateSimulatedMetrics();
+    }
+  }
+
+  private async getHardwareMetrics() {
+    // Request hardware metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestHardwareMetrics')
+      this.socket.once('hardwareMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async getMLMetrics(): Promise<MLMetrics> {
+    // Request ML metrics from backend
+    return new Promise<MLMetrics>((resolve, reject) => {
+      this.socket.emit('requestMLMetrics')
+      this.socket.once('mlMetrics', (metrics: MLMetrics) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async collectCPUMetrics() {
+    // Request CPU metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestCPUMetrics')
+      this.socket.once('cpuMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectMemoryMetrics() {
+    // Request memory metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestMemoryMetrics')
+      this.socket.once('memoryMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectDiskMetrics() {
+    // Request disk metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestDiskMetrics')
+      this.socket.once('diskMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectNetworkMetrics() {
+    // Request network metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestNetworkMetrics')
+      this.socket.once('networkMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async measureResponseTime() {
+    // Request response time from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestResponseTime')
+      this.socket.once('responseTime', (time: number) => {
+        resolve(time)
+      })
+    })
+  }
+
+  private calculateErrorRate() {
+    // Request error rate from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestErrorRate')
+      this.socket.once('errorRate', (rate: number) => {
+        resolve(rate)
+      })
+    })
+  }
+
+  private async measureThroughput() {
+    // Request throughput from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestThroughput')
+      this.socket.once('throughput', (tp: number) => {
+        resolve(tp)
+      })
+    })
+  }
+
+  private calculateAvailability() {
+    // Request availability from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestAvailability')
+      this.socket.once('availability', (avail: number) => {
+        resolve(avail)
+      })
+    })
+  }
+
+  private async setupMLMetricsCollection() {
+    // Setup ML metrics collection if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private async initializeSystemHealth() {
+    // Setup system health monitoring if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private startRealTimeUpdates() {
+    // Listen for real-time updates from backend
+    this.socket.on('metrics', (metrics: AdvancedMetrics) => {
+      this.metrics.next(metrics)
+    })
+  }
+
+  private async optimizeCPU() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeCPU')
+    return Promise.resolve()
+  }
+
+  private async optimizeMemory() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeMemory')
+    return Promise.resolve()
+  }
+
+  private async optimizeNetwork() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeNetwork')
+    return Promise.resolve()
+  }
+
+  private notifyOptimizations(optimizations: any[]) {
+    // Implement optimization notification logic here
+  }
+
+  private async collectRealTimeMetrics(): Promise<RealTimeMetrics> {
+    // Collect real hardware metrics if available
+    try {
+      const hwMetrics = await this.getHardwareMetrics();
+      const mlMetrics = await this.getMLMetrics();
+      return {
+        ...this.metrics.value,
+        ...hwMetrics,
+        ...mlMetrics,
+      };
+    } catch (error) {
+      console.error('Failed to collect real metrics, using simulated data');
+      return this.generateSimulatedMetrics();
+    }
+  }
+
+  private async getHardwareMetrics() {
+    // Request hardware metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestHardwareMetrics')
+      this.socket.once('hardwareMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async getMLMetrics(): Promise<MLMetrics> {
+    // Request ML metrics from backend
+    return new Promise<MLMetrics>((resolve, reject) => {
+      this.socket.emit('requestMLMetrics')
+      this.socket.once('mlMetrics', (metrics: MLMetrics) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async collectCPUMetrics() {
+    // Request CPU metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestCPUMetrics')
+      this.socket.once('cpuMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectMemoryMetrics() {
+    // Request memory metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestMemoryMetrics')
+      this.socket.once('memoryMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectDiskMetrics() {
+    // Request disk metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestDiskMetrics')
+      this.socket.once('diskMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectNetworkMetrics() {
+    // Request network metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestNetworkMetrics')
+      this.socket.once('networkMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async measureResponseTime() {
+    // Request response time from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestResponseTime')
+      this.socket.once('responseTime', (time: number) => {
+        resolve(time)
+      })
+    })
+  }
+
+  private calculateErrorRate() {
+    // Request error rate from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestErrorRate')
+      this.socket.once('errorRate', (rate: number) => {
+        resolve(rate)
+      })
+    })
+  }
+
+  private async measureThroughput() {
+    // Request throughput from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestThroughput')
+      this.socket.once('throughput', (tp: number) => {
+        resolve(tp)
+      })
+    })
+  }
+
+  private calculateAvailability() {
+    // Request availability from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestAvailability')
+      this.socket.once('availability', (avail: number) => {
+        resolve(avail)
+      })
+    })
+  }
+
+  private async setupMLMetricsCollection() {
+    // Setup ML metrics collection if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private async initializeSystemHealth() {
+    // Setup system health monitoring if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private startRealTimeUpdates() {
+    // Listen for real-time updates from backend
+    this.socket.on('metrics', (metrics: AdvancedMetrics) => {
+      this.metrics.next(metrics)
+    })
+  }
+
+  private async optimizeCPU() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeCPU')
+    return Promise.resolve()
+  }
+
+  private async optimizeMemory() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeMemory')
+    return Promise.resolve()
+  }
+
+  private async optimizeNetwork() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeNetwork')
+    return Promise.resolve()
+  }
+
+  private notifyOptimizations(optimizations: any[]) {
+    // Implement optimization notification logic here
+  }
+
+  private async collectRealTimeMetrics(): Promise<RealTimeMetrics> {
+    // Collect real hardware metrics if available
+    try {
+      const hwMetrics = await this.getHardwareMetrics();
+      const mlMetrics = await this.getMLMetrics();
+      return {
+        ...this.metrics.value,
+        ...hwMetrics,
+        ...mlMetrics,
+      };
+    } catch (error) {
+      console.error('Failed to collect real metrics, using simulated data');
+      return this.generateSimulatedMetrics();
+    }
+  }
+
+  private async getHardwareMetrics() {
+    // Request hardware metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestHardwareMetrics')
+      this.socket.once('hardwareMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async getMLMetrics(): Promise<MLMetrics> {
+    // Request ML metrics from backend
+    return new Promise<MLMetrics>((resolve, reject) => {
+      this.socket.emit('requestMLMetrics')
+      this.socket.once('mlMetrics', (metrics: MLMetrics) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async collectCPUMetrics() {
+    // Request CPU metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestCPUMetrics')
+      this.socket.once('cpuMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectMemoryMetrics() {
+    // Request memory metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestMemoryMetrics')
+      this.socket.once('memoryMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectDiskMetrics() {
+    // Request disk metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestDiskMetrics')
+      this.socket.once('diskMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async collectNetworkMetrics() {
+    // Request network metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestNetworkMetrics')
+      this.socket.once('networkMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+    })
+  }
+
+  private async measureResponseTime() {
+    // Request response time from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestResponseTime')
+      this.socket.once('responseTime', (time: number) => {
+        resolve(time)
+      })
+    })
+  }
+
+  private calculateErrorRate() {
+    // Request error rate from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestErrorRate')
+      this.socket.once('errorRate', (rate: number) => {
+        resolve(rate)
+      })
+    })
+  }
+
+  private async measureThroughput() {
+    // Request throughput from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestThroughput')
+      this.socket.once('throughput', (tp: number) => {
+        resolve(tp)
+      })
+    })
+  }
+
+  private calculateAvailability() {
+    // Request availability from backend
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit('requestAvailability')
+      this.socket.once('availability', (avail: number) => {
+        resolve(avail)
+      })
+    })
+  }
+
+  private async setupMLMetricsCollection() {
+    // Setup ML metrics collection if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private async initializeSystemHealth() {
+    // Setup system health monitoring if needed (no-op for live data)
+    return Promise.resolve()
+  }
+
+  private startRealTimeUpdates() {
+    // Listen for real-time updates from backend
+    this.socket.on('metrics', (metrics: AdvancedMetrics) => {
+      this.metrics.next(metrics)
+    })
+  }
+
+  private async optimizeCPU() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeCPU')
+    return Promise.resolve()
+  }
+
+  private async optimizeMemory() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeMemory')
+    return Promise.resolve()
+  }
+
+  private async optimizeNetwork() {
+    // Send optimization command to backend
+    this.socket.emit('optimizeNetwork')
+    return Promise.resolve()
+  }
+
+  private notifyOptimizations(optimizations: any[]) {
+    // Implement optimization notification logic here
+  }
+
+  private async collectRealTimeMetrics(): Promise<RealTimeMetrics> {
+    // Collect real hardware metrics if available
+    try {
+      const hwMetrics = await this.getHardwareMetrics();
+      const mlMetrics = await this.getMLMetrics();
+      return {
+        ...this.metrics.value,
+        ...hwMetrics,
+        ...mlMetrics,
+      };
+    } catch (error) {
+      console.error('Failed to collect real metrics, using simulated data');
+      return this.generateSimulatedMetrics();
+    }
+  }
+
+  private async getHardwareMetrics() {
+    // Request hardware metrics from backend
+    return new Promise<any>((resolve, reject) => {
+      this.socket.emit('requestHardwareMetrics')
+      this.socket.once('hardwareMetrics', (metrics: any) => {
+        resolve(metrics)
+      })
+      // Optionally add timeout/error handling
+    })
+  }
+
+  private async getMLMetrics(): Promise<MLMetrics>

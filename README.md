@@ -12,6 +12,7 @@
 - **TypeScript & Modular Architecture**
 - **Modern Styling & Responsive Design**
 - **Accessibility & Animations**
+- **User Interface**: Interactive dashboards and controls for all self-* features
 
 ## Usage
 
@@ -22,8 +23,8 @@
 ## How it Works
 
 - The dashboard displays live system metrics from real sources.
-- Users can trigger diagnostics, repair, and improvement from the UI.
-- The system performs self-diagnostics, self-repair, and self-improvement automatically and on demand.
+- Users can trigger diagnostics, repair, improvement, and update from the UI.
+- The system performs self-diagnostics, self-repair, self-improvement, and self-update automatically and on demand.
 - All status and results are shown in real-time, with feedback and logs.
 
 ## Advanced Features
@@ -32,6 +33,7 @@
 - Optimization history and status
 - Alerts and notifications for critical issues
 - Self-updating and continuous improvement
+- User command interface for direct interaction
 
 ## Architecture
 

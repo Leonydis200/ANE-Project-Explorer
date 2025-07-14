@@ -19,6 +19,8 @@ export const useLiveMetrics = () => {
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState('overview')
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'error'>('disconnected')
+  const [feedback, setFeedback] = useState<string>('')
+  const [improvementHistory, setImprovementHistory] = useState<any[]>([])
 
   const refreshData = useCallback(async () => {
     try {
@@ -38,6 +40,8 @@ export const useLiveMetrics = () => {
     const diagSub = selfDiagnostics.getHealthStream().subscribe(setDiagnostics)
     const impSub = systemImprovement.getStatusStream().subscribe(setImprovementStatus)
     const connSub = dataStream.getConnectionStatus().subscribe(setConnectionStatus)
+    const feedbackSub = systemImprovement.getFeedbackStream().subscribe(setFeedback)
+    const historySub = systemImprovement.getImprovementHistory().subscribe(setImprovementHistory)
 
     selfDiagnostics.startMonitoring()
     setLoading(false)
@@ -47,6 +51,8 @@ export const useLiveMetrics = () => {
       diagSub.unsubscribe()
       impSub.unsubscribe()
       connSub.unsubscribe()
+      feedbackSub.unsubscribe()
+      historySub.unsubscribe()
     }
   }, [])
 
@@ -115,6 +121,9 @@ export const useLiveMetrics = () => {
     loading,
     tab,
     setTab,
-    connectionStatus
+    connectionStatus,
+    feedback,
+    improvementHistory,
+    triggerUserImprovement: systemImprovement.triggerUserImprovement.bind(systemImprovement),
   }
 }

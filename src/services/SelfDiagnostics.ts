@@ -28,6 +28,8 @@ export class SelfDiagnosticsService {
   private predictionHistory: any[] = [];
   private alertsStream = new BehaviorSubject<string[]>([])
   private healthStream = this.systemHealth
+  private feedbackStream = new BehaviorSubject<string>('Idle')
+  private diagnosticsHistory = new BehaviorSubject<any[]>([])
 
   constructor() {
     this.initializeMonitoring()
@@ -187,6 +189,21 @@ export class SelfDiagnosticsService {
   }
   getAlertsStream() {
     return this.alertsStream.asObservable()
+  }
+  getFeedbackStream() {
+    return this.feedbackStream.asObservable()
+  }
+  getDiagnosticsHistory() {
+    return this.diagnosticsHistory.asObservable()
+  }
+
+  async triggerUserDiagnostics() {
+    this.feedbackStream.next('User diagnostics triggered')
+    const results = await this.runDiagnostics()
+    this.diagnosticsHistory.next([
+      ...this.diagnosticsHistory.value,
+      { time: new Date(), results }
+    ])
   }
 
   private updateSystemHealth(results: DiagnosticResult[]) {

@@ -22,7 +22,7 @@ export default function ModernDashboard() {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [showModal, setShowModal] = useState(false)
   const [autoRefresh, setAutoRefresh] = useState(true)
-  const { diagnostics, repair, improvement } = useRealTimeMetrics()
+  const { diagnostics, repair, improvement, feedback } = useRealTimeMetrics()
 
   useEffect(() => {
     fetch('/api/projects.json')
@@ -159,7 +159,15 @@ export default function ModernDashboard() {
               <button className="btn btn-ghost" onClick={() => dataStream.triggerSelfImprovement()}>
                 Run Self-Improvement
               </button>
+              <button className="btn btn-ghost" onClick={() => dataStream.triggerSelfUpdate()}>
+                Run Self-Update
+              </button>
             </div>
+            {feedback && (
+              <div className="mb-4 bg-info/10 text-info p-2 rounded">
+                Feedback: {feedback}
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="bg-white rounded-lg p-4 shadow">
                 <h4 className="font-bold mb-2">Diagnostics</h4>

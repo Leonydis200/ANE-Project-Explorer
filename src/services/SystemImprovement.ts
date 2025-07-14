@@ -29,6 +29,8 @@ export class SystemImprovementService {
   })
 
   private statusStream = new BehaviorSubject<string>('idle')
+  private feedbackStream = new BehaviorSubject<string>('Idle')
+  private improvementHistory = new BehaviorSubject<any[]>([])
 
   constructor() {
     this.initializeImprovement()
@@ -36,6 +38,23 @@ export class SystemImprovementService {
 
   getStatusStream() {
     return this.statusStream.asObservable()
+  }
+
+  getFeedbackStream() {
+    return this.feedbackStream.asObservable()
+  }
+
+  getImprovementHistory() {
+    return this.improvementHistory.asObservable()
+  }
+
+  async triggerUserImprovement() {
+    this.feedbackStream.next('User improvement triggered')
+    await this.analyzeAndImprove()
+    this.improvementHistory.next([
+      ...this.improvementHistory.value,
+      { time: new Date(), status: 'completed' }
+    ])
   }
 
   private initializeImprovement() {
