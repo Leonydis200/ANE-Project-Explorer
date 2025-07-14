@@ -1,4 +1,4 @@
-// ModuleDashboard.tsx
+import { dataStream } from '../services/DataStream';
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
@@ -24,7 +24,7 @@ type Module = {
 }
 
 export default function ModuleDashboard() {
-	const { metrics, systemHealth, error, refreshData, loading, tab, setTab, connectionStatus, update, feedback, improvementHistory, triggerUserImprovement } = useLiveMetrics()
+	const { metrics, systemHealth, error, refreshData, loading, tab, setTab, connectionStatus, feedback, improvementHistory, triggerUserImprovement } = useLiveMetrics();
 	const [autoRefresh, setAutoRefresh] = useState(true)
 
 	useEffect(() => {
@@ -37,7 +37,7 @@ export default function ModuleDashboard() {
 	const currentModule = metrics.find((m) => m.id === tab)
 
 	if (loading) return <div className="p-6 text-muted-foreground">Loading modules...</div>
-	if (error) return <div className="p-6 text-red-500">{error}</div>
+	if (error) return <div className="p-6 text-red-500">{error.message}</div>;
 	if (!currentModule) return <div className="p-6 text-red-500">Module not found.</div>
 
 	return (
@@ -69,15 +69,13 @@ export default function ModuleDashboard() {
 				</div>
 			</div>
 			<div className="flex gap-2 mb-4">
-				{metrics.map((mod) => (
-					<button
-						key={mod.id}
-						className={`px-4 py-2 rounded-lg ${tab === mod.id ? 'bg-primary text-white' : 'bg-gray-200'}`}
-						onClick={() => setTab(mod.id)}
-					>
-						{mod.id}
-					</button>
-				))}
+				{metrics.map((mod: LiveMetrics) => (
+  			<div key={mod.id}>
+    						{iconMap[mod.icon]}
+    					{mod.title}
+    					{mod.description}
+  			</div>
+			))}
 			</div>
 			<div className="flex gap-3 mb-4">
 				<button className="btn btn-ghost" onClick={triggerUserImprovement}>

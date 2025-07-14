@@ -1,4 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react';
+import { Line } from 'react-chartjs-2';
+import { 
+  AdvancedMetrics, 
+  SystemHealth, 
+  PerformanceMetrics, 
+  OptimizationStatus 
+} from '../types';
 import { motion } from 'framer-motion'
 import { Line } from 'react-chartjs-2'
 import { dataStream } from '../services/DataStream'

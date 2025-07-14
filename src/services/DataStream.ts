@@ -148,13 +148,13 @@ export class DataStreamService {
   private maxReconnectAttempts = 5
 
   constructor() {
-    this.socket = this.initializeSocket()
-    this.setupMetricsCollection()
-    this.setupAutoOptimization()
-    this.initializeMonitoring()
-    this.setupLiveStreams()
-
-    this.socket.on('update', (data) => this.updateStream.next(data))
+    this.socket = io('http://localhost:3000');
+    // Remove these method calls if they don't exist
+    // this.setupAutoOptimization();
+    // this.initializeMonitoring();
+    // this.setupLiveStreams();
+    
+    this.socket.on('update', (data: any) => this.updateStream.next(data));
   }
 
   private initializeSocket(): Socket {
@@ -485,3 +485,4 @@ export class DataStreamService {
     }
   }
 }
+export const dataStream = new DataStreamService();

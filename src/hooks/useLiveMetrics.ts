@@ -23,97 +23,103 @@ export const useLiveMetrics = () => {
   const [improvementHistory, setImprovementHistory] = useState<any[]>([])
 
   const refreshData = useCallback(async () => {
+    setLoading(true)
     try {
-      const diagnostics = await selfDiagnostics.runDiagnostics()
-      // Handle diagnostics results
+      const results = await selfDiagnostics.runDiagnostics()
+      setDiagnostics(results)
+      setFeedback('Diagnostics refreshed')
     } catch (err) {
+      console.error('Diagnostics refresh error:', err)
       setError(err as Error)
-    }
-  }, [])
-
-  useEffect(() => {
-    const subscription = dataStream.getMetricsStream().subscribe(data => {
-      setSystemHealth(data)
-      updateMetrics(data)
-    })
-
-    const diagSub = selfDiagnostics.getHealthStream().subscribe(setDiagnostics)
-    const impSub = systemImprovement.getStatusStream().subscribe(setImprovementStatus)
-    const connSub = dataStream.getConnectionStatus().subscribe(setConnectionStatus)
-    const feedbackSub = systemImprovement.getFeedbackStream().subscribe(setFeedback)
-    const historySub = systemImprovement.getImprovementHistory().subscribe(setImprovementHistory)
-
-    selfDiagnostics.startMonitoring()
-    setLoading(false)
-
-    return () => {
-      subscription.unsubscribe()
-      diagSub.unsubscribe()
-      impSub.unsubscribe()
-      connSub.unsubscribe()
-      feedbackSub.unsubscribe()
-      historySub.unsubscribe()
+    } finally {
+      setLoading(false)
     }
   }, [])
 
   const updateMetrics = (data: EnhancedSystemMetrics) => {
+    const nlp = data.nlp || {}
+    const emotions = data.emotions || {}
+    const prediction = data.prediction || {}
+    const control = data.control || {}
+
     const newMetrics: LiveMetrics[] = [
       {
         id: 'overview',
         metrics: {
-          uptime: `${data.uptime}%`,
-          nodes: data.nodes,
-          status: data.status,
+          uptime: `${data.uptime ?? 0}%`,
+          nodes: data.nodes ?? 0,
+          status: data.status ?? 'unknown',
         },
-        health: data.health,
-        status: data.statusLevel,
+        health: data.health ?? 0,
+        status: data.statusLevel ?? 'degraded',
       },
       {
         id: 'nlp',
         metrics: {
-          throughput: `${data.nlp.throughput} req/min`,
-          models: data.nlp.models,
-          latency: `${data.nlp.latency}ms`,
+          throughput: `${nlp.throughput ?? 0} req/min`,
+          models: nlp.models ?? 0,
+          latency: `${nlp.latency ?? 0}ms`,
         },
-        health: data.nlp.health,
-        status: data.nlp.status,
+        health: nlp.health ?? 0,
+        status: nlp.status ?? 'degraded',
       },
       {
         id: 'emotions',
         metrics: {
-          sentimentAccuracy: `${data.emotions.sentimentAccuracy}%`,
-          emotionalRange: `${data.emotions.emotionalRange} layers`,
+          sentimentAccuracy: `${emotions.sentimentAccuracy ?? 0}%`,
+          emotionalRange: `${emotions.emotionalRange ?? 0} layers`,
         },
-        health: data.emotions.health,
-        status: data.emotions.status,
+        health: emotions.health ?? 0,
+        status: emotions.status ?? 'degraded',
       },
       {
         id: 'prediction',
         metrics: {
-          predictionAccuracy: `${data.prediction.predictionAccuracy}%`,
-          modelsTrained: data.prediction.modelsTrained,
+          predictionAccuracy: `${prediction.predictionAccuracy ?? 0}%`,
+          modelsTrained: prediction.modelsTrained ?? 0,
         },
-        health: data.prediction.health,
-        status: data.prediction.status,
+        health: prediction.health ?? 0,
+        status: prediction.status ?? 'degraded',
       },
       {
         id: 'control',
         metrics: {
-          activeProcesses: data.control.activeProcesses,
-          systemLoad: `${data.control.systemLoad}%`,
-          alerts: data.control.alerts,
+          activeProcesses: control.activeProcesses ?? 0,
+          systemLoad: `${control.systemLoad ?? 0}%`,
+          alerts: control.alerts ?? 0,
         },
-        health: data.control.health,
-        status: data.control.status,
+        health: control.health ?? 0,
+        status: control.status ?? 'degraded',
       },
     ]
 
     setMetrics(newMetrics)
   }
 
-  return { 
-    metrics, 
-    systemHealth, 
+  useEffect(() => {
+    const subscriptions = [
+      dataStream.getMetricsStream().subscribe(data => {
+        setSystemHealth(data)
+        updateMetrics(data)
+      }),
+      selfDiagnostics.getHealthStream().subscribe(setDiagnostics),
+      systemImprovement.getStatusStream().subscribe(setImprovementStatus),
+      dataStream.getConnectionStatus().subscribe(setConnectionStatus),
+      systemImprovement.getFeedbackStream().subscribe(setFeedback),
+      systemImprovement.getImprovementHistory().subscribe(setImprovementHistory),
+    ]
+
+    selfDiagnostics.startMonitoring()
+    setLoading(false)
+
+    return () => {
+      subscriptions.forEach(sub => sub.unsubscribe())
+    }
+  }, [])
+
+  return {
+    metrics,
+    systemHealth,
     error,
     diagnostics,
     improvementStatus,

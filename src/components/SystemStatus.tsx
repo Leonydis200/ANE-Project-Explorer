@@ -4,6 +4,31 @@ import { useRealTimeMetrics } from '../hooks/useRealTimeMetrics';
 
 export function SystemStatus() {
   const { metrics, health, alerts, feedback, sendUserCommand } = useRealTimeMetrics();
+  // Temporary placeholder components
+const HealthIndicator = ({ id, name, status, value, unit }: any) => (
+  <div key={id} className="health-indicator">
+    <span>{name}</span>
+    <span>{value} {unit}</span>
+    <span>{status}</span>
+  </div>
+);
+
+const AlertList = ({ alerts }: any) => (
+  <div className="alert-list">
+    {alerts.map((alert: any) => (
+      <div key={alert.id} className={`alert ${alert.severity}`}>
+        {alert.message}
+      </div>
+    ))}
+  </div>
+);
+
+const PerformanceGraph = ({ data }: any) => (
+  <div className="performance-graph">
+    {/* Placeholder for performance graph */}
+    Performance Graph Placeholder
+  </div>
+);
 
   return (
     <motion.div
