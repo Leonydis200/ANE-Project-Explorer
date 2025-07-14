@@ -71,13 +71,24 @@ export default function EnhancedModuleDashboard() {
 						transition={{ duration: 0.4 }}
 						className="space-y-4"
 					>
-						<div className={`p-4 rounded-lg text-white ${currentModule.color}`}>
-							<h2 className="text-xl font-bold">{currentModule.title}</h2>
-							<p className="text-sm opacity-80">{currentModule.description}</p>
+						<div className={`p-4 rounded-lg text-white ${currentModule.color} shadow-lg flex flex-col md:flex-row md:items-center gap-4`}>
+							<div className="flex items-center gap-3">
+								{iconMap[currentModule.icon] || <span className="w-5 h-5" />}
+								<h2 className="text-xl font-bold">{currentModule.title}</h2>
+							</div>
+							<div className="flex-1">
+								<p className="text-sm opacity-80">{currentModule.description}</p>
+							</div>
+							<a
+								href={`/detail/${currentModule.id}`}
+								className="ml-auto mt-2 md:mt-0 px-4 py-2 bg-white text-primary rounded shadow hover:bg-primary hover:text-white transition"
+							>
+								View Details
+							</a>
 						</div>
 						<div className="grid grid-cols-2 md:grid-cols-3 gap-4">
 							{Object.entries(currentModule.metrics).map(([key, value]) => (
-								<div key={key} className="bg-muted p-4 rounded-lg shadow">
+								<div key={key} className="bg-muted p-4 rounded-lg shadow border border-gray-200">
 									<div className="text-xs uppercase text-muted-foreground">{key}</div>
 									<div className="text-lg font-semibold text-foreground">{value}</div>
 								</div>

@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Tabs, TabsContent } from '@/components/ui/Tabs'
-import { Brain, ActivitySquare, Bot, Radar, Settings2 } from 'lucide-react'
+import { Brain, ActivitySquare, Bot, Radar, Settings2, ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const iconMap: Record<string, JSX.Element> = {
 	Brain: <Brain className="w-5 h-5" />,
@@ -47,7 +48,16 @@ export default function ModuleDashboard() {
 	if (!currentModule) return <div className="p-6 text-red-500">Module not found.</div>
 
 	return (
-		<div className="p-6 space-y-6 max-w-7xl mx-auto">
+		<div className="p-8">
+			<header className="mb-8">
+				<h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+					ANE Dashboard
+				</h1>
+				<p className="text-muted-foreground mt-2">
+					Explore and monitor your AI systems
+				</p>
+			</header>
+
 			<Tabs tabs={modules.map(m => ({ title: m.title, value: m.id }))} activeTab={tab} onChange={setTab}>
 				<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-4">
 					{modules.map((mod) => (
@@ -71,13 +81,24 @@ export default function ModuleDashboard() {
 						transition={{ duration: 0.4 }}
 						className="space-y-4"
 					>
-						<div className={`p-4 rounded-lg text-white ${currentModule.color}`}>
-							<h2 className="text-xl font-bold">{currentModule.title}</h2>
-							<p className="text-sm opacity-80">{currentModule.description}</p>
+						<div className={`p-4 rounded-lg text-white ${currentModule.color} shadow-lg flex flex-col md:flex-row md:items-center gap-4`}>
+							<div className="flex items-center gap-3">
+								{iconMap[currentModule.icon] || <span className="w-5 h-5" />}
+								<h2 className="text-xl font-bold">{currentModule.title}</h2>
+							</div>
+							<div className="flex-1">
+								<p className="text-sm opacity-80">{currentModule.description}</p>
+							</div>
+							<Link
+								to={`/detail/${currentModule.id}`}
+								className="ml-auto mt-2 md:mt-0 px-4 py-2 bg-white text-primary rounded shadow hover:bg-primary hover:text-white transition"
+							>
+								View Details
+							</Link>
 						</div>
 						<div className="grid grid-cols-2 md:grid-cols-3 gap-4">
 							{Object.entries(currentModule.metrics).map(([key, value]) => (
-								<div key={key} className="bg-muted p-4 rounded-lg shadow">
+								<div key={key} className="bg-muted p-4 rounded-lg shadow border border-gray-200">
 									<div className="text-xs uppercase text-muted-foreground">{key}</div>
 									<div className="text-lg font-semibold text-foreground">{value}</div>
 								</div>

@@ -15,44 +15,56 @@ const navItems = [
 ]
 
 export default function SidebarLayout({ children }: { children: React.ReactNode }) {
-	const location = useLocation()
-	const [drawerOpen, setDrawerOpen] = useState(false)
+		const location = useLocation()
+		const [drawerOpen, setDrawerOpen] = useState(false)
 
-	return (
-		<div className="flex min-h-screen bg-background text-foreground">
-			{/* Sidebar */}
-			<aside className="w-16 sm:w-20 border-r border-muted bg-muted/30 flex flex-col items-center py-4 space-y-6">
-				{navItems.map((item) => (
-					<Link
-						to={`/${item.id}`}
-						key={item.id}
-						className={`group relative flex flex-col items-center text-muted-foreground hover:text-primary transition ${
-							location.pathname.includes(item.id) ? 'text-primary' : ''
-						}`}
-					>
-						<div className="text-xl">{item.icon}</div>
-						<span className="hidden sm:block text-xs mt-1">{item.label}</span>
-						{location.pathname.includes(item.id) && (
-							<motion.span
-								layoutId="active-pill"
-								className="absolute left-0 h-full w-1 bg-primary rounded-r"
-							/>
-						)}
-					</Link>
-				))}
+		return (
+			<div className="flex min-h-screen">
+				<aside className="w-64 border-r border-white/10 bg-white/5 backdrop-blur-xl">
+					<div className="p-6">
+						<h2 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+							ANE Explorer
+						</h2>
+					</div>
 
-				<button
-					onClick={() => setDrawerOpen(!drawerOpen)}
-					className="mt-auto p-2 rounded hover:bg-accent text-muted-foreground hover:text-primary"
-				>
-					<Bell />
-				</button>
-			</aside>
+					<nav className="mt-6 px-3 space-y-2">
+						{navItems.map((item) => (
+							<Link
+								key={item.id}
+								to={`/${item.id}`}
+								className={`nav-item ${
+									location.pathname.includes(item.id)
+										? 'bg-primary/15 text-primary'
+										: 'text-muted-foreground'
+								}`}
+							>
+								{item.icon}
+								<span>{item.label}</span>
+								{location.pathname.includes(item.id) && (
+									<motion.div
+										layoutId="active-nav"
+										className="absolute left-0 w-1 h-full bg-primary rounded-r"
+									/>
+								)}
+							</Link>
+						))}
+					</nav>
 
-			{/* Main content */}
-			<main className="flex-1 overflow-y-auto p-4">{children}</main>
+					<div className="absolute bottom-0 w-full p-4">
+						<button
+							onClick={() => setDrawerOpen(!drawerOpen)}
+							className="w-full nav-item justify-center"
+						>
+							<Bell className="w-5 h-5" />
+						</button>
+					</div>
+				</aside>
 
-			<NotificationDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-		</div>
-	)
-}
+				<main className="flex-1 overflow-auto">
+					<div className="max-w-7xl mx-auto">{children}</div>
+				</main>
+
+				<NotificationDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+			</div>
+		)
+	}

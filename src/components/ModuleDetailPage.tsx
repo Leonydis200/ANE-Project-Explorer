@@ -57,16 +57,17 @@ export default function ModuleDetailPage() {
           <h1 className="text-2xl font-bold">{module.title}</h1>
         </div>
         <p className="mb-4">{module.description}</p>
-        <div className="mb-4 flex gap-4">
+        <div className="mb-6 flex gap-4">
           {Object.entries(module.metrics).map(([key, value]) => (
-            <div key={key} className="bg-white/10 p-2 rounded shadow text-center flex-1">
+            <div key={key} className="bg-white/10 p-4 rounded shadow text-center flex-1">
               <div className="text-xs uppercase text-white/80">{key}</div>
               <div className="text-lg font-semibold">{value}</div>
             </div>
           ))}
         </div>
+        <hr className="border-white/30 my-6" />
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {/* ...could add more details or charts here... */}
+          {/* Add more details or charts here if needed */}
         </div>
       </div>
     </div>

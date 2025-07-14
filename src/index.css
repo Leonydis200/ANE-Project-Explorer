@@ -2,15 +2,52 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: system-ui, sans-serif;
-  transition: background 0.3s ease, color 0.3s ease;
-  background: linear-gradient(120deg, #f3f4f6 0%, #e0e7ff 100%);
+:root {
+  --primary: #6366f1;
+  --secondary: #818cf8;
+  --accent: #4f46e5;
+  --background: #f8fafc;
+  --foreground: #0f172a;
 }
 
-/* Accessibility: focus outlines for interactive elements */
-button:focus, [tabindex]:focus {
-  outline: 2px solid #6366f1;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 2px #a5b4fc;
+.dark {
+  --primary: #818cf8;
+  --secondary: #6366f1;
+  --accent: #4f46e5;
+  --background: #0f172a;
+  --foreground: #f8fafc;
+}
+
+@layer base {
+  body {
+    @apply bg-gradient-to-br from-background to-background/95 text-foreground min-h-screen;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  .glass-card {
+    @apply bg-white/10 backdrop-blur-lg border border-white/20 dark:border-white/10;
+  }
+
+  .module-card {
+    @apply rounded-2xl p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+           hover:bg-primary/10 dark:hover:bg-primary/20;
+  }
+}
+
+/* Modern scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary/20 rounded-full hover:bg-primary/30;
 }
