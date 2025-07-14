@@ -140,6 +140,7 @@ export class DataStreamService {
   private diagnosticsStream = new BehaviorSubject<any>(null)
   private repairStream = new BehaviorSubject<any>(null)
   private improvementStream = new BehaviorSubject<any>(null)
+  private updateStream = new BehaviorSubject<any>(null)
 
   private reconnectAttempts = 0
   private maxReconnectAttempts = 5
@@ -150,6 +151,8 @@ export class DataStreamService {
     this.setupAutoOptimization()
     this.initializeMonitoring()
     this.setupLiveStreams()
+
+    this.socket.on('update', (data) => this.updateStream.next(data))
   }
 
   private initializeSocket(): Socket {
@@ -478,6 +481,10 @@ export class DataStreamService {
     return this.connectionStatus.asObservable()
   }
 
+  getUpdateStream() {
+    return this.updateStream.asObservable()
+  }
+
   triggerSelfDiagnostics() {
     this.socket.emit('triggerDiagnostics')
   }
@@ -486,5 +493,8 @@ export class DataStreamService {
   }
   triggerSelfImprovement() {
     this.socket.emit('triggerImprovement')
+  }
+  triggerSelfUpdate() {
+    this.socket.emit('triggerUpdate')
   }
 }

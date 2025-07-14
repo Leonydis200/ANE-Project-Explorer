@@ -24,7 +24,7 @@ type Module = {
 }
 
 export default function ModuleDashboard() {
-	const { metrics, systemHealth, error, refreshData, loading, tab, setTab, connectionStatus } = useLiveMetrics()
+	const { metrics, systemHealth, error, refreshData, loading, tab, setTab, connectionStatus, update } = useLiveMetrics()
 	const [autoRefresh, setAutoRefresh] = useState(true)
 
 	useEffect(() => {
@@ -89,7 +89,15 @@ export default function ModuleDashboard() {
 				<button className="btn btn-ghost" onClick={() => dataStream.triggerSelfImprovement()}>
 					Run Self-Improvement
 				</button>
+				<button className="btn btn-ghost" onClick={() => dataStream.triggerSelfUpdate()}>
+					Run Self-Update
+				</button>
 			</div>
+			{update && (
+				<div className="mb-4 bg-success/10 text-success p-2 rounded">
+					Update Status: {JSON.stringify(update)}
+				</div>
+			)}
 			<div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
 				{metrics.map((mod) => (
 					<motion.div

@@ -10,12 +10,14 @@ export default function SystemMonitor() {
   const [health, setHealth] = useState<SystemHealth | null>(null)
   const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetrics>({})
   const [optimizationStatus, setOptimizationStatus] = useState<OptimizationStatus>({})
+  const [update, setUpdate] = useState<any>(null)
 
   useEffect(() => {
     const subscriptions = [
       dataStream.getMetricsStream().subscribe(setMetrics),
       selfDiagnostics.getHealthStream().subscribe(setHealth),
-      dataStream.getPerformanceMetrics().subscribe(setPerformanceMetrics)
+      dataStream.getPerformanceMetrics().subscribe(setPerformanceMetrics),
+      dataStream.getUpdateStream().subscribe(setUpdate)
     ]
 
     return () => subscriptions.forEach(sub => sub.unsubscribe())
@@ -123,7 +125,15 @@ export default function SystemMonitor() {
           <button className="btn btn-ghost" onClick={() => dataStream.triggerSelfImprovement()}>
             Run Self-Improvement
           </button>
+          <button className="btn btn-ghost" onClick={() => dataStream.triggerSelfUpdate()}>
+            Run Self-Update
+          </button>
         </div>
+        {update && (
+          <div className="mt-2 text-success bg-success/10 p-2 rounded">
+            Update Status: {JSON.stringify(update)}
+          </div>
+        )}
       </motion.div>
     </div>
   )

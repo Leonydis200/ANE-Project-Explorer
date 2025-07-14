@@ -6,7 +6,8 @@
 - **Self-Diagnostics**: Automated health checks, predictive maintenance, and issue detection
 - **Self-Repair**: Automatic and user-triggered repair actions, with feedback and logs
 - **Self-Improvement**: Continuous optimization, learning, and self-updating capabilities
-- **User Interaction**: Intuitive UI for diagnostics, repair, improvement, and live feedback
+- **Self-Update**: Automatic and user-triggered updates for system and modules
+- **User Interaction**: Intuitive UI for diagnostics, repair, improvement, update, and live feedback
 - **Advanced Dashboards**: Visualize metrics, health, status, and alerts in real-time
 - **TypeScript & Modular Architecture**
 - **Modern Styling & Responsive Design**
@@ -34,6 +35,6 @@
 
 ## Architecture
 
-- **services/**: Data streams, diagnostics, repair, improvement logic
+- **services/**: Data streams, diagnostics, repair, improvement, update logic
 - **components/**: Dashboards and UI controls for user interaction
 - **hooks/**: Real-time data and status hooks

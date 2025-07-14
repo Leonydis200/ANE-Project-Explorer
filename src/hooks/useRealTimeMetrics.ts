@@ -9,6 +9,7 @@ export function useRealTimeMetrics() {
   const [diagnostics, setDiagnostics] = useState<any>(null);
   const [repair, setRepair] = useState<any>(null);
   const [improvement, setImprovement] = useState<any>(null);
+  const [update, setUpdate] = useState<any>(null);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'error'>('disconnected');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -20,6 +21,7 @@ export function useRealTimeMetrics() {
       dataStream.getDiagnosticsStream().subscribe(setDiagnostics),
       dataStream.getRepairStream().subscribe(setRepair),
       dataStream.getImprovementStream().subscribe(setImprovement),
+      dataStream.getUpdateStream().subscribe(setUpdate),
     ];
 
     const connSub = dataStream.getConnectionStatus().subscribe(setConnectionStatus);
@@ -37,6 +39,7 @@ export function useRealTimeMetrics() {
     diagnostics,
     repair,
     improvement,
+    update,
     isLoading,
     hasAlerts: alerts.length > 0,
     connectionStatus,

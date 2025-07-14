@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { FileSearch, Plus, RefreshCw } from 'lucide-react'
 import { useRealTimeMetrics } from '../hooks/useRealTimeMetrics'
+import { dataStream } from '../services/DataStream'
 
 interface Project {
   id: string
@@ -13,13 +14,41 @@ interface Project {
   type: string
 }
 
+const categories = ['all', 'development', 'research', 'maintenance']
+
 export default function ModernDashboard() {
   const [projects, setProjects] = useState<Project[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [showModal, setShowModal] = useState(false)
+  const [autoRefresh, setAutoRefresh] = useState(true)
   const { diagnostics, repair, improvement } = useRealTimeMetrics()
 
-  // Stats calculation
+  useEffect(() => {
+    fetch('/api/projects.json')
+      .then(res => res.json())
+      .then(setProjects)
+      .catch(console.error)
+  }, [])
+
+  useEffect(() => {
+    if (autoRefresh) {
+      const interval = setInterval(() => {
+        fetch('/api/projects.json')
+          .then(res => res.json())
+          .then(setProjects)
+      }, 10000)
+      return () => clearInterval(interval)
+    }
+  }, [autoRefresh])
+
+  const filteredProjects = projects.filter(
+    p =>
+      (selectedCategory === 'all' || p.type === selectedCategory) &&
+      (p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  )
+
   const stats = {
     total: projects.length,
     active: projects.filter(p => p.status === 'active').length,
@@ -52,7 +81,15 @@ export default function ModernDashboard() {
 
           {/* Project Categories */}
           <nav className="p-4 space-y-2">
-            {/* ...categories... */}
+            {categories.map(cat => (
+              <button
+                key={cat}
+                className={`nav-item${selectedCategory === cat ? ' active' : ''}`}
+                onClick={() => setSelectedCategory(cat)}
+              >
+                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+              </button>
+            ))}
           </nav>
         </aside>
 
@@ -62,11 +99,11 @@ export default function ModernDashboard() {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-semibold text-white">Projects Overview</h2>
               <div className="flex gap-3">
-                <button className="btn btn-ghost">
+                <button className="btn btn-ghost" onClick={() => setAutoRefresh(!autoRefresh)}>
                   <RefreshCw className="w-4 h-4 mr-2" />
-                  Refresh
+                  {autoRefresh ? 'Auto Refresh On' : 'Auto Refresh Off'}
                 </button>
-                <button className="btn btn-primary">
+                <button className="btn btn-primary" onClick={() => setShowModal(true)}>
                   <Plus className="w-4 h-4 mr-2" />
                   New Project
                 </button>
@@ -91,7 +128,7 @@ export default function ModernDashboard() {
 
             {/* Projects Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map(project => (
+              {filteredProjects.map(project => (
                 <motion.div
                   key={project.id}
                   className="project-card"
@@ -138,6 +175,16 @@ export default function ModernDashboard() {
               </div>
             </div>
           </div>
+          {/* Project Creation Modal */}
+          {showModal && (
+            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md">
+                <h3 className="font-bold mb-4">Create New Project</h3>
+                {/* ...form fields for new project... */}
+                <button className="btn btn-primary mt-4" onClick={() => setShowModal(false)}>Close</button>
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>
