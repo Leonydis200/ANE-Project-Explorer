@@ -1,4 +1,3 @@
-// src/components/ModuleViewer.tsx
 import React from 'react';
 import { modules } from '../config/modules';
 import { motion } from 'framer-motion';

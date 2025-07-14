@@ -1,4 +1,3 @@
-// src/components/SystemControlPanel.tsx
 import React from 'react';
 import { Play, Activity } from 'lucide-react';
 import { toast } from 'react-hot-toast';

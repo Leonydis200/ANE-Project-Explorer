@@ -1,4 +1,3 @@
-// src/components/Sidebar.tsx
 import React from 'react';
 import { Bookmark, Search, Moon, Sun, Star } from 'lucide-react';
 import { modules } from '../config/modules';

@@ -1,4 +1,3 @@
-// src/App.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from './components/Sidebar';
 import SystemControlPanel from './components/SystemControlPanel';

@@ -1,64 +1,112 @@
-# ANE-Project-Explorer
-Key improvements made:
+---
 
-TypeScript Implementation: Added strict typing throughout
+````markdown
+# 🚀 ANE Project Explorer
 
-Component Modularization: Split into logical components
+**ANE Project Explorer** is a modern, responsive, and fully interactive interface for exploring the capabilities of the **Autonomous Nexus Entity (ANE)** — an advanced AI system that brings together AGI, NLP, predictive analytics, emotional intelligence, and system control.
 
-Dark Mode Persistence: Using localStorage
+![ANE Project Explorer Banner](./assets/banner-darkmode.gif) <!-- Replace this with your own screenshot or GIF -->
 
-Animations: Framer Motion for smooth transitions
+---
 
-Accessibility: ARIA attributes, keyboard navigation
+## 📌 Features
 
-Timeout Management: Proper cleanup with useRef
+- ✅ **TypeScript + Modular Architecture**
+- 🌗 **Dark/Light Mode with Persistence**
+- 🎞 **Smooth Transitions via Framer Motion**
+- 🔥 **Hot Toast Notifications for User Feedback**
+- ♿ **Accessibility Enhancements (ARIA, Keyboard Nav)**
+- 🌐 **Responsive Tailwind UI for All Devices**
+- 📁 **Centralized Module Configuration**
+- 🧠 **Module Search & Favorites Filter**
+- 🛠 **System Simulation with Timed Logs**
+- 🧹 **Timeout Cleanup to Prevent Memory Leaks**
 
-Toast Notifications: User feedback for actions
+---
 
-Responsive Design: Tailwind-based responsive layout
+## 📷 Preview
 
-Favorite Filtering: Toggle to show only favorites
+![Light Mode Screenshot](./assets/screenshot-light.png)
+![Dark Mode Screenshot](./assets/screenshot-dark.png)
 
-Config Centralization: Modules defined in separate file
+> You can also record a quick demo using [LiceCap](https://www.cockos.com/licecap/) or [Screen Studio](https://screen.studio/) to showcase transitions and animations.
 
-Error Handling: Type guards and safe access
+---
 
-Performance: Memoization where applicable
+## 🧑‍💻 Tech Stack
 
-Code Organization: Clean component structure
+- **React 18 + TypeScript**
+- **Tailwind CSS**
+- **Framer Motion**
+- **Lucide Icons**
+- **Vite**
+- **React Hot Toast**
 
-Modern Styling: Enhanced UI with Tailwind
+---
 
-Build Optimization: Vite for fast development
+## 🛠 Setup Instructions
 
-The project now features:
+### 1. Clone the Repo
 
-Smooth animated transitions between modules
+```bash
+git clone https://github.com/Leonydis200/ANE-Project-Explorer.git
+cd ANE-Project-Explorer
+````
 
-Persistent dark/light mode preferences
+### 2. Install Dependencies
 
-Toast notifications for user actions
+```bash
+npm install
+```
 
-Proper timeout cleanup to prevent memory leaks
+### 3. Start Development Server
 
-Keyboard navigation and accessibility improvements
+```bash
+npm run dev
+```
 
-Favorite filtering and module search
+### 4. Build for Production
 
-Centralized configuration
+```bash
+npm run build
+```
 
-Responsive design for all screen sizes
+---
 
-Type-safe codebase
+## 🤝 Contributing
 
-Modular component architecture
+Contributions are welcome! To contribute:
 
-To run:
+1. **Fork** the repository
+2. **Create a branch**: `git checkout -b feature/your-feature-name`
+3. **Commit your changes**
+4. **Push to your fork**
+5. **Create a Pull Request**
 
-Install dependencies: npm install
+---
 
-Start dev server: npm run dev
+## 🧾 License
 
-Build for production: npm run build
+This project is open-source and available under the [MIT License](./LICENSE).
 
-The application now follows modern React best practices with TypeScript, has improved UX with animations and notifications, and includes proper memory management for long-running operations.
+---
+
+## ✨ Author
+
+Built with 💙 by [Leonydis Greyling](https://github.com/Leonydis200)
+
+Feel free to ⭐ the repo if you find it helpful!
+
+```
+
+---
+
+### ✅ What You Should Do Next:
+
+- ✅ Save this as `README.md` in your project root
+- 🖼 Add real screenshots or GIFs in the `./assets` folder
+- 📝 Add a `LICENSE` file if you haven’t yet (MIT is a good default)
+- ✅ Optionally customize links or add badges (like CI/CD, Vercel deploy)
+
+Let me know if you'd like a badge set or a deploy-to-Vercel/GitHub Pages workflow setup!
+```

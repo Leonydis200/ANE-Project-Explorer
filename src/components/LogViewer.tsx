@@ -1,4 +1,3 @@
-// src/components/LogViewer.tsx
 import React from 'react';
 
 interface LogViewerProps {
