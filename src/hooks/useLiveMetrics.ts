@@ -1,63 +1,101 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import { dataStream, EnhancedSystemMetrics } from '../services/DataStream'
+import { selfDiagnostics } from '../services/SelfDiagnostics'
+import { systemImprovement } from '../services/SystemImprovement'
 
 export interface LiveMetrics {
   id: string
   metrics: Record<string, string | number>
-}
-
-const generateRandomMetrics = (): LiveMetrics[] => {
-  return [
-    {
-      id: 'overview',
-      metrics: {
-        uptime: `${(99 + Math.random()).toFixed(2)}%`,
-        nodes: 42 + Math.floor(Math.random() * 3),
-        status: 'Online',
-      },
-    },
-    {
-      id: 'nlp',
-      metrics: {
-        throughput: `${1000 + Math.floor(Math.random() * 500)} req/min`,
-        models: 8,
-        latency: `${10 + Math.floor(Math.random() * 10)}ms`,
-      },
-    },
-    {
-      id: 'emotions',
-      metrics: {
-        sentimentAccuracy: `${(94 + Math.random()).toFixed(1)}%`,
-        emotionalRange: '7 layers',
-      },
-    },
-    {
-      id: 'prediction',
-      metrics: {
-        predictionAccuracy: `${(90 + Math.random()).toFixed(1)}%`,
-        modelsTrained: 15 + Math.floor(Math.random() * 3),
-      },
-    },
-    {
-      id: 'control',
-      metrics: {
-        activeProcesses: 120 + Math.floor(Math.random() * 10),
-        systemLoad: `${35 + Math.floor(Math.random() * 10)}%`,
-        alerts: 2,
-      },
-    },
-  ]
+  health: number
+  status: 'healthy' | 'degraded' | 'critical'
 }
 
 export const useLiveMetrics = () => {
-  const [metrics, setMetrics] = useState<LiveMetrics[]>(generateRandomMetrics())
+  const [metrics, setMetrics] = useState<LiveMetrics[]>([])
+  const [systemHealth, setSystemHealth] = useState<EnhancedSystemMetrics | null>(null)
+  const [error, setError] = useState<Error | null>(null)
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMetrics(generateRandomMetrics())
-    }, 5000)
-
-    return () => clearInterval(interval)
+  const refreshData = useCallback(async () => {
+    try {
+      const diagnostics = await selfDiagnostics.runDiagnostics()
+      // Handle diagnostics results
+    } catch (err) {
+      setError(err as Error)
+    }
   }, [])
 
-  return metrics
-}  
+  useEffect(() => {
+    const subscription = dataStream.getMetricsStream().subscribe(data => {
+      setSystemHealth(data)
+      updateMetrics(data)
+    })
+
+    selfDiagnostics.startMonitoring()
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  const updateMetrics = (data: EnhancedSystemMetrics) => {
+    const newMetrics: LiveMetrics[] = [
+      {
+        id: 'overview',
+        metrics: {
+          uptime: `${data.uptime}%`,
+          nodes: data.nodes,
+          status: data.status,
+        },
+        health: data.health,
+        status: data.statusLevel,
+      },
+      {
+        id: 'nlp',
+        metrics: {
+          throughput: `${data.nlp.throughput} req/min`,
+          models: data.nlp.models,
+          latency: `${data.nlp.latency}ms`,
+        },
+        health: data.nlp.health,
+        status: data.nlp.status,
+      },
+      {
+        id: 'emotions',
+        metrics: {
+          sentimentAccuracy: `${data.emotions.sentimentAccuracy}%`,
+          emotionalRange: `${data.emotions.emotionalRange} layers`,
+        },
+        health: data.emotions.health,
+        status: data.emotions.status,
+      },
+      {
+        id: 'prediction',
+        metrics: {
+          predictionAccuracy: `${data.prediction.predictionAccuracy}%`,
+          modelsTrained: data.prediction.modelsTrained,
+        },
+        health: data.prediction.health,
+        status: data.prediction.status,
+      },
+      {
+        id: 'control',
+        metrics: {
+          activeProcesses: data.control.activeProcesses,
+          systemLoad: `${data.control.systemLoad}%`,
+          alerts: data.control.alerts,
+        },
+        health: data.control.health,
+        status: data.control.status,
+      },
+    ]
+
+    setMetrics(newMetrics)
+  }
+
+  return { 
+    metrics, 
+    systemHealth, 
+    error,
+    refreshData 
+  }
+}

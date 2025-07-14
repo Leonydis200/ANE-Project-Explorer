@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import ModernHeader from './ModernHeader'
 import { Brain, ActivitySquare, Bot, Radar, Settings2, ArrowRight } from 'lucide-react'
+import { useLiveMetrics } from '../hooks/useLiveMetrics'
 
 const iconMap: Record<string, JSX.Element> = {
 	Brain: <Brain className="w-5 h-5" />,
@@ -23,25 +24,17 @@ type Module = {
 }
 
 export default function ModuleDashboard() {
-	const [modules, setModules] = useState<Module[]>([])
-	const [tab, setTab] = useState('overview')
-	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState<string | null>(null)
+	const { metrics, systemHealth, error, refreshData } = useLiveMetrics()
+	const [autoRefresh, setAutoRefresh] = useState(true)
 
 	useEffect(() => {
-		fetch('/api/modules.json')
-			.then((res) => res.json())
-			.then((data) => {
-				setModules(data)
-				setLoading(false)
-			})
-			.catch(() => {
-				setError('Failed to load modules.')
-				setLoading(false)
-			})
-	}, [])
+		if (autoRefresh) {
+			const interval = setInterval(refreshData, 5000)
+			return () => clearInterval(interval)
+		}
+	}, [autoRefresh, refreshData])
 
-	const currentModule = modules.find((m) => m.id === tab)
+	const currentModule = metrics.find((m) => m.id === tab)
 
 	if (loading) return <div className="p-6 text-muted-foreground">Loading modules...</div>
 	if (error) return <div className="p-6 text-red-500">{error}</div>
@@ -52,17 +45,30 @@ export default function ModuleDashboard() {
 			<div className="fancy-blur top-0 left-0" />
 			<div className="fancy-blur bottom-0 right-0" />
 			
-			<header className="mb-8">
+			<div className="flex justify-between items-center mb-6">
 				<h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 					ANE System Dashboard
 				</h1>
-				<p className="text-lg text-foreground/60 mt-2">
-					Monitor and control your AI systems
-				</p>
-			</header>
+				<div className="flex items-center gap-4">
+					<button
+						onClick={() => setAutoRefresh(!autoRefresh)}
+						className={`px-4 py-2 rounded-lg ${
+							autoRefresh ? 'bg-primary text-white' : 'bg-gray-200'
+						}`}
+					>
+						Auto Refresh
+					</button>
+					<button
+						onClick={refreshData}
+						className="px-4 py-2 bg-secondary text-white rounded-lg"
+					>
+						Refresh Now
+					</button>
+				</div>
+			</div>
 
 			<div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-				{modules.map((mod) => (
+				{metrics.map((mod) => (
 					<motion.div
 						key={mod.id}
 						initial={{ opacity: 0, y: 20 }}
