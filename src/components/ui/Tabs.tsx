@@ -6,11 +6,13 @@ interface Tab {
   value: string
 }
 
-interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
+// Remove the incorrect extension here
+interface TabsProps {
   tabs: Tab[]
   activeTab: string
   onChange: (value: string) => void
   children: React.ReactNode
+  divProps?: React.HTMLAttributes<HTMLDivElement>
 }
 
 interface TabsContentProps {
@@ -19,9 +21,9 @@ interface TabsContentProps {
   children: React.ReactNode
 }
 
-export const Tabs = ({ tabs, activeTab, onChange, children, ...props }: TabsProps) => {
+export const Tabs = ({ tabs, activeTab, onChange, children, divProps }: TabsProps) => {
   return (
-    <div {...props}>
+    <div {...divProps}>
       <div className="flex space-x-4 border-b border-muted p-2" role="tablist">
         {tabs.map((tab) => (
           <button
