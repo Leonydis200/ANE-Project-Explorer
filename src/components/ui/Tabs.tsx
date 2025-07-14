@@ -19,7 +19,7 @@ interface TabsContentProps {
   children: React.ReactNode
 }
 
-export function Tabs({ tabs, activeTab, onChange, children }: TabsProps) {
+export const Tabs = ({ tabs, activeTab, onChange, children }: TabsProps) => {
   return (
     <div>
       <div className="flex space-x-4 border-b border-muted p-2">
@@ -44,7 +44,7 @@ export function Tabs({ tabs, activeTab, onChange, children }: TabsProps) {
   )
 }
 
-export function TabsContent({ value, activeTab, children }: TabsContentProps) {
+export const TabsContent = ({ value, activeTab, children }: TabsContentProps) => {
   return (
     <AnimatePresence mode="wait">
       {activeTab === value && (
@@ -60,4 +60,4 @@ export function TabsContent({ value, activeTab, children }: TabsContentProps) {
       )}
     </AnimatePresence>
   )
-}
+} 
