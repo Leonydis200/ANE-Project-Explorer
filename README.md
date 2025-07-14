@@ -1,112 +1,64 @@
-# 🚀 ANE Project Explorer
+# ANE-Project-Explorer
+Key improvements made:
 
-**ANE Project Explorer** is a modern, responsive, and fully interactive interface for exploring the capabilities of the **Autonomous Nexus Entity (ANE)** — an advanced AI system that brings together AGI, NLP, predictive analytics, emotional intelligence, and system control.
+TypeScript Implementation: Added strict typing throughout
 
-![ANE Project Explorer Banner](./assets/banner-darkmode.gif) <!-- Replace this with your own screenshot or GIF -->
+Component Modularization: Split into logical components
 
----
+Dark Mode Persistence: Using localStorage
 
-## 📌 Features
+Animations: Framer Motion for smooth transitions
 
-- ✅ **TypeScript + Modular Architecture**
-- 🌗 **Dark/Light Mode with Persistence**
-- 🎞 **Smooth Transitions via Framer Motion**
-- 🔥 **Hot Toast Notifications for User Feedback**
-- ♿ **Accessibility Enhancements (ARIA, Keyboard Nav)**
-- 🌐 **Responsive Tailwind UI for All Devices**
-- 📁 **Centralized Module Configuration**
-- 🧠 **Module Search & Favorites Filter**
-- 🛠 **System Simulation with Timed Logs**
-- 🧹 **Timeout Cleanup to Prevent Memory Leaks**
+Accessibility: ARIA attributes, keyboard navigation
 
----
+Timeout Management: Proper cleanup with useRef
 
-## 📷 Preview
+Toast Notifications: User feedback for actions
 
-![Light Mode Screenshot](./assets/screenshot-light.png)
-![Dark Mode Screenshot](./assets/screenshot-dark.png)
+Responsive Design: Tailwind-based responsive layout
 
-> You can also record a quick demo using [LiceCap](https://www.cockos.com/licecap/) or [Screen Studio](https://screen.studio/) to showcase transitions and animations.
+Favorite Filtering: Toggle to show only favorites
 
----
+Config Centralization: Modules defined in separate file
 
-## 🧑‍💻 Tech Stack
+Error Handling: Type guards and safe access
 
-- **React 18 + TypeScript**
-- **Tailwind CSS**
-- **Framer Motion**
-- **Lucide Icons**
-- **Vite**
-- **React Hot Toast**
+Performance: Memoization where applicable
 
----
+Code Organization: Clean component structure
 
-## 🛠 Setup Instructions
+Modern Styling: Enhanced UI with Tailwind
 
-### 1. Clone the Repo
+Build Optimization: Vite for fast development
 
-```bash
-git clone https://github.com/Leonydis200/ANE-Project-Explorer.git
-cd ANE-Project-Explorer
-```
+The project now features:
 
-### 2. Install Dependencies
+Smooth animated transitions between modules
 
-```bash
-npm install
-```
+Persistent dark/light mode preferences
 
-### 3. Start Development Server
+Toast notifications for user actions
 
-```bash
-npm run dev
-```
+Proper timeout cleanup to prevent memory leaks
 
-### 4. Build for Production
+Keyboard navigation and accessibility improvements
 
-```bash
-npm run build
-```
+Favorite filtering and module search
 
----
+Centralized configuration
 
-## 🤝 Contributing
+Responsive design for all screen sizes
 
-Contributions are welcome! To contribute:
+Type-safe codebase
 
-1. **Fork** the repository
-2. **Create a branch**: `git checkout -b feature/your-feature-name`
-3. **Commit your changes**
-4. **Push to your fork**
-5. **Create a Pull Request**
+Modular component architecture
 
----
+To run:
 
-## 🧾 License
+Install dependencies: npm install
 
-This project is open-source and available under the [MIT License](./LICENSE).
+Start dev server: npm run dev
 
----
+Build for production: npm run build
 
-## ✨ Author
-
-Built with 💙 by [Leonydis Greyling](https://github.com/Leonydis200)
-
-Feel free to ⭐ the repo if you find it helpful!
-
----
-
-### ✅ What You Should Do Next:
-
-- ✅ Save this as `README.md` in your project root
-- 🖼 Add real screenshots or GIFs in the `./assets` folder
-- 📝 Add a `LICENSE` file if you haven’t yet (MIT is a good default)
-- ✅ Optionally customize links or add badges (like CI/CD, Vercel deploy)
-
-Let me know if you'd like a badge set or a deploy-to-Vercel/GitHub Pages workflow setup!
-- 🖼 Add real screenshots or GIFs in the `./assets` folder
-- 📝 Add a `LICENSE` file if you haven’t yet (MIT is a good default)
-- ✅ Optionally customize links or add badges (like CI/CD, Vercel deploy)
-
-Let me know if you'd like a badge set or a deploy-to-Vercel/GitHub Pages workflow setup!
-```
+The application now follows modern React best practices with TypeScript, has improved UX with animations and notifications, and includes proper memory management for long-running operations.
