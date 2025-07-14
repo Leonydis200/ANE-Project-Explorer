@@ -75,21 +75,3 @@ const ModuleViewer: React.FC<ModuleViewerProps> = ({ activeModule, isDarkMode })
 };
 
 export default ModuleViewer;
-                <div>- description: String (Nullable)</div>
-              </div>
-            ) : (
-              <ul className={`text-sm space-y-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                <li>• Feature implementation details</li>
-                <li>• Performance metrics</li>
-                <li>• Integration points</li>
-                <li>• Configuration options</li>
-              </ul>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default ModuleViewer;

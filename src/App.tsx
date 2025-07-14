@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { Suspense, lazy, useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { motion } from 'framer-motion'
