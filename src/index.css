@@ -1,9 +1,9 @@
+@import './styles/modern-dashboard.css';
+@import './styles/modern-theme.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import './styles/modern-dashboard.css';
-@import './styles/modern-theme.css';
 
 :root {
   --primary: #6366f1;
