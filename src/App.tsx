@@ -1,6 +1,10 @@
-import { useState, useEffect } from 'react'
+import { Suspense, lazy, useState, useEffect } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Brain, ActivitySquare, Bot, Radar, Settings2 } from 'lucide-react'
+import SidebarLayout from '@/components/SidebarLayout'
+
+const ModuleDetailPage = lazy(() => import('@/components/ModuleDetailPage'))
 
 const iconMap: Record<string, JSX.Element> = {
   Brain: <Brain className="w-5 h-5" />,
@@ -19,7 +23,7 @@ type Module = {
   metrics: Record<string, string | number>
 }
 
-export default function ModuleDashboard() {
+function ModuleDashboard() {
   const [modules, setModules] = useState<Module[]>([])
   const [tab, setTab] = useState('overview')
   const [error, setError] = useState<string | null>(null)
@@ -83,5 +87,20 @@ export default function ModuleDashboard() {
         </div>
       </motion.div>
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <SidebarLayout>
+        <Suspense fallback={<div className="p-6">Loading...</div>}>
+          <Routes>
+            <Route path="/" element={<ModuleDashboard />} />
+            <Route path="/:moduleId" element={<ModuleDetailPage />} />
+          </Routes>
+        </Suspense>
+      </SidebarLayout>
+    </BrowserRouter>
   )
 }

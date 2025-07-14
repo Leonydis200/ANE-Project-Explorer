@@ -6,7 +6,7 @@ interface Tab {
   value: string
 }
 
-interface TabsProps {
+interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
   tabs: Tab[]
   activeTab: string
   onChange: (value: string) => void
@@ -19,14 +19,16 @@ interface TabsContentProps {
   children: React.ReactNode
 }
 
-export const Tabs = ({ tabs, activeTab, onChange, children }: TabsProps) => {
+export const Tabs = ({ tabs, activeTab, onChange, children, ...props }: TabsProps) => {
   return (
-    <div>
-      <div className="flex space-x-4 border-b border-muted p-2">
+    <div {...props}>
+      <div className="flex space-x-4 border-b border-muted p-2" role="tablist">
         {tabs.map((tab) => (
           <button
             key={tab.value}
             onClick={() => onChange(tab.value)}
+            role="tab"
+            aria-selected={activeTab === tab.value}
             className={`pb-2 px-4 text-sm font-medium transition-colors border-b-2 ${
               activeTab === tab.value
                 ? 'border-primary text-primary'
@@ -60,4 +62,4 @@ export const TabsContent = ({ value, activeTab, children }: TabsContentProps) =>
       )}
     </AnimatePresence>
   )
-} 
+}
