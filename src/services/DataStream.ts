@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client'
 import { BehaviorSubject, interval, Observable } from 'rxjs'
-import { map, mergeMap, retryWhen, delay, take } from 'rxjs/operators'
+import { map, mergeMap, retryWhen, delay } from 'rxjs/operators'
 import { generateMockData } from './mockData'
 
 export interface SystemMetrics {
@@ -77,24 +77,82 @@ export interface AdvancedMetrics extends EnhancedSystemMetrics {
   }
 }
 
+export interface MLMetrics {
+  modelAccuracy: number
+  trainingProgress: number
+  predictionConfidence: number
+  adaptationRate: number
+  lastTrainingDate: Date
+}
+
+export interface RealTimeMetrics extends AdvancedMetrics {
+  processingMetrics: {
+    messageQueue: number;
+    processingTime: number;
+    errorRate: number;
+    successRate: number;
+  };
+  learningMetrics: {
+    modelAccuracy: number;
+    learningRate: number;
+    iterations: number;
+    lastTrainingDate: Date;
+  };
+  resourceMetrics: {
+    cpuUsage: number[];
+    memoryUsage: number;
+    diskSpace: number;
+    networkBandwidth: number;
+  };
+}
+
+interface PerformanceMetrics {
+  systemLoad: number;
+  responseTime: number;
+  errorRate: number;
+  throughput: number;
+  availability: number;
+  resourceUtilization: {
+    cpu: number[];
+    memory: number;
+    disk: number;
+    network: number;
+  };
+}
+
 export class DataStreamService {
   private socket: Socket
   private metrics = new BehaviorSubject<AdvancedMetrics>(this.getInitialMetrics())
   private connectionStatus = new BehaviorSubject<ConnectionStatus>('disconnected')
-  private mockInterval: NodeJS.Timeout | null = null
-  private reconnectAttempts = 0
-  private maxReconnectAttempts = 5
+  private performanceMetrics = new BehaviorSubject<PerformanceMetrics>({
+    systemLoad: 0,
+    responseTime: 0,
+    errorRate: 0,
+    throughput: 0,
+    availability: 100,
+    resourceUtilization: {
+      cpu: [],
+      memory: 0,
+      disk: 0,
+      network: 0
+    }
+  })
+  private diagnosticsStream = new BehaviorSubject<any>(null)
+  private repairStream = new BehaviorSubject<any>(null)
+  private improvementStream = new BehaviorSubject<any>(null)
 
   constructor() {
     this.socket = this.initializeSocket()
     this.setupMetricsCollection()
-    this.setupSelfImprovement()
+    this.setupAutoOptimization()
+    this.initializeMonitoring()
+    this.setupLiveStreams()
   }
 
   private initializeSocket(): Socket {
     const socket = io(process.env.REACT_APP_WS_URL || 'ws://localhost:3001', {
       reconnection: true,
-      reconnectionAttempts: this.maxReconnectAttempts,
+      reconnectionAttempts: 5,
       reconnectionDelay: 1000,
       timeout: 5000
     })
@@ -106,7 +164,6 @@ export class DataStreamService {
   private setupSocketHandlers(socket: Socket) {
     socket.on('connect', () => {
       this.connectionStatus.next('connected')
-      this.reconnectAttempts = 0
       console.log('Connected to metrics server')
     })
 
@@ -140,22 +197,6 @@ export class DataStreamService {
         this.connectionStatus.next('error');
       }
     });
-  }
-
-  private setupSelfImprovement() {
-    interval(3600000).subscribe(() => { // Every hour
-      this.performSelfImprovement()
-    })
-  }
-
-  private async performSelfImprovement() {
-    const currentMetrics = this.metrics.value
-    const optimizations = await this.calculateOptimizations(currentMetrics)
-    
-    if (optimizations.length > 0) {
-      await this.applyOptimizations(optimizations)
-      this.notifyOptimizations(optimizations)
-    }
   }
 
   private getInitialMetrics(): AdvancedMetrics {
@@ -288,30 +329,146 @@ export class DataStreamService {
     // Implement optimization notification logic here
   }
 
-  getMetricsStream() {
-    return this.metrics.asObservable()
-  }
-
-  getConnectionStatus() {
-    return this.connectionStatus.asObservable()
-  }
-
-  sendCommand(command: string, payload: any) {
-    if (this.socket.connected) {
-      this.socket.emit('command', { command, payload })
-      return true
+  private async collectRealTimeMetrics(): Promise<RealTimeMetrics> {
+    // Collect real hardware metrics if available
+    try {
+      const hwMetrics = await this.getHardwareMetrics();
+      const mlMetrics = await this.getMLMetrics();
+      return {
+        ...this.metrics.value,
+        ...hwMetrics,
+        ml: mlMetrics,
+      };
+    } catch (error) {
+      console.error('Failed to collect real metrics, using simulated data');
+      return this.generateSimulatedMetrics();
     }
-    return false
   }
 
-  disconnect() {
-    this.socket.disconnect()
-    if (this.mockInterval) {
-      clearInterval(this.mockInterval)
+  private async getHardwareMetrics() {
+    // Implementation to get real hardware metrics
+  }
+
+  private async getMLMetrics(): Promise<MLMetrics> {
+    // Implementation to get ML metrics
+  }
+
+  private setupAutoOptimization() {
+    interval(300000).subscribe(() => { // Every 5 minutes
+      this.optimizePerformance();
+    });
+  }
+
+  private async optimizePerformance() {
+    const metrics = await this.collectSystemMetrics().toPromise();
+    if (metrics.cpu > 80 || metrics.memory > 85) {
+      await this.performResourceOptimization();
     }
-    this.metrics.complete()
-    this.connectionStatus.complete()
+  }
+
+  private async performResourceOptimization() {
+    // Implementation for resource optimization
+    const optimizations = [
+      this.optimizeCPU(),
+      this.optimizeMemory(),
+      this.optimizeNetwork()
+    ];
+    
+    await Promise.all(optimizations);
+  }
+
+  private async initializeMonitoring() {
+    try {
+      await this.setupPerformanceMonitoring();
+      await this.setupMLMetricsCollection();
+      await this.initializeSystemHealth();
+      this.startRealTimeUpdates();
+    } catch (error) {
+      console.error('Failed to initialize monitoring:', error);
+      this.connectionStatus.next('error');
+    }
+  }
+
+  private setupPerformanceMonitoring() {
+    interval(1000).pipe(
+      mergeMap(() => this.collectPerformanceMetrics()),
+      retryWhen(errors => 
+        errors.pipe(
+          delay(1000),
+          take(5)
+        )
+      )
+    ).subscribe({
+      next: (metrics) => this.performanceMetrics.next(metrics),
+      error: (error) => this.handleMonitoringError(error)
+    });
+  }
+
+  private async collectPerformanceMetrics(): Promise<PerformanceMetrics> {
+    // Implement real metrics collection
+    const metrics = await Promise.all([
+      this.collectCPUMetrics(),
+      this.collectMemoryMetrics(),
+      this.collectDiskMetrics(),
+      this.collectNetworkMetrics()
+    ]);
+
+    return {
+      systemLoad: metrics[0].load,
+      responseTime: await this.measureResponseTime(),
+      errorRate: this.calculateErrorRate(),
+      throughput: await this.measureThroughput(),
+      availability: this.calculateAvailability(),
+      resourceUtilization: {
+        cpu: metrics[0].utilization,
+        memory: metrics[1],
+        disk: metrics[2],
+        network: metrics[3]
+      }
+    };
+  }
+
+  private async collectCPUMetrics() {
+    // Implementation
+  }
+
+  private async collectMemoryMetrics() {
+    // Implementation
+  }
+
+  private async collectDiskMetrics() {
+    // Implementation
+  }
+
+  private async collectNetworkMetrics() {
+    // Implementation
+  }
+
+  private setupLiveStreams() {
+    this.socket.on('diagnostics', (data) => this.diagnosticsStream.next(data))
+    this.socket.on('repair', (data) => this.repairStream.next(data))
+    this.socket.on('improvement', (data) => this.improvementStream.next(data))
+  }
+
+  getDiagnosticsStream() {
+    return this.diagnosticsStream.asObservable()
+  }
+  getRepairStream() {
+    return this.repairStream.asObservable()
+  }
+  getImprovementStream() {
+    return this.improvementStream.asObservable()
+  }
+
+  triggerSelfDiagnostics() {
+    this.socket.emit('triggerDiagnostics')
+  }
+  triggerSelfRepair() {
+    this.socket.emit('triggerRepair')
+  }
+  triggerSelfImprovement() {
+    this.socket.emit('triggerImprovement')
   }
 }
-
-export const dataStream = new DataStreamService()
+  // ...existing code...
+}

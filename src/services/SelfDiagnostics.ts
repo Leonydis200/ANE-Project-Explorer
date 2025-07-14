@@ -1,5 +1,6 @@
 import { dataStream } from './DataStream'
 import { BehaviorSubject, interval, lastValueFrom } from 'rxjs'
+import * as tf from '@tensorflow/tfjs';
 
 interface DiagnosticResult {
   status: 'success' | 'warning' | 'error'
@@ -23,10 +24,15 @@ export class SelfDiagnosticsService {
     lastCheck: new Date(),
     issues: []
   })
+  private mlModel: any; // TensorFlow.js model
+  private predictionHistory: any[] = [];
+  private alertsStream = new BehaviorSubject<string[]>([])
+  private healthStream = this.systemHealth
 
   constructor() {
     this.initializeMonitoring()
     this.setupAutomaticRepair()
+    this.initializeMLModel();
   }
 
   private initializeMonitoring() {
@@ -176,12 +182,31 @@ export class SelfDiagnosticsService {
     }
   }
 
+  getHealthStream() {
+    return this.healthStream.asObservable()
+  }
+  getAlertsStream() {
+    return this.alertsStream.asObservable()
+  }
+
   private updateSystemHealth(results: DiagnosticResult[]) {
-    // Implementation to update system health status
+    // Example implementation:
+    const issues = results.filter(r => r.status === 'error').map(r => r.message)
+    this.systemHealth.next({
+      ...this.systemHealth.value,
+      overall: 100 - issues.length * 10,
+      lastCheck: new Date(),
+      issues,
+    })
+    this.alertsStream.next(issues)
   }
 
   private handleCriticalIssues(results: DiagnosticResult[]) {
-    // Implementation to handle critical issues found during diagnostics
+    const criticals = results.filter(r => r.status === 'error')
+    if (criticals.length) {
+      this.alertsStream.next(criticals.map(r => r.message))
+      this.performAutoRepair(criticals.map(r => r.message))
+    }
   }
 
   private repair(issues: string[]) {
@@ -198,6 +223,28 @@ export class SelfDiagnosticsService {
 
   private escalateIssue(issue: string, error: any) {
     // Implementation to escalate the issue if it cannot be repaired
+  }
+
+  private async initializeMLModel() {
+    // Load pre-trained model for system diagnostics
+    this.mlModel = await tf.loadLayersModel('/models/diagnostics-model.json');
+    this.startPredictiveMaintenance();
+  }
+
+  private startPredictiveMaintenance() {
+    interval(300000).subscribe(async () => {
+      const prediction = await this.predictSystemIssues();
+      if (prediction.risk > 0.7) {
+        await this.preventiveMaintenance(prediction.issues);
+      }
+    });
+  }
+
+  private async predictSystemIssues() {
+    const metrics = this.metrics.value;
+    const tensorData = tf.tensor2d([this.preprocessMetrics(metrics)]);
+    const prediction = this.mlModel.predict(tensorData);
+    return this.interpretPrediction(prediction);
   }
 }
 

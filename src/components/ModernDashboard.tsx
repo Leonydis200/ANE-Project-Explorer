@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { FileSearch, Plus, RefreshCw } from 'lucide-react'
+import { useRealTimeMetrics } from '../hooks/useRealTimeMetrics'
 
 interface Project {
   id: string
@@ -16,6 +17,7 @@ export default function ModernDashboard() {
   const [projects, setProjects] = useState<Project[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const { diagnostics, repair, improvement } = useRealTimeMetrics()
 
   // Stats calculation
   const stats = {
@@ -107,6 +109,33 @@ export default function ModernDashboard() {
                   </div>
                 </motion.div>
               ))}
+            </div>
+
+            {/* Diagnostics, Repair, Improvement UI */}
+            <div className="flex gap-3 mb-4">
+              <button className="btn btn-ghost" onClick={() => dataStream.triggerSelfDiagnostics()}>
+                Run Diagnostics
+              </button>
+              <button className="btn btn-ghost" onClick={() => dataStream.triggerSelfRepair()}>
+                Run Self-Repair
+              </button>
+              <button className="btn btn-ghost" onClick={() => dataStream.triggerSelfImprovement()}>
+                Run Self-Improvement
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white rounded-lg p-4 shadow">
+                <h4 className="font-bold mb-2">Diagnostics</h4>
+                <pre>{JSON.stringify(diagnostics, null, 2)}</pre>
+              </div>
+              <div className="bg-white rounded-lg p-4 shadow">
+                <h4 className="font-bold mb-2">Repair Status</h4>
+                <pre>{JSON.stringify(repair, null, 2)}</pre>
+              </div>
+              <div className="bg-white rounded-lg p-4 shadow">
+                <h4 className="font-bold mb-2">Improvement Status</h4>
+                <pre>{JSON.stringify(improvement, null, 2)}</pre>
+              </div>
             </div>
           </div>
         </main>

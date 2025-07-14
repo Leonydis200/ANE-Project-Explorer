@@ -14,6 +14,8 @@ export const useLiveMetrics = () => {
   const [metrics, setMetrics] = useState<LiveMetrics[]>([])
   const [systemHealth, setSystemHealth] = useState<EnhancedSystemMetrics | null>(null)
   const [error, setError] = useState<Error | null>(null)
+  const [diagnostics, setDiagnostics] = useState<any>(null)
+  const [improvementStatus, setImprovementStatus] = useState<string>('idle')
 
   const refreshData = useCallback(async () => {
     try {
@@ -30,10 +32,15 @@ export const useLiveMetrics = () => {
       updateMetrics(data)
     })
 
+    const diagSub = selfDiagnostics.getHealthStream().subscribe(setDiagnostics)
+    const impSub = systemImprovement.getStatusStream().subscribe(setImprovementStatus)
+
     selfDiagnostics.startMonitoring()
 
     return () => {
       subscription.unsubscribe()
+      diagSub.unsubscribe()
+      impSub.unsubscribe()
     }
   }, [])
 
@@ -96,6 +103,8 @@ export const useLiveMetrics = () => {
     metrics, 
     systemHealth, 
     error,
+    diagnostics,
+    improvementStatus,
     refreshData 
   }
 }

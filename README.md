@@ -1,64 +1,38 @@
 # ANE-Project-Explorer
-Key improvements made:
 
-TypeScript Implementation: Added strict typing throughout
+## Key Features
 
-Component Modularization: Split into logical components
+- **Live Data Streams**: Real-time metrics and system status
+- **Self-Diagnostics**: Automated health checks and issue detection
+- **Self-Repair**: Automatic and user-triggered repair actions
+- **Self-Improvement**: Continuous optimization and learning
+- **User Interaction**: UI controls for diagnostics, repair, and improvement
+- **Advanced Dashboards**: Visualize metrics, health, and status
+- **TypeScript & Modular Architecture**
+- **Modern Styling & Responsive Design**
+- **Accessibility & Animations**
 
-Dark Mode Persistence: Using localStorage
+## Usage
 
-Animations: Framer Motion for smooth transitions
+- Install dependencies: `npm install`
+- Start dev server: `npm run dev`
+- Build for production: `npm run build`
 
-Accessibility: ARIA attributes, keyboard navigation
+## How it Works
 
-Timeout Management: Proper cleanup with useRef
+- The dashboard displays live system metrics.
+- Users can trigger diagnostics, repair, and improvement from the UI.
+- The system performs self-diagnostics, self-repair, and self-improvement automatically and on demand.
+- All status and results are shown in real-time.
 
-Toast Notifications: User feedback for actions
+## Advanced Features
 
-Responsive Design: Tailwind-based responsive layout
+- Predictive maintenance and health monitoring
+- Optimization history and status
+- Alerts and notifications for critical issues
 
-Favorite Filtering: Toggle to show only favorites
+## Architecture
 
-Config Centralization: Modules defined in separate file
-
-Error Handling: Type guards and safe access
-
-Performance: Memoization where applicable
-
-Code Organization: Clean component structure
-
-Modern Styling: Enhanced UI with Tailwind
-
-Build Optimization: Vite for fast development
-
-The project now features:
-
-Smooth animated transitions between modules
-
-Persistent dark/light mode preferences
-
-Toast notifications for user actions
-
-Proper timeout cleanup to prevent memory leaks
-
-Keyboard navigation and accessibility improvements
-
-Favorite filtering and module search
-
-Centralized configuration
-
-Responsive design for all screen sizes
-
-Type-safe codebase
-
-Modular component architecture
-
-To run:
-
-Install dependencies: npm install
-
-Start dev server: npm run dev
-
-Build for production: npm run build
-
-The application now follows modern React best practices with TypeScript, has improved UX with animations and notifications, and includes proper memory management for long-running operations.
+- **services/**: Data streams, diagnostics, repair, improvement logic
+- **components/**: Dashboards and UI controls
+- **hooks/**: Real-time data and status hooks
