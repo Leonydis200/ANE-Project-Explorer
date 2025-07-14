@@ -1,0 +1,23 @@
+[
+  {
+    "id": "overview",
+    "title": "ANE Overview",
+    "description": "Autonomous Nexus Entity - Advanced AI System",
+    "icon": "Brain",
+    "color": "bg-purple-500"
+  },
+  {
+    "id": "nlp",
+    "title": "Natural Language Processor",
+    "description": "Interprets and generates human-like language.",
+    "icon": "MessageCircle",
+    "color": "bg-green-500"
+  },
+  {
+    "id": "emotions",
+    "title": "Emotional Intelligence",
+    "description": "Understands emotional states and responds accordingly.",
+    "icon": "Smile",
+    "color": "bg-yellow-400"
+  }
+]
