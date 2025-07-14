@@ -1,0 +1,1 @@
+@tailwind base;@tailwind components;@tailwind utilities;body{font-family:system-ui,sans-serif;transition:background .3s ease,color .3s ease;background:linear-gradient(120deg,#f3f4f6 0%,#e0e7ff 100%)}button:focus,[tabindex]:focus{outline:2px solid #6366f1;outline-offset:2px;box-shadow:0 0 0 2px #a5b4fc}

@@ -1,0 +1,60 @@
+[
+  {
+    "id": "overview",
+    "title": "ANE Overview",
+    "description": "Autonomous Nexus Entity - Advanced AI System",
+    "icon": "Brain",
+    "color": "bg-purple-500",
+    "metrics": {
+      "uptime": "99.97%",
+      "nodes": 42,
+      "status": "Online"
+    }
+  },
+  {
+    "id": "nlp",
+    "title": "Natural Language Processing",
+    "description": "Handles real-time language understanding & generation.",
+    "icon": "ActivitySquare",
+    "color": "bg-blue-500",
+    "metrics": {
+      "throughput": "1200 req/min",
+      "models": 8,
+      "latency": "15ms"
+    }
+  },
+  {
+    "id": "emotions",
+    "title": "Emotional Intelligence",
+    "description": "Emotion recognition, response modulation, and empathy layers.",
+    "icon": "Bot",
+    "color": "bg-pink-500",
+    "metrics": {
+      "sentimentAccuracy": "94.5%",
+      "emotionalRange": "7 layers"
+    }
+  },
+  {
+    "id": "prediction",
+    "title": "Predictive Analytics",
+    "description": "Forecasting, behavior modeling & real-time insights.",
+    "icon": "Radar",
+    "color": "bg-yellow-500",
+    "metrics": {
+      "predictionAccuracy": "91.8%",
+      "modelsTrained": 15
+    }
+  },
+  {
+    "id": "control",
+    "title": "System Control & Monitoring",
+    "description": "Orchestrates distributed processes and manages lifecycle.",
+    "icon": "Settings2",
+    "color": "bg-green-500",
+    "metrics": {
+      "activeProcesses": 128,
+      "systemLoad": "42%",
+      "alerts": 2
+    }
+  }
+]
