@@ -1,9 +1,9 @@
 // ModuleDashboard.tsx
 import React, { useState, useEffect } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { Tabs, TabsContent } from '@/components/ui/Tabs'
-import { Brain, ActivitySquare, Bot, Radar, Settings2, ArrowRight } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import ModernHeader from './ModernHeader'
+import { Brain, ActivitySquare, Bot, Radar, Settings2, ArrowRight } from 'lucide-react'
 
 const iconMap: Record<string, JSX.Element> = {
 	Brain: <Brain className="w-5 h-5" />,
@@ -48,65 +48,65 @@ export default function ModuleDashboard() {
 	if (!currentModule) return <div className="p-6 text-red-500">Module not found.</div>
 
 	return (
-		<div className="p-8">
+		<div className="app-background px-8 py-6">
+			<div className="fancy-blur top-0 left-0" />
+			<div className="fancy-blur bottom-0 right-0" />
+			
 			<header className="mb-8">
-				<h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-					ANE Dashboard
+				<h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+					ANE System Dashboard
 				</h1>
-				<p className="text-muted-foreground mt-2">
-					Explore and monitor your AI systems
+				<p className="text-lg text-foreground/60 mt-2">
+					Monitor and control your AI systems
 				</p>
 			</header>
 
-			<Tabs tabs={modules.map(m => ({ title: m.title, value: m.id }))} activeTab={tab} onChange={setTab}>
-				<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-4">
-					{modules.map((mod) => (
-						<button
-							key={mod.id}
-							onClick={() => setTab(mod.id)}
-							className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors whitespace-nowrap
-								${tab === mod.id ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-accent'}`}
-						>
-							{iconMap[mod.icon] || <span className="w-5 h-5" />}
-							<span className="text-sm font-medium">{mod.title}</span>
-						</button>
-					))}
-				</div>
-				<TabsContent value={tab} activeTab={tab}>
+			<div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+				{modules.map((mod) => (
 					<motion.div
-						key={tab}
+						key={mod.id}
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
-						exit={{ opacity: 0, y: -10 }}
-						transition={{ duration: 0.4 }}
-						className="space-y-4"
+						className="module-card"
 					>
-						<div className={`p-4 rounded-lg text-white ${currentModule.color} shadow-lg flex flex-col md:flex-row md:items-center gap-4`}>
-							<div className="flex items-center gap-3">
-								{iconMap[currentModule.icon] || <span className="w-5 h-5" />}
-								<h2 className="text-xl font-bold">{currentModule.title}</h2>
+						<div className="flex items-start gap-4 mb-6">
+							<div className="p-3 bg-white/10 rounded-xl">
+								{iconMap[mod.icon]}
 							</div>
-							<div className="flex-1">
-								<p className="text-sm opacity-80">{currentModule.description}</p>
+							<div>
+								<h3 className="text-xl font-semibold text-white mb-1">
+									{mod.title}
+								</h3>
+								<p className="text-white/80 text-sm">
+									{mod.description}
+								</p>
 							</div>
-							<Link
-								to={`/detail/${currentModule.id}`}
-								className="ml-auto mt-2 md:mt-0 px-4 py-2 bg-white text-primary rounded shadow hover:bg-primary hover:text-white transition"
-							>
-								View Details
-							</Link>
 						</div>
-						<div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-							{Object.entries(currentModule.metrics).map(([key, value]) => (
-								<div key={key} className="bg-muted p-4 rounded-lg shadow border border-gray-200">
-									<div className="text-xs uppercase text-muted-foreground">{key}</div>
-									<div className="text-lg font-semibold text-foreground">{value}</div>
+
+						<div className="grid grid-cols-2 gap-4 mb-6">
+							{Object.entries(mod.metrics).map(([key, value]) => (
+								<div key={key} className="metric-card">
+									<div className="text-xs uppercase text-foreground/60">
+										{key}
+									</div>
+									<div className="text-lg font-semibold mt-1">
+										{value}
+									</div>
 								</div>
 							))}
 						</div>
+
+						<Link
+							to={`/detail/${mod.id}`}
+							className="glass-panel w-full flex items-center justify-center gap-2 py-3 rounded-xl
+									 text-primary hover:bg-primary hover:text-white transition-all"
+						>
+							View Details
+							<ArrowRight className="w-4 h-4" />
+						</Link>
 					</motion.div>
-				</TabsContent>
-			</Tabs>
+				))}
+			</div>
 		</div>
 	)
 }

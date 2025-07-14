@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './styles/modern-dashboard.css';
+@import './styles/modern-theme.css';
+
 :root {
   --primary: #6366f1;
   --secondary: #818cf8;
@@ -20,8 +23,8 @@
 
 @layer base {
   body {
-    @apply bg-gradient-to-br from-background to-background/95 text-foreground min-h-screen;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply bg-gradient-to-br from-[#f0f4f8] to-[#e6e9f0] text-foreground;
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
   }
 
   .glass-card {
