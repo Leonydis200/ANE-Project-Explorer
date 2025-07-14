@@ -48,7 +48,12 @@ function ModuleDashboard() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="p-6 space-y-6"
+    >
       <div className="flex space-x-2 overflow-x-auto border-b border-muted pb-2">
         {modules.map((mod) => (
           <button
@@ -86,7 +91,18 @@ function ModuleDashboard() {
           ))}
         </div>
       </motion.div>
-    </div>
+    </motion.div>
+  )
+}
+
+// Simple error boundary for the app
+function ErrorBoundary({ children }: { children: React.ReactNode }) {
+  const [error, setError] = useState<Error | null>(null)
+  if (error) return <div className="p-6 text-red-500">Unexpected error: {error.message}</div>
+  return (
+    <React.Suspense fallback={<div className="p-6">Loading...</div>}>
+      {children}
+    </React.Suspense>
   )
 }
 
@@ -94,12 +110,12 @@ export default function App() {
   return (
     <BrowserRouter>
       <SidebarLayout>
-        <Suspense fallback={<div className="p-6">Loading...</div>}>
+        <ErrorBoundary>
           <Routes>
             <Route path="/" element={<ModuleDashboard />} />
             <Route path="/:moduleId" element={<ModuleDetailPage />} />
           </Routes>
-        </Suspense>
+        </ErrorBoundary>
       </SidebarLayout>
     </BrowserRouter>
   )

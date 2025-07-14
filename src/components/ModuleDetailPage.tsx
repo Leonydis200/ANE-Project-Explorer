@@ -39,9 +39,14 @@ export default function ModuleDetailPage() {
       })
   }, [moduleId])
 
-  if (loading) return <div className="p-6">Loading...</div>
+  if (loading) return (
+    <div className="p-6 flex items-center justify-center">
+      <span className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary inline-block mr-2"></span>
+      <span>Loading...</span>
+    </div>
+  )
   if (error) return <div className="p-6 text-red-500">{error}</div>
-  if (!module) return <div className="p-6 text-red-500">Module not found.</div>
+  if (!module) return <div className="p-6 text-muted-foreground">Module not found.</div>
 
   return (
     <div className="p-4 max-w-2xl mx-auto">
@@ -52,13 +57,16 @@ export default function ModuleDetailPage() {
           <h1 className="text-2xl font-bold">{module.title}</h1>
         </div>
         <p className="mb-4">{module.description}</p>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="mb-4 flex gap-4">
           {Object.entries(module.metrics).map(([key, value]) => (
-            <div key={key} className="bg-white/10 p-4 rounded-lg shadow">
+            <div key={key} className="bg-white/10 p-2 rounded shadow text-center flex-1">
               <div className="text-xs uppercase text-white/80">{key}</div>
               <div className="text-lg font-semibold">{value}</div>
             </div>
           ))}
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {/* ...could add more details or charts here... */}
         </div>
       </div>
     </div>
