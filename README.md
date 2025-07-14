@@ -1,64 +1,148 @@
-# ANE-Project-Explorer
-Key improvements made:
 
-TypeScript Implementation: Added strict typing throughout
+````markdown
+# 🧠 ANE Project Explorer
 
-Component Modularization: Split into logical components
+A modern, responsive, and animated **React + TypeScript** application to explore the **Autonomous Nexus Entity (ANE)** — a modular AI system combining AGI, NLP, emotional intelligence, predictive analytics, and system control capabilities.
 
-Dark Mode Persistence: Using localStorage
+![ANE Project Explorer Banner](https://user-images.githubusercontent.com/your-github-username/banner-placeholder.png)
 
-Animations: Framer Motion for smooth transitions
+---
 
-Accessibility: ARIA attributes, keyboard navigation
+## 🚀 Overview
 
-Timeout Management: Proper cleanup with useRef
+**ANE Project Explorer** provides an interactive interface to visualize and manage the components of an advanced AI architecture. It showcases modern frontend engineering practices including:
 
-Toast Notifications: User feedback for actions
+- Type-safe components
+- Persistent dark mode
+- Smooth animations
+- Accessibility features
+- Toast notifications
+- Timeout-controlled simulation
 
-Responsive Design: Tailwind-based responsive layout
+---
 
-Favorite Filtering: Toggle to show only favorites
+## ✨ Features
 
-Config Centralization: Modules defined in separate file
+- ✅ **Modular Component Architecture** — Clean separation of `Sidebar`, `LogViewer`, `ModuleViewer`, and `SystemControlPanel`.
+- 🌙 **Dark Mode Support** — Stored in `localStorage` with toggle support.
+- 🎬 **Framer Motion Animations** — Smooth transitions between modules.
+- 🔍 **Search & Filter** — Live search and "Favorites Only" toggle.
+- 📝 **Live Logs Panel** — Simulated system logs with accessibility (`aria-live`).
+- 💬 **Toast Notifications** — Responsive system status messages.
+- ♿ **Accessibility** — Keyboard navigation and ARIA roles.
+- 📱 **Fully Responsive** — Tailwind CSS-based fluid layouts.
+- 💡 **Centralized Config** — All modules defined in `config/modules.ts`.
 
-Error Handling: Type guards and safe access
+---
 
-Performance: Memoization where applicable
+## 📷 Screenshots
 
-Code Organization: Clean component structure
+| Light Mode | Dark Mode |
+|------------|-----------|
+| ![light-mode](https://user-images.githubusercontent.com/your-github-username/light-mode-placeholder.png) | ![dark-mode](https://user-images.githubusercontent.com/your-github-username/dark-mode-placeholder.png) |
 
-Modern Styling: Enhanced UI with Tailwind
+> *Add your actual screenshots/GIFs under `/public/assets/` or from your deployment*
 
-Build Optimization: Vite for fast development
+---
 
-The project now features:
+## 🛠️ Getting Started
 
-Smooth animated transitions between modules
+### 1. Clone the Repository
 
-Persistent dark/light mode preferences
+```bash
+git clone https://github.com/Leonydis200/ANE-Project-Explorer.git
+cd ANE-Project-Explorer
+````
 
-Toast notifications for user actions
+### 2. Install Dependencies
 
-Proper timeout cleanup to prevent memory leaks
+```bash
+npm install
+```
 
-Keyboard navigation and accessibility improvements
+### 3. Run the Development Server
 
-Favorite filtering and module search
+```bash
+npm run dev
+```
 
-Centralized configuration
+### 4. Build for Production
 
-Responsive design for all screen sizes
+```bash
+npm run build
+```
 
-Type-safe codebase
+### 5. Preview Production Build
 
-Modular component architecture
+```bash
+npm run preview
+```
 
-To run:
+---
 
-Install dependencies: npm install
+## 🧩 Tech Stack
 
-Start dev server: npm run dev
+* ⚛️ React 18 + TypeScript
+* 🖼️ Tailwind CSS 3
+* 🌀 Framer Motion
+* 🔥 React Hot Toast
+* 📦 Vite (build tool)
+* 🧠 Lucide Icons
 
-Build for production: npm run build
+---
 
-The application now follows modern React best practices with TypeScript, has improved UX with animations and notifications, and includes proper memory management for long-running operations.
+## 🤝 Contributing
+
+Contributions are welcome! Here's how to get involved:
+
+1. Fork the repo
+2. Create a new branch: `git checkout -b feature/awesome-feature`
+3. Make your changes
+4. Commit and push: `git commit -m "Add awesome feature"` then `git push origin`
+5. Open a Pull Request
+
+Please follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format and include clear, descriptive messages.
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
+
+---
+
+## 💬 Feedback & Roadmap
+
+Feel free to open [Discussions](https://github.com/Leonydis200/ANE-Project-Explorer/discussions) or [Issues](https://github.com/Leonydis200/ANE-Project-Explorer/issues) to suggest new features, report bugs, or propose enhancements.
+
+---
+
+## 🌐 Live Demo (optional)
+
+> Coming soon via [Vercel](https://vercel.com) or [Netlify](https://netlify.com)
+
+---
+
+## 🔗 Connect
+
+Built with 💡 by [Leonydis200](https://github.com/Leonydis200)
+
+---
+
+```
+
+---
+
+### ✅ Next Steps
+
+1. Drop in some real screenshots or a demo GIF
+2. Replace `banner-placeholder.png` with a real banner (I can help generate one)
+3. Optionally include a license badge or GitHub stats
+
+Let me know if you want:
+- A banner image designed
+- A short GIF walkthrough
+- Automated deployment with GitHub Actions + Vercel/Netlify
+
+Would you like me to generate that banner or GIF preview next?
+```
