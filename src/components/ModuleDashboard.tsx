@@ -1,11 +1,22 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Tabs } from '@/components/ui/Tabs'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs'
 import { Card, CardContent } from '@/components/ui/card'
 import { toast } from 'react-hot-toast'
-import { Brain, ActivitySquare, Bot, Radar, Settings2 } from 'lucide-react'
+import { Brain, ActivitySquare, Bot, Radar, Settings2, AlertCircle } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 
-const modules = [
+interface Module {
+  id: string
+  title: string
+  icon: React.ReactNode
+  description: string
+  color: string
+  metrics: Record<string, string | number>
+  alerts?: number
+}
+
+const modules: Module[] = [
   {
     id: 'overview',
     title: 'ANE Overview',
@@ -29,6 +40,7 @@ const modules = [
       models: 8,
       latency: '15ms',
     },
+    alerts: 1,
   },
   {
     id: 'emotions',
@@ -51,6 +63,7 @@ const modules = [
       predictionAccuracy: '91.8%',
       modelsTrained: 15,
     },
+    alerts: 2,
   },
   {
     id: 'control',
@@ -71,32 +84,57 @@ export default function ModuleDashboard() {
 
   const current = modules.find((m) => m.id === tab)!
 
+  const handleTabChange = (newTab: string) => {
+    setTab(newTab)
+    toast.dismiss()
+    const module = modules.find((m) => m.id === newTab)
+    if (module?.alerts) {
+      toast(
+        <div className="flex items-start gap-3">
+          <AlertCircle className="text-yellow-500 mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="font-medium">{module.title} has {module.alerts} active alert{module.alerts > 1 ? 's' : ''}</p>
+            <p className="text-sm text-muted-foreground">Check the monitoring panel for details</p>
+          </div>
+        </div>,
+        { duration: 3000 }
+      )
+    }
+  }
+
   return (
-    <div className="p-6 space-y-6">
-      <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <TabsList className="grid grid-cols-5 gap-2">
+    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+      <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
+        <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
           {modules.map((mod) => (
-            <TabsTrigger key={mod.id} value={mod.id} className="flex items-center gap-2">
+            <TabsTrigger key={mod.id} value={mod.id} className="flex items-center gap-2 relative">
               {mod.icon}
-              <span className="text-sm font-medium">{mod.title}</span>
+              <span className="text-sm font-medium truncate">{mod.title}</span>
+              {mod.alerts && (
+                <Badge variant="destructive" className="absolute -top-2 -right-2 text-xs px-1.5">
+                  {mod.alerts}
+                </Badge>
+              )}
             </TabsTrigger>
           ))}
         </TabsList>
 
-        {modules.map((mod) => (
-          <TabsContent key={mod.id} value={mod.id} asChild>
+        <AnimatePresence mode="wait">
+          <TabsContent key={tab} value={tab} asChild forceMount>
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              key={tab}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.4 }}
               className="space-y-4"
             >
-              <Card className={`p-4 ${mod.color} text-white`}>
-                <h2 className="text-xl font-bold">{mod.title}</h2>
-                <p className="text-sm opacity-80">{mod.description}</p>
+              <Card className={`p-4 ${current.color} text-white`}>
+                <h2 className="text-xl font-bold">{current.title}</h2>
+                <p className="text-sm opacity-80">{current.description}</p>
               </Card>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {Object.entries(mod.metrics).map(([key, value]) => (
+                {Object.entries(current.metrics).map(([key, value]) => (
                   <Card key={key} className="bg-muted">
                     <CardContent className="p-4">
                       <div className="text-xs uppercase text-muted-foreground">{key}</div>
@@ -107,7 +145,7 @@ export default function ModuleDashboard() {
               </div>
             </motion.div>
           </TabsContent>
-        ))}
+        </AnimatePresence>
       </Tabs>
     </div>
   )
