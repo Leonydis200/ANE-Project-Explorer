@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Bell, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 
 interface LogEntry {
   id: number
@@ -45,10 +43,10 @@ export default function NotificationDrawer({ open, onClose }: { open: boolean, o
             <p className="text-muted-foreground">No recent alerts.</p>
           ) : (
             logs.map(log => (
-              <Card key={log.id} className="mb-2 p-3">
+              <div key={log.id} className="mb-2 p-3 bg-muted rounded">
                 <div className="text-sm font-medium">{log.message}</div>
                 <div className="text-xs text-muted-foreground">{log.timestamp}</div>
-              </Card>
+              </div>
             ))
           )}
         </motion.div>

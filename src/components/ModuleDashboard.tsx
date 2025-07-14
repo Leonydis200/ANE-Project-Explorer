@@ -1,8 +1,7 @@
 // ModuleDashboard.tsx
 import React, { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs'
-import { Card, CardContent } from '@/components/ui/card'
+import { Tabs, TabsContent } from '@/components/ui/Tabs'
 import { Brain, ActivitySquare, Bot, Radar, Settings2 } from 'lucide-react'
 
 const iconMap: Record<string, JSX.Element> = {
@@ -49,43 +48,43 @@ export default function ModuleDashboard() {
 
 	return (
 		<div className="p-6 space-y-6 max-w-7xl mx-auto">
-			<Tabs value={tab} onValueChange={setTab} className="w-full">
-				<TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+			<Tabs tabs={modules.map(m => ({ title: m.title, value: m.id }))} activeTab={tab} onChange={setTab}>
+				<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-4">
 					{modules.map((mod) => (
-						<TabsTrigger key={mod.id} value={mod.id} className="flex items-center gap-2">
+						<button
+							key={mod.id}
+							onClick={() => setTab(mod.id)}
+							className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors whitespace-nowrap
+								${tab === mod.id ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-accent'}`}
+						>
 							{iconMap[mod.icon] || <span className="w-5 h-5" />}
 							<span className="text-sm font-medium">{mod.title}</span>
-						</TabsTrigger>
+						</button>
 					))}
-				</TabsList>
-
-				<AnimatePresence mode="wait">
-					<TabsContent key={tab} value={tab} asChild>
-						<motion.div
-							key={tab}
-							initial={{ opacity: 0, y: 20 }}
-							animate={{ opacity: 1, y: 0 }}
-							exit={{ opacity: 0, y: -10 }}
-							transition={{ duration: 0.4 }}
-							className="space-y-4"
-						>
-							<Card className={`p-4 ${currentModule.color} text-white`}>
-								<h2 className="text-xl font-bold">{currentModule.title}</h2>
-								<p className="text-sm opacity-80">{currentModule.description}</p>
-							</Card>
-							<div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-								{Object.entries(currentModule.metrics).map(([key, value]) => (
-									<Card key={key} className="bg-muted">
-										<CardContent className="p-4">
-											<div className="text-xs uppercase text-muted-foreground">{key}</div>
-											<div className="text-lg font-semibold">{value}</div>
-										</CardContent>
-									</Card>
-								))}
-							</div>
-						</motion.div>
-					</TabsContent>
-				</AnimatePresence>
+				</div>
+				<TabsContent value={tab} activeTab={tab}>
+					<motion.div
+						key={tab}
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -10 }}
+						transition={{ duration: 0.4 }}
+						className="space-y-4"
+					>
+						<div className={`p-4 rounded-lg text-white ${currentModule.color}`}>
+							<h2 className="text-xl font-bold">{currentModule.title}</h2>
+							<p className="text-sm opacity-80">{currentModule.description}</p>
+						</div>
+						<div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+							{Object.entries(currentModule.metrics).map(([key, value]) => (
+								<div key={key} className="bg-muted p-4 rounded-lg shadow">
+									<div className="text-xs uppercase text-muted-foreground">{key}</div>
+									<div className="text-lg font-semibold text-foreground">{value}</div>
+								</div>
+							))}
+						</div>
+					</motion.div>
+				</TabsContent>
 			</Tabs>
 		</div>
 	)
