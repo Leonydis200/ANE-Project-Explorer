@@ -1,20 +1,20 @@
-import { useEffect, useState } from 'react';
-import { fetchModules } from '@/lib/api';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { LucideIcon, Brain, MessageCircle, Smile } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Brain, ActivitySquare, Bot, Radar, Settings2 } from 'lucide-react';
 
-interface Module {
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Brain,
+  ActivitySquare,
+  Bot,
+  Radar,
+  Settings2,
+};
+
+type Module = {
   id: string;
   title: string;
   description: string;
-  icon: string; // string name of the icon
+  icon: string;
   color: string;
-}
-
-const iconMap: Record<string, LucideIcon> = {
-  Brain,
-  MessageCircle,
-  Smile
 };
 
 export default function ModuleTabs() {
@@ -22,33 +22,43 @@ export default function ModuleTabs() {
   const [active, setActive] = useState('overview');
 
   useEffect(() => {
-    fetchModules().then(setModules).catch(console.error);
+    fetch('/api/modules.json')
+      .then((res) => res.json())
+      .then(setModules)
+      .catch(console.error);
   }, []);
 
   return (
-    <Tabs value={active} onValueChange={setActive} className="w-full max-w-5xl mx-auto">
-      <TabsList className="grid grid-cols-3 gap-2">
+    <div className="w-full max-w-5xl mx-auto">
+      <div className="flex space-x-2 border-b border-muted pb-2">
         {modules.map(({ id, icon, title }) => {
           const Icon = iconMap[icon] || Brain;
           return (
-            <TabsTrigger key={id} value={id} className="flex items-center gap-2">
+            <button
+              key={id}
+              onClick={() => setActive(id)}
+              className={`flex items-center gap-2 px-4 py-2 text-sm rounded-md transition-colors whitespace-nowrap
+                ${active === id ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-accent'}`}
+            >
               <Icon className="w-4 h-4" />
               {title}
-            </TabsTrigger>
+            </button>
           );
         })}
-      </TabsList>
-
-      {modules.map(({ id, title, description, color }) => (
-        <TabsContent
-          key={id}
-          value={id}
-          className={`rounded-xl p-6 mt-4 shadow-md ${color} text-white animate-fadeIn`}
-        >
-          <h2 className="text-xl font-semibold mb-2">{title}</h2>
-          <p className="text-sm opacity-90">{description}</p>
-        </TabsContent>
-      ))}
-    </Tabs>
+      </div>
+      <div className="mt-4">
+        {modules.map(({ id, title, description, color }) =>
+          active === id ? (
+            <div
+              key={id}
+              className={`rounded-xl p-6 mt-4 shadow-md ${color} text-white animate-fadeIn`}
+            >
+              <h2 className="text-xl font-semibold mb-2">{title}</h2>
+              <p className="text-sm opacity-90">{description}</p>
+            </div>
+          ) : null
+        )}
+      </div>
+    </div>
   );
 }

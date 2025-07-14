@@ -1,3 +1,4 @@
+// Tailwind CSS config
 module.exports = {
   content: [
     "./index.html",

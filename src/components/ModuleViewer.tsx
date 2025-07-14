@@ -1,6 +1,23 @@
-import React from 'react';
-import { modules } from '../config/modules';
+import React, { useEffect, useState } from 'react';
+import { Brain, ActivitySquare, Bot, Radar, Settings2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+
+const iconMap: Record<string, JSX.Element> = {
+  Brain: <Brain className="w-8 h-8" />,
+  ActivitySquare: <ActivitySquare className="w-8 h-8" />,
+  Bot: <Bot className="w-8 h-8" />,
+  Radar: <Radar className="w-8 h-8" />,
+  Settings2: <Settings2 className="w-8 h-8" />,
+};
+
+type Module = {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  color: string;
+  metrics?: Record<string, string | number>;
+};
 
 interface ModuleViewerProps {
   activeModule: string;
@@ -8,9 +25,17 @@ interface ModuleViewerProps {
 }
 
 const ModuleViewer: React.FC<ModuleViewerProps> = ({ activeModule, isDarkMode }) => {
-  const module = modules[activeModule as keyof typeof modules];
+  const [modules, setModules] = useState<Module[]>([]);
+  useEffect(() => {
+    fetch('/api/modules.json')
+      .then((res) => res.json())
+      .then(setModules)
+      .catch(console.error);
+  }, []);
+
+  const module = modules.find((m) => m.id === activeModule);
   const borderClass = isDarkMode ? 'border-gray-700' : 'border-gray-200';
-  
+
   if (!module) return <div>Module not found</div>;
 
   return (
@@ -22,7 +47,7 @@ const ModuleViewer: React.FC<ModuleViewerProps> = ({ activeModule, isDarkMode })
         className="flex items-center mb-6"
       >
         <div className={`p-3 rounded-lg ${module.color} text-white mr-4`}>
-          {module.icon}
+          {iconMap[module.icon] || <Brain className="w-8 h-8" />}
         </div>
         <div>
           <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -33,48 +58,23 @@ const ModuleViewer: React.FC<ModuleViewerProps> = ({ activeModule, isDarkMode })
           </p>
         </div>
       </motion.div>
-
       <div className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>
-        {activeModule === 'overview' ? (
-          <div className="space-y-6">
-            <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 rounded-lg">
-              <h3 className="text-xl font-bold mb-2">Autonomous Nexus Entity</h3>
-              <p>Advanced AI system combining AGI, NLP, emotional intelligence, and predictive analytics</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className={`p-4 rounded-lg border ${borderClass} ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-                <h4 className={`font-semibold mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Architecture</h4>
-                <ul className={`text-sm space-y-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  <li>• Docker containerized services</li>
-                  <li>• PostgreSQL database</li>
-                  <li>• FastAPI backend</li>
-                  <li>• Streamlit UI</li>
-                </ul>
+        {module.metrics && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {Object.entries(module.metrics).map(([key, value]) => (
+              <div key={key} className={`p-4 rounded-lg border ${borderClass} ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                <div className="text-xs uppercase text-muted-foreground">{key}</div>
+                <div className="text-lg font-semibold">{value}</div>
               </div>
-              
-              <div className={`p-4 rounded-lg border ${borderClass} ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-                <h4 className={`font-semibold mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>AI Capabilities</h4>
-                <ul className={`text-sm space-y-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  <li>• Text generation (GPT-2)</li>
-                  <li>• Sentiment analysis</li>
-                  <li>• Predictive modeling</li>
-                  <li>• Emotion detection</li>
-                </ul>
-              </div>
-            </div>
+            ))}
           </div>
-        ) : (
-          <div className={`p-4 rounded-lg border ${borderClass} ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <h4 className={`font-semibold mb-3 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-              {activeModule === 'database' ? 'Database Schema' : 'Key Features'}
-            </h4>
-            
-            {activeModule === 'database' ? (
-              <div className="font-mono text-sm">
-                <div>Table: items</div>
-                <div>- id: Integer (Primary Key)</div>
-                <div>- name: String (Indexed)</div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ModuleViewer;
                 <div>- description: String (Nullable)</div>
               </div>
             ) : (

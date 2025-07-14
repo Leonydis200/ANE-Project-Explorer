@@ -1,6 +1,3 @@
----
-
-````markdown
 # 🚀 ANE Project Explorer
 
 **ANE Project Explorer** is a modern, responsive, and fully interactive interface for exploring the capabilities of the **Autonomous Nexus Entity (ANE)** — an advanced AI system that brings together AGI, NLP, predictive analytics, emotional intelligence, and system control.
@@ -51,7 +48,7 @@
 ```bash
 git clone https://github.com/Leonydis200/ANE-Project-Explorer.git
 cd ANE-Project-Explorer
-````
+```
 
 ### 2. Install Dependencies
 
@@ -97,13 +94,16 @@ Built with 💙 by [Leonydis Greyling](https://github.com/Leonydis200)
 
 Feel free to ⭐ the repo if you find it helpful!
 
-```
-
 ---
 
 ### ✅ What You Should Do Next:
 
 - ✅ Save this as `README.md` in your project root
+- 🖼 Add real screenshots or GIFs in the `./assets` folder
+- 📝 Add a `LICENSE` file if you haven’t yet (MIT is a good default)
+- ✅ Optionally customize links or add badges (like CI/CD, Vercel deploy)
+
+Let me know if you'd like a badge set or a deploy-to-Vercel/GitHub Pages workflow setup!
 - 🖼 Add real screenshots or GIFs in the `./assets` folder
 - 📝 Add a `LICENSE` file if you haven’t yet (MIT is a good default)
 - ✅ Optionally customize links or add badges (like CI/CD, Vercel deploy)

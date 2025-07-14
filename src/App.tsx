@@ -1,71 +1,47 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Brain, ActivitySquare, Bot, Radar, Settings2 } from 'lucide-react'
 
-const modules = [
-  {
-    id: 'overview',
-    title: 'ANE Overview',
-    icon: <Brain className="w-5 h-5" />,
-    description: 'Autonomous Nexus Entity - Advanced AI System',
-    color: 'bg-purple-500',
-    metrics: {
-      uptime: '99.97%',
-      nodes: 42,
-      status: 'Online',
-    },
-  },
-  {
-    id: 'nlp',
-    title: 'Natural Language Processing',
-    icon: <ActivitySquare className="w-5 h-5" />,
-    description: 'Handles real-time language understanding & generation.',
-    color: 'bg-blue-500',
-    metrics: {
-      throughput: '1200 req/min',
-      models: 8,
-      latency: '15ms',
-    },
-  },
-  {
-    id: 'emotions',
-    title: 'Emotional Intelligence',
-    icon: <Bot className="w-5 h-5" />,
-    description: 'Emotion recognition, response modulation, and empathy layers.',
-    color: 'bg-pink-500',
-    metrics: {
-      sentimentAccuracy: '94.5%',
-      emotionalRange: '7 layers',
-    },
-  },
-  {
-    id: 'prediction',
-    title: 'Predictive Analytics',
-    icon: <Radar className="w-5 h-5" />,
-    description: 'Forecasting, behavior modeling & real-time insights.',
-    color: 'bg-yellow-500',
-    metrics: {
-      predictionAccuracy: '91.8%',
-      modelsTrained: 15,
-    },
-  },
-  {
-    id: 'control',
-    title: 'System Control & Monitoring',
-    icon: <Settings2 className="w-5 h-5" />,
-    description: 'Orchestrates distributed processes and manages lifecycle.',
-    color: 'bg-green-500',
-    metrics: {
-      activeProcesses: 128,
-      systemLoad: '42%',
-      alerts: 2,
-    },
-  },
-]
+const iconMap: Record<string, JSX.Element> = {
+  Brain: <Brain className="w-5 h-5" />,
+  ActivitySquare: <ActivitySquare className="w-5 h-5" />,
+  Bot: <Bot className="w-5 h-5" />,
+  Radar: <Radar className="w-5 h-5" />,
+  Settings2: <Settings2 className="w-5 h-5" />,
+}
+
+type Module = {
+  id: string
+  title: string
+  icon: string
+  description: string
+  color: string
+  metrics: Record<string, string | number>
+}
 
 export default function ModuleDashboard() {
+  const [modules, setModules] = useState<Module[]>([])
   const [tab, setTab] = useState('overview')
-  const current = modules.find((m) => m.id === tab)!
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/api/modules.json')
+      .then((res) => res.json())
+      .then((data) => setModules(data))
+      .catch(() => setError('Failed to load modules.'))
+  }, [])
+
+  const current = modules.find((m) => m.id === tab)
+
+  if (error) {
+    return <div className="p-6 text-red-500">{error}</div>
+  }
+  if (!modules.length) {
+    return <div className="p-6 text-muted-foreground">Loading modules...</div>
+  }
+  if (!current) {
+    return <div className="p-6 text-red-500">Module not found.</div>
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -76,8 +52,10 @@ export default function ModuleDashboard() {
             onClick={() => setTab(mod.id)}
             className={`flex items-center gap-2 px-4 py-2 text-sm rounded-md transition-colors whitespace-nowrap
               ${tab === mod.id ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-accent'}`}
+            aria-pressed={tab === mod.id}
+            tabIndex={0}
           >
-            {mod.icon}
+            {iconMap[mod.icon] || <span className="w-5 h-5" />}
             {mod.title}
           </button>
         ))}
