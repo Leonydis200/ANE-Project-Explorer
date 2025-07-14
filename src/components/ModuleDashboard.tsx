@@ -24,7 +24,7 @@ type Module = {
 }
 
 export default function ModuleDashboard() {
-	const { metrics, systemHealth, error, refreshData } = useLiveMetrics()
+	const { metrics, systemHealth, error, refreshData, loading, tab, setTab, connectionStatus } = useLiveMetrics()
 	const [autoRefresh, setAutoRefresh] = useState(true)
 
 	useEffect(() => {
@@ -44,12 +44,14 @@ export default function ModuleDashboard() {
 		<div className="app-background px-8 py-6">
 			<div className="fancy-blur top-0 left-0" />
 			<div className="fancy-blur bottom-0 right-0" />
-			
 			<div className="flex justify-between items-center mb-6">
 				<h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 					ANE System Dashboard
 				</h1>
 				<div className="flex items-center gap-4">
+					<span className={`px-3 py-1 rounded-full ${connectionStatus === 'connected' ? 'bg-success text-white' : 'bg-danger text-white'}`}>
+						{connectionStatus}
+					</span>
 					<button
 						onClick={() => setAutoRefresh(!autoRefresh)}
 						className={`px-4 py-2 rounded-lg ${
@@ -66,7 +68,28 @@ export default function ModuleDashboard() {
 					</button>
 				</div>
 			</div>
-
+			<div className="flex gap-2 mb-4">
+				{metrics.map((mod) => (
+					<button
+						key={mod.id}
+						className={`px-4 py-2 rounded-lg ${tab === mod.id ? 'bg-primary text-white' : 'bg-gray-200'}`}
+						onClick={() => setTab(mod.id)}
+					>
+						{mod.id}
+					</button>
+				))}
+			</div>
+			<div className="flex gap-3 mb-4">
+				<button className="btn btn-ghost" onClick={() => dataStream.triggerSelfDiagnostics()}>
+					Run Diagnostics
+				</button>
+				<button className="btn btn-ghost" onClick={() => dataStream.triggerSelfRepair()}>
+					Run Self-Repair
+				</button>
+				<button className="btn btn-ghost" onClick={() => dataStream.triggerSelfImprovement()}>
+					Run Self-Improvement
+				</button>
+			</div>
 			<div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
 				{metrics.map((mod) => (
 					<motion.div

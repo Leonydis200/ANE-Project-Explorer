@@ -90,7 +90,13 @@ export default function SystemMonitor() {
         animate={{ opacity: 1, y: 0 }}
         className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6"
       >
-        {/* Health status display */}
+        <h2 className="text-lg font-semibold mb-4">Health Status</h2>
+        <div>
+          <span className={`px-3 py-1 rounded-full ${health?.overall > 80 ? 'bg-success text-white' : health?.overall > 60 ? 'bg-warning text-white' : 'bg-danger text-white'}`}>
+            {health?.overall ?? 'N/A'}%
+          </span>
+          <div className="mt-2 text-sm text-gray-500">Last check: {health?.lastCheck?.toLocaleString()}</div>
+        </div>
       </motion.div>
       
       <motion.div
@@ -98,21 +104,26 @@ export default function SystemMonitor() {
         animate={{ opacity: 1, y: 0 }}
         className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6"
       >
-        {/* Alerts and notifications */}
-      </motion.div>
-    </div>
-  )
-}
-      >
-        {/* Health status display */}
-      </motion.div>
-      
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6"
-      >
-        {/* Alerts and notifications */}
+        <h2 className="text-lg font-semibold mb-4">Alerts & Notifications</h2>
+        <ul>
+          {health?.issues?.length
+            ? health.issues.map((issue, idx) => (
+                <li key={idx} className="text-danger">{issue}</li>
+              ))
+            : <li className="text-success">No critical issues detected.</li>
+          }
+        </ul>
+        <div className="flex gap-2 mt-4">
+          <button className="btn btn-ghost" onClick={() => dataStream.triggerSelfDiagnostics()}>
+            Run Diagnostics
+          </button>
+          <button className="btn btn-ghost" onClick={() => dataStream.triggerSelfRepair()}>
+            Run Self-Repair
+          </button>
+          <button className="btn btn-ghost" onClick={() => dataStream.triggerSelfImprovement()}>
+            Run Self-Improvement
+          </button>
+        </div>
       </motion.div>
     </div>
   )

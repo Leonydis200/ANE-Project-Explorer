@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client'
 import { BehaviorSubject, interval, Observable } from 'rxjs'
-import { map, mergeMap, retryWhen, delay } from 'rxjs/operators'
+import { map, mergeMap, retryWhen, delay, take } from 'rxjs/operators'
 import { generateMockData } from './mockData'
 
 export interface SystemMetrics {
@@ -140,6 +140,9 @@ export class DataStreamService {
   private diagnosticsStream = new BehaviorSubject<any>(null)
   private repairStream = new BehaviorSubject<any>(null)
   private improvementStream = new BehaviorSubject<any>(null)
+
+  private reconnectAttempts = 0
+  private maxReconnectAttempts = 5
 
   constructor() {
     this.socket = this.initializeSocket()
@@ -460,6 +463,21 @@ export class DataStreamService {
     return this.improvementStream.asObservable()
   }
 
+  // Add performance metrics stream getter
+  getPerformanceMetrics() {
+    return this.performanceMetrics.asObservable()
+  }
+
+  // Add metrics stream getter for UI hooks
+  getMetricsStream() {
+    return this.metrics.asObservable()
+  }
+
+  // Add connection status stream getter
+  getConnectionStatus() {
+    return this.connectionStatus.asObservable()
+  }
+
   triggerSelfDiagnostics() {
     this.socket.emit('triggerDiagnostics')
   }
@@ -469,6 +487,4 @@ export class DataStreamService {
   triggerSelfImprovement() {
     this.socket.emit('triggerImprovement')
   }
-}
-  // ...existing code...
 }

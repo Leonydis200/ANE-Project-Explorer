@@ -16,6 +16,9 @@ export const useLiveMetrics = () => {
   const [error, setError] = useState<Error | null>(null)
   const [diagnostics, setDiagnostics] = useState<any>(null)
   const [improvementStatus, setImprovementStatus] = useState<string>('idle')
+  const [loading, setLoading] = useState(true)
+  const [tab, setTab] = useState('overview')
+  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'error'>('disconnected')
 
   const refreshData = useCallback(async () => {
     try {
@@ -34,13 +37,16 @@ export const useLiveMetrics = () => {
 
     const diagSub = selfDiagnostics.getHealthStream().subscribe(setDiagnostics)
     const impSub = systemImprovement.getStatusStream().subscribe(setImprovementStatus)
+    const connSub = dataStream.getConnectionStatus().subscribe(setConnectionStatus)
 
     selfDiagnostics.startMonitoring()
+    setLoading(false)
 
     return () => {
       subscription.unsubscribe()
       diagSub.unsubscribe()
       impSub.unsubscribe()
+      connSub.unsubscribe()
     }
   }, [])
 
@@ -105,6 +111,10 @@ export const useLiveMetrics = () => {
     error,
     diagnostics,
     improvementStatus,
-    refreshData 
+    refreshData,
+    loading,
+    tab,
+    setTab,
+    connectionStatus
   }
 }
