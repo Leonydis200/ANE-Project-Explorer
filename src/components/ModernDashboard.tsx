@@ -13,7 +13,152 @@ interface Project {
   lastUpdated: string
   type: string
 }
+// ... existing imports ...
 
+export default function ModuleDashboard() {
+  const [tab, setTab] = useState('overview')
+  const [expandedMetrics, setExpandedMetrics] = useState<Record<string, boolean>>({})
+
+  const toggleMetricExpansion = (moduleId: string) => {
+    setExpandedMetrics(prev => ({
+      ...prev,
+      [moduleId]: !prev[moduleId]
+    }))
+  }
+
+  const handleTabChange = (newTab: string) => {
+    setTab(newTab)
+    toast.dismiss()
+    const module = modules.find(m => m.id === newTab)
+    if (module?.alerts) {
+      toast(
+        <div className="flex items-start gap-3">
+          <AlertCircle className="text-yellow-500 mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="font-medium">{module.title} has {module.alerts} active alert{module.alerts > 1 ? 's' : ''}</p>
+            <p className="text-sm text-muted-foreground">Check the monitoring panel for details</p>
+          </div>
+        </div>,
+        { duration: 3000 }
+      )
+    }
+  }
+
+  return (
+    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="bg-gradient-to-br from-purple-600 to-indigo-800 p-2 rounded-lg">
+          <Brain className="w-8 h-8 text-white" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold">Autonomous Nexus Dashboard</h1>
+          <p className="text-muted-foreground">Monitor and manage all ANE subsystems</p>
+        </div>
+      </div>
+
+      <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
+        <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+          {modules.map(module => (
+            <Tooltip key={module.id}>
+              <TooltipTrigger asChild>
+                <TabsTrigger 
+                  value={module.id} 
+                  className="flex flex-col items-center justify-center h-auto py-4 relative"
+                >
+                  {module.alerts && (
+                    <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500"></span>
+                  )}
+                  <div className={`p-3 rounded-lg mb-2 ${module.color}`}>
+                    {module.icon}
+                  </div>
+                  <span className="font-medium">{module.title}</span>
+                </TabsTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                {module.description}
+              </TooltipContent>
+            </Tooltip>
+          ))}
+        </TabsList>
+
+        <AnimatePresence mode="wait">
+          {modules.map(module => (
+            <TabsContent key={module.id} value={module.id}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <div className="flex items-start gap-4">
+                        <div className={`p-3 rounded-lg ${module.color}`}>
+                          {module.icon}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-3">
+                            <h3 className="text-xl font-bold">{module.title}</h3>
+                            {module.alerts && (
+                              <Badge variant="destructive" className="gap-1">
+                                <AlertCircle className="w-4 h-4" />
+                                {module.alerts} Alert{module.alerts > 1 ? 's' : ''}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-muted-foreground mt-1">{module.description}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-muted/50 rounded-lg px-4 py-2 flex items-center gap-2">
+                        <Info className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm">Last updated: Just now</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-8">
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-sm font-medium text-muted-foreground">PERFORMANCE METRICS</h4>
+                        {Object.keys(module.metrics).length > 3 && (
+                          <button
+                            onClick={() => toggleMetricExpansion(module.id)}
+                            className="text-sm font-medium text-primary hover:underline flex items-center gap-1"
+                          >
+                            {expandedMetrics[module.id] ? (
+                              <>
+                                <span>Show Less</span>
+                              </>
+                            ) : (
+                              <>
+                                <span>Show More</span>
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </div>
+                      
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {Object.entries(module.metrics)
+                          .slice(0, expandedMetrics[module.id] ? undefined : 3)
+                          .map(([key, value], index) => (
+                            <div key={key} className="border rounded-lg p-4 bg-muted/5 hover:bg-muted/10 transition-colors">
+                              <p className="text-sm text-muted-foreground font-medium capitalize">{key}</p>
+                              <p className="text-lg font-semibold mt-1">{value}</p>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </TabsContent>
+          ))}
+        </AnimatePresence>
+      </Tabs>
+    </div>
+  )
+}
 const categories = ['all', 'development', 'research', 'maintenance']
 
 export default function ModernDashboard() {
