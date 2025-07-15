@@ -1,13 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './styles/cyber.css';
-import CyberTerminal from './components/CyberTerminal'; // ✅ fixed line
-import './index.css';
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import './index.css'  // Should match the created file
+import App from './App'
 
-const App = () => (
-  <div className="min-h-screen flex items-center justify-center bg-dark p-4">
-    <CyberTerminal />
-  </div>
-);
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+)
 
 ReactDOM.createRoot(document.getElementById('root')!).render(<App />);

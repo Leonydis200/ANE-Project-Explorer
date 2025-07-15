@@ -1,22 +1,502 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-.font-roboto-mono {
-  font-family: 'Roboto Mono', monospace;
-}
-                </div>
-                
-                <!-- Data Visualization -->
-                <div class="cyber-graph" id="uptime-graph"></div>
-            </section>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERNETIC DASHBOARD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --neon-blue: #0ff;
+            --neon-pink: #f0f;
+            --neon-green: #0f0;
+            --dark-bg: #0a0a14;
+            --panel-bg: rgba(10, 15, 30, 0.8);
+            --glow-blue: 0 0 10px rgba(0, 255, 255, 0.7), 0 0 20px rgba(0, 255, 255, 0.5);
+            --glow-pink: 0 0 10px rgba(255, 0, 255, 0.7), 0 0 20px rgba(255, 0, 255, 0.5);
+            --glow-green: 0 0 10px rgba(0, 255, 0, 0.7), 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--dark-bg);
+            color: #fff;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 100, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 0, 200, 0.1) 0%, transparent 20%),
+                linear-gradient(to bottom, #000011, #0a0015);
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 255, 255, 0.05) 0px,
+                    rgba(0, 255, 255, 0.05) 1px,
+                    transparent 1px,
+                    transparent 20px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(0, 255, 255, 0.05) 0px,
+                    rgba(0, 255, 255, 0.05) 1px,
+                    transparent 1px,
+                    transparent 20px
+                );
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .terminal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr auto;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100vh;
+        }
+        
+        .header {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--neon-blue);
+            box-shadow: var(--glow-blue);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            animation: scanline 6s linear infinite;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: var(--neon-blue);
+            text-shadow: var(--glow-blue);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            color: var(--neon-pink);
+            font-size: 1rem;
+            letter-spacing: 2px;
+        }
+        
+        .cyber-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--neon-blue);
+            border-radius: 4px;
+            box-shadow: var(--glow-blue);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cyber-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--neon-blue), var(--neon-pink));
+            box-shadow: var(--glow-blue);
+        }
+        
+        .panel-title {
+            color: var(--neon-blue);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-shadow: var(--glow-blue);
+            position: relative;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+        
+        .panel-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
+            box-shadow: var(--glow-blue);
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .metric-card {
+            background: rgba(0, 20, 40, 0.6);
+            border: 1px solid var(--neon-green);
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: var(--glow-green);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .metric-title {
+            color: var(--neon-green);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .metric-unit {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-left: 5px;
+        }
+        
+        .cyber-graph {
+            height: 100%;
+            position: relative;
+            grid-column: 1 / -1;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .cyber-alerts {
+            list-style: none;
+        }
+        
+        .alert-item {
+            background: rgba(40, 0, 20, 0.6);
+            border: 1px solid var(--neon-pink);
+            border-left: 4px solid var(--neon-pink);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            box-shadow: var(--glow-pink);
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s infinite;
+        }
+        
+        .alert-icon {
+            color: var(--neon-pink);
+            margin-right: 10px;
+            font-size: 1.2rem;
+            text-shadow: var(--glow-pink);
+        }
+        
+        .alert-text {
+            color: #fff;
+            font-weight: 500;
+        }
+        
+        .alert-date {
+            display: block;
+            color: #aaa;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .status-bar {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(0, 10, 20, 0.8);
+            border-top: 1px solid var(--neon-blue);
+            box-shadow: var(--glow-blue);
+            font-size: 0.9rem;
+        }
+        
+        .system-time {
+            color: var(--neon-green);
+            text-shadow: var(--glow-green);
+        }
+        
+        .system-status {
+            color: var(--neon-blue);
+            text-shadow: var(--glow-blue);
+        }
+        
+        @keyframes scanline {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: var(--glow-pink); }
+            50% { box-shadow: 0 0 15px rgba(255, 0, 255, 0.9), 0 0 30px rgba(255, 0, 255, 0.7); }
+            100% { box-shadow: var(--glow-pink); }
+        }
+        
+        .glitch-text {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+        
+        .glitch-text::before {
+            color: var(--neon-pink);
+            animation: glitch 3s infinite;
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+        }
+        
+        .glitch-text::after {
+            color: var(--neon-blue);
+            animation: glitch 2s infinite reverse;
+            clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+        }
+        
+        @keyframes glitch {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-2px); }
+            40% { transform: translateX(3px); }
+            60% { transform: translateX(-3px); }
+            80% { transform: translateX(2px); }
+            100% { transform: translateX(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .terminal-grid {
+                grid-template-columns: 1fr;
+            }
             
-            <!-- Alerts Section -->
-            <section class="cyber-panel">
-                <h2>System Alerts</h2>
-                <ul class="cyber-alerts">
-                    <li class="alert-item">
-                        <span class="alert-icon">⚠️</span>
-                        <span class="alert-text">Alert: Metric threshold breached at 06:58:42</span>
-                        <span class="alert-date">15/07/2025, 06:58:42</span>
-                    </li>
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal-grid">
+        <header class="header">
+            <h1 class="glitch-text" data-text="CYBERNETIC DASHBOARD">CYBERNETIC DASHBOARD</h1>
+            <div class="subtitle">SYSTEM MONITORING & ALERT CONSOLE</div>
+        </header>
+        
+        <section class="cyber-panel">
+            <h2 class="panel-title">SYSTEM METRICS</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-title">CPU Utilization</div>
+                    <div class="metric-value">78<span class="metric-unit">%</span></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Memory Usage</div>
+                    <div class="metric-value">64<span class="metric-unit">%</span></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Network Throughput</div>
+                    <div class="metric-value">3.2<span class="metric-unit">Gbps</span></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Storage Capacity</div>
+                    <div class="metric-value">87<span class="metric-unit">%</span></div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="cyber-panel">
+            <h2 class="panel-title">SYSTEM ALERTS</h2>
+            <ul class="cyber-alerts">
+                <li class="alert-item">
+                    <span class="alert-icon">⚠️</span>
+                    <span class="alert-text">Alert: Metric threshold breached at 06:58:42</span>
+                    <span class="alert-date">15/07/2025, 06:58:42</span>
+                </li>
+                <li class="alert-item">
+                    <span class="alert-icon">🔒</span>
+                    <span class="alert-text">Security: Unauthorized access attempt detected</span>
+                    <span class="alert-date">15/07/2025, 05:23:17</span>
+                </li>
+                <li class="alert-item">
+                    <span class="alert-icon">🚨</span>
+                    <span class="alert-text">Critical: Cooling system failure in Sector 7</span>
+                    <span class="alert-date">14/07/2025, 22:41:05</span>
+                </li>
+            </ul>
+        </section>
+        
+        <section class="cyber-panel cyber-graph">
+            <h2 class="panel-title">UPTIME MONITORING</h2>
+            <div class="chart-container">
+                <canvas id="uptime-graph"></canvas>
+            </div>
+        </section>
+        
+        <footer class="status-bar">
+            <div class="system-time">15/07/2025, 07:42:18 UTC</div>
+            <div class="system-status">STATUS: <span>OPERATIONAL</span></div>
+            <div>NETWORK: <span>SECURE</span></div>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize the chart
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('uptime-graph').getContext('2d');
+            
+            // Generate sample data for the last 24 hours
+            const labels = [];
+            const data = [];
+            const now = new Date();
+            
+            for (let i = 23; i >= 0; i--) {
+                const hour = new Date(now);
+                hour.setHours(now.getHours() - i);
+                labels.push(hour.getHours().toString().padStart(2, '0') + ':00');
+                
+                // Generate some variation in uptime percentage
+                const base = 95;
+                const variation = Math.random() * 5;
+                data.push(base + variation);
+            }
+            
+            // Create the chart
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Uptime %',
+                        data: data,
+                        borderColor: '#0ff',
+                        backgroundColor: 'rgba(0, 255, 255, 0.1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#f0f',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#0ff',
+                                font: {
+                                    family: "'Roboto Mono', monospace"
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 90,
+                            max: 100,
+                            grid: {
+                                color: 'rgba(0, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#0ff',
+                                font: {
+                                    family: "'Roboto Mono', monospace"
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#0ff',
+                                font: {
+                                    family: "'Roboto Mono', monospace"
+                                }
+                            }
+                        }
+                    },
+                    elements: {
+                        line: {
+                            borderWidth: 2
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+            
+            // Update time every second
+            function updateTime() {
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('en-GB');
+                const timeStr = now.toLocaleTimeString('en-GB');
+                document.querySelector('.system-time').textContent = `${dateStr}, ${timeStr} UTC`;
+            }
+            
+            setInterval(updateTime, 1000);
+            updateTime();
+            
+            // Add glitch effect randomly
+            setInterval(() => {
+                const glitchText = document.querySelector('.glitch-text');
+                glitchText.classList.add('glitch-active');
+                setTimeout(() => {
+                    glitchText.classList.remove('glitch-active');
+                }, 200);
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
