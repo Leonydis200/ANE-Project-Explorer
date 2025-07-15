@@ -1,56 +1,106 @@
-@import './styles/modern-dashboard.css';
-@import './styles/modern-theme.css';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>ANE Project Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/cyberpunk.css">
+</head>
+<body>
+    <!-- Matrix Background Canvas -->
+    <canvas id="matrix"></canvas>
+    
+    <!-- Main Dashboard Container -->
+    <div class="cyber-container">
+        <!-- Header Section -->
+        <header class="cyber-header">
+            <h1 class="cyber-title">ANE EXPLORER</h1>
+            <nav class="cyber-nav">
+                <a href="#" class="cyber-link active">Overview</a>
+                <a href="#" class="cyber-link">NLPEmotionsPredictionControl</a>
+                <a href="#" class="cyber-link">Notifications</a>
+            </nav>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="cyber-main">
+            <section class="cyber-panel">
+                <h2>ANE Overview</h2>
+                <p>Autonomous Nexus Entity - Advanced AI System</p>
+                
+                <!-- HUD Stats -->
+                <div class="cyber-hud">
+                    <div class="hud-item">
+                        <div class="hud-label">Uptime</div>
+                        <div class="hud-value" data-value="99.97">99.97%</div>
+                        <div class="hud-bar">
+                            <div class="hud-fill" style="width: 99.97%"></div>
+                        </div>
+                    </div>
+                    <div class="hud-item">
+                        <div class="hud-label">Nodes</div>
+                        <div class="hud-value" data-value="42">42</div>
+                        <div class="hud-bar">
+                            <div class="hud-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="hud-item">
+                        <div class="hud-label">Status</div>
+                        <div class="hud-value" data-value="100">Online</div>
+                        <div class="hud-bar">
+                            <div class="hud-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Visualization -->
+                <div class="cyber-graph" id="uptime-graph"></div>
+            </section>
+            
+            <!-- Alerts Section -->
+            <section class="cyber-panel">
+                <h2>System Alerts</h2>
+                <div class="alert">
+                    Alert: Metric threshold breached at 06:58:42
+                    <span class="alert-date">15/07/2025, 06:58:42</span>
+                </div>
+                <div class="alert">
+                    Alert: Metric threshold breached at 06:58:32
+                    <span class="alert-date">15/07/2025, 06:58:32</span>
+                </div>
+                <div class="alert">
+                    Alert: Metric threshold breached at 06:58:22
+                    <span class="alert-date">15/07/2025, 06:58:22</span>
+                </div>
+                <div class="alert">
+                    Alert: Metric threshold breached at 06:58:12
+                    <span class="alert-date">15/07/2025, 06:58:12</span>
+                </div>
+            </section>
+            
+            <!-- Cyber Terminal -->
+            <section class="cyber-panel">
+                <h2>System Terminal</h2>
+                <div class="cyber-terminal">
+                    <div class="terminal-output"></div>
+                    <div class="terminal-input">
+                        <span class="prompt">ANE:~$ </span>
+                        <input type="text" class="command-line" autofocus>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+    <!-- Audio Elements -->
+    <audio id="hover-sound" src="assets/sounds/hover.wav" preload="auto"></audio>
+    <audio id="click-sound" src="assets/sounds/click.wav" preload="auto"></audio>
+    <audio id="terminal-sound" src="assets/sounds/terminal.wav" preload="auto"></audio>
 
-:root {
-  --primary: #6366f1;
-  --secondary: #818cf8;
-  --accent: #4f46e5;
-  --background: #f8fafc;
-  --foreground: #0f172a;
-}
-
-.dark {
-  --primary: #818cf8;
-  --secondary: #6366f1;
-  --accent: #4f46e5;
-  --background: #0f172a;
-  --foreground: #f8fafc;
-}
-
-@layer base {
-  body {
-    @apply bg-gradient-to-br from-[#f0f4f8] to-[#e6e9f0] text-foreground;
-    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-  }
-
-  .glass-card {
-    @apply bg-white/10 backdrop-blur-lg border border-white/20 dark:border-white/10;
-  }
-
-  .module-card {
-    @apply rounded-2xl p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg;
-  }
-
-  .nav-item {
-    @apply flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-           hover:bg-primary/10 dark:hover:bg-primary/20;
-  }
-}
-
-/* Modern scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-primary/20 rounded-full hover:bg-primary/30;
-}
+    <!-- JavaScript Files -->
+    <script src="js/matrix.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/terminal.js"></script>
+    <script src="js/audio.js"></script>
+</body>
+</html>
