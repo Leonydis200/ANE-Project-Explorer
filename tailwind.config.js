@@ -1,4 +1,3 @@
-/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
     "./index.html",
@@ -7,28 +6,36 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: 'var(--primary)',
-        secondary: 'var(--secondary)',
-        accent: 'var(--accent)',
-        background: 'var(--background)',
-        foreground: 'var(--foreground)',
+        'cyber-dark': '#0a0a12',
+        'cyber-dark-accent': '#1a1a2e',
+        'cyber-blue': '#00f0ff',
+        'cyber-pink': '#ff2a6d',
+        'cyber-purple': '#d300c5',
+        'cyber-green': '#00ff9f',
+        'cyber-text': '#e2e2e2',
+      },
+      fontFamily: {
+        'tech': ['"Share Tech Mono"', 'monospace'],
       },
       animation: {
-        'fade-in': 'fadeIn 0.3s ease-out',
-        'slide-in': 'slideIn 0.4s ease-out',
+        'scanline': 'scanline 3s linear infinite',
+        'flicker': 'flicker 3s infinite alternate',
       },
       keyframes: {
-        fadeIn: {
-          '0%': { opacity: 0 },
-          '100%': { opacity: 1 },
+        scanline: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
         },
-        slideIn: {
-          '0%': { transform: 'translateY(10px)', opacity: 0 },
-          '100%': { transform: 'translateY(0)', opacity: 1 },
+        flicker: {
+          '0%, 19%, 21%, 23%, 25%, 54%, 56%, 100%': {
+            'text-shadow': '0 0 5px #00ff9f, 0 0 10px #00ff9f, 0 0 20px #00ff9f'
+          },
+          '20%, 24%, 55%': { 
+            'text-shadow': 'none' 
+          },
         },
       },
     },
   },
-  darkMode: 'class',
   plugins: [],
 }
