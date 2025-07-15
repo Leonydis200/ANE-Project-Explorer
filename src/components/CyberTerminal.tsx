@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import useSound from 'react-use-audio';
+import { useSound } from 'react-use-audio';
+import './styles/cyber.css'; // Ensure you have the correct path to your CSS
+import 'tailwindcss/tailwind.css'; // Assuming you're using Tailwind CSS
+import 'lucide-react'; // Ensure you have lucide-react installed for icons
+import 'react-use-audio'; // Ensure you have react-use-audio installed for sound effects
+import 'framer-motion'; // Ensure you have framer-motion installed for animations
+import 'react'; // Ensure React is imported for JSX support
 
 export const CyberTerminal = () => {
   const [commands, setCommands] = useState<string[]>([]);
