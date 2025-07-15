@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import useSound from 'react-use-audio';
+import React from 'react'
 
 export const CyberTerminal = () => {
   const [commands, setCommands] = useState<string[]>([]);
@@ -11,14 +12,16 @@ export const CyberTerminal = () => {
 
   const processCommand = (cmd: string) => {
     const newCommands = [...commands, `ANE:~$ ${cmd}`];
-    
-    switch(cmd.toLowerCase()) {
+
+    switch (cmd.toLowerCase()) {
       case 'help':
-        newCommands.push('Available commands:',
+        newCommands.push(
+          'Available commands:',
           '  status - Show system status',
           '  nodes - List active nodes',
           '  clear - Clear terminal',
-          '  scan - Run diagnostic scan');
+          '  scan - Run diagnostic scan'
+        );
         break;
       case 'status':
         newCommands.push('System Status: ONLINE', 'Uptime: 99.97%', 'Threat Level: NOMINAL');
@@ -28,16 +31,17 @@ export const CyberTerminal = () => {
         break;
       case 'scan':
         newCommands.push('Initiating diagnostic scan...');
+        setCommands(newCommands);
         setTimeout(() => {
           setCommands(prev => [...prev, 'Scan complete: No critical issues detected']);
         }, 1500);
-        break;
+        return;
       case 'clear':
         return setCommands([]);
       default:
         newCommands.push(`Command not found: ${cmd}`);
     }
-    
+
     setCommands(newCommands);
   };
 
@@ -48,12 +52,12 @@ export const CyberTerminal = () => {
   }, [commands]);
 
   return (
-    <motion.div 
+    <motion.div
       className="bg-black bg-opacity-70 border border-cyber-green rounded p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <div 
+      <div
         ref={outputRef}
         className="font-mono text-cyber-green h-48 overflow-y-auto mb-2"
       >
