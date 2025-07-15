@@ -3,13 +3,12 @@ import { Suspense, lazy, useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate, useParams, Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Brain, ActivitySquare, Bot, Radar, Settings2 } from 'lucide-react'
-import SidebarLayout from '@/components/SidebarLayout'
 import UserPanel from '@/components/UserPanel'
 import { ThemeProvider } from './components/ThemeProvider'
 import WelcomeWizard from './components/WelcomeWizard'
 import UserPreferences from './components/UserPreferences'
-
-const ModuleDetailPage = lazy(() => import('@/components/ModuleDetailPage'))
+import SidebarLayout from '@/components/SidebarLayout';
+const ModuleDetailPage = lazy(() => import('./components/ModuleDetailPage'))
 
 const iconMap: Record<string, JSX.Element> = {
   Brain: <Brain className="w-5 h-5" />,
