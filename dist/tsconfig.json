@@ -14,7 +14,7 @@
     "noEmit": true,
     "baseUrl": "./",
     "paths": {
-      "@/*": ["dist/*"] // Updated to point to dist instead of src
+      "@/*": ["dist/*"]
     },
     "types": ["vite/client"]
   },

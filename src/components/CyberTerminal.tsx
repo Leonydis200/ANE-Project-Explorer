@@ -1,46 +1,48 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { useSound } from 'react-use-audio';
-import './styles/cyber.css'; // Ensure you have the correct path to your CSS
-import 'tailwindcss/tailwind.css'; // Assuming you're using Tailwind CSS
-import 'lucide-react'; // Ensure you have lucide-react installed for icons
-import 'react-use-audio'; // Ensure you have react-use-audio installed for sound effects
-import 'framer-motion'; // Ensure you have framer-motion installed for animations
-import 'react'; // Ensure React is imported for JSX support
+// src/components/CyberTerminal.tsx
+import React, { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+// Removed react-use-audio because it's causing issues; see note below.
+// import { useSound } from "react-use-audio";
+import "../styles/cyber.css";
+import "tailwindcss/tailwind.css";
+
+// Example icon import from lucide-react, replace or remove if unused
+import { Terminal } from "lucide-react";
 
 export const CyberTerminal = () => {
   const [commands, setCommands] = useState<string[]>([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const outputRef = useRef<HTMLDivElement>(null);
-  const [playKeySound] = useSound('/sounds/terminal.wav', { volume: 0.2 });
-  const [playEnterSound] = useSound('/sounds/click.wav', { volume: 0.3 });
+
+  // Sound hooks removed because react-use-audio isn't installed properly.
+  // You can add audio later with another library or workaround.
 
   const processCommand = (cmd: string) => {
     const newCommands = [...commands, `ANE:~$ ${cmd}`];
 
     switch (cmd.toLowerCase()) {
-      case 'help':
+      case "help":
         newCommands.push(
-          'Available commands:',
-          '  status - Show system status',
-          '  nodes - List active nodes',
-          '  clear - Clear terminal',
-          '  scan - Run diagnostic scan'
+          "Available commands:",
+          "  status - Show system status",
+          "  nodes - List active nodes",
+          "  clear - Clear terminal",
+          "  scan - Run diagnostic scan"
         );
         break;
-      case 'status':
-        newCommands.push('System Status: ONLINE', 'Uptime: 99.97%', 'Threat Level: NOMINAL');
+      case "status":
+        newCommands.push("System Status: ONLINE", "Uptime: 99.97%", "Threat Level: NOMINAL");
         break;
-      case 'nodes':
-        newCommands.push('Active Nodes (42):', '  Core-01 to Core-42: Operational');
+      case "nodes":
+        newCommands.push("Active Nodes (42):", "  Core-01 to Core-42: Operational");
         break;
-      case 'scan':
-        newCommands.push('Initiating diagnostic scan...');
+      case "scan":
+        newCommands.push("Initiating diagnostic scan...");
         setTimeout(() => {
-          setCommands((prev) => [...prev, 'Scan complete: No critical issues detected']);
+          setCommands((prev) => [...prev, "Scan complete: No critical issues detected"]);
         }, 1500);
         break;
-      case 'clear':
+      case "clear":
         return setCommands([]);
       default:
         newCommands.push(`Command not found: ${cmd}`);
@@ -57,38 +59,36 @@ export const CyberTerminal = () => {
 
   return (
     <motion.div
-      className="bg-black bg-opacity-70 border border-cyber-green rounded p-4 max-w-xl mx-auto"
+      className="bg-black bg-opacity-70 border border-cyber-green rounded p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
+      <div className="flex items-center mb-2 text-cyber-green">
+        <Terminal className="mr-2" />
+        <span>ANE Cyber Terminal</span>
+      </div>
       <div
         ref={outputRef}
-        className="font-mono text-cyber-green h-48 overflow-y-auto mb-2 whitespace-pre-wrap"
+        className="font-mono text-cyber-green h-48 overflow-y-auto mb-2"
       >
         {commands.map((cmd, i) => (
           <div key={i}>{cmd}</div>
         ))}
       </div>
       <div className="flex items-center">
-        <span className="text-cyber-green mr-2 select-none">ANE:~$</span>
+        <span className="text-cyber-green mr-2">ANE:~$</span>
         <input
           type="text"
           value={input}
-          onChange={(e) => {
-            setInput(e.target.value);
-            playKeySound();
-          }}
+          onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && input.trim()) {
-              playEnterSound();
-              processCommand(input.trim());
-              setInput('');
+            if (e.key === "Enter") {
+              processCommand(input);
+              setInput("");
             }
           }}
           className="bg-transparent border-b border-cyber-green text-cyber-green flex-grow outline-none font-mono"
           autoFocus
-          spellCheck={false}
-          autoComplete="off"
         />
       </div>
     </motion.div>

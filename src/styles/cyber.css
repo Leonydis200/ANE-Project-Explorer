@@ -2,81 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Additional styles */
 body {
   background-color: #0a0f1a;
+  color: #00ffcc;
+  font-family: 'Fira Code', monospace;
 }
-.cyber-panel {
+
+.terminal-box {
   background-color: rgba(10, 15, 26, 0.85);
   border: 1px solid #00ffcc;
-  box-shadow: 0 0 16px #ff1eff;
-  padding: 20px;
-  margin: 20px;
-  border-radius: 8px;
+  box-shadow: 0 0 10px #00ffcc;
 }
-.cyber-panel::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #00ffcc, transparent);
-  animation: scanline 3s linear infinite;
-}
-.cyber-title {
+
+.text-cyber-green {
   color: #00ffcc;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  animation: flicker 3s infinite alternate;
-}
-@keyframes scanline {
-  0% { background-position: 0 0; }
-  100% { background-position: 100% 0; }
-}
-@keyframes flicker {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-@layer utilities {
-  .bg-cyber-dark {
-    background-color: #0a0f1a;
-  }
-  .text-cyber-text {
-    color: #e0eaff;
-  }
-  .font-tech {
-    font-family: 'Fira Code', monospace;
-  }
-  .bg-cyber-dark-accent {
-    background-color: rgba(10, 15, 26, 0.85);
-  }
-  .border-cyber-blue {
-    border-color: #00ffcc;
-  }
 }
 
-/* Additional cyber styles */
+.border-cyber-green {
+  border-color: #00ffcc;
+}
 
-body {
+.bg-dark {
   background-color: #0a0f1a;
-  color: #00ffcc;
-  font-family: 'Fira Code', monospace;
 }
 
-/* Terminal box styling */
-.terminal-box {
-  background: rgba(0, 15, 26, 0.8);
-  border: 1px solid #00ffcc;
-  box-shadow: 0 0 15px #00ffcc;
-  border-radius: 0.5rem;
-  font-family: 'Fira Code', monospace;
-  color: #00ffcc;
-}
-
-/* Neon border-left blink effect */
 .animate-blink {
   animation: blink 1.5s step-end infinite;
-  border-left-color: #ff1eff;
-  border-left-width: 2px;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
 }
