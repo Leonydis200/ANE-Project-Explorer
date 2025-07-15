@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-cyber-dark text-cyber-text font-tech;
+}
+
+.cyber-panel {
+  @apply bg-cyber-dark-accent bg-opacity-80 border border-cyber-blue rounded p-5 my-4 relative overflow-hidden;
+}
+
+.cyber-panel::before {
+  @apply content-[''] absolute top-0 left-0 right-0 h-0.5;
+  background: linear-gradient(90deg, transparent, theme('colors.cyber-blue'), transparent);
+  animation: scanline 3s linear infinite;
+}
+
+.cyber-title {
+  @apply text-cyber-green uppercase tracking-wider;
+  animation: flicker 3s infinite alternate;
+}

@@ -1,0 +1,109 @@
+:root {
+  --primary: #3a4a6d;
+  --primary-dark: #1a2a4a;
+  --secondary: #4fc3f7;
+  --accent: #7e57c2;
+  --success: #66bb6a;
+  --warning: #ffca28;
+  --danger: #ef5350;
+  --light: #f5f7fa;
+  --dark: #333;
+  --gray: #e1e5eb;
+  --card-radius: 12px;
+  --transition: all 0.3s ease;
+}
+
+.modern-dashboard {
+  @apply min-h-screen bg-gradient-to-br from-[#f0f4f8] to-[#e6e9f0] p-5;
+}
+
+.dashboard-header {
+  @apply bg-gradient-to-r from-primary to-primary-dark text-white p-6 rounded-xl mb-6 shadow-lg
+         relative overflow-hidden flex justify-between items-center;
+}
+
+.logo-section {
+  @apply flex items-center gap-4 z-10;
+}
+
+.logo-icon {
+  @apply bg-secondary w-12 h-12 rounded-full flex items-center justify-center text-2xl text-primary-dark;
+}
+
+.status-badge {
+  @apply bg-secondary/20 border border-secondary px-5 py-2 rounded-full text-base font-semibold
+         flex items-center gap-2 z-10;
+}
+
+.status-indicator {
+  @apply w-2.5 h-2.5 bg-success rounded-full animate-pulse;
+}
+
+.feature-card {
+  @apply bg-white rounded-xl p-7 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg
+         relative overflow-hidden border-t-4 border-accent;
+}
+
+.feature-icon {
+  @apply w-12 h-12 rounded-xl flex items-center justify-center text-xl mb-5;
+}
+
+.stats-grid {
+  @apply grid grid-cols-3 gap-4 mb-8;
+}
+
+.stat-card {
+  @apply bg-white/10 backdrop-blur rounded-lg p-4 text-center border border-white/20
+         transition-transform duration-300 hover:-translate-y-1;
+}
+
+.view-details-btn {
+  @apply bg-gradient-to-r from-secondary to-[#29b6f6] text-primary-dark px-6 py-3 rounded-lg
+         text-lg font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-1
+         hover:shadow-lg flex items-center justify-center gap-3;
+}
+
+.health-indicator {
+  @apply relative flex h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700;
+}
+
+.health-indicator-bar {
+  @apply transition-all duration-500 ease-out;
+}
+
+.health-critical {
+  @apply bg-red-500;
+}
+
+.health-warning {
+  @apply bg-yellow-500;
+}
+
+.health-good {
+  @apply bg-green-500;
+}
+
+.metric-card {
+  @apply relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl p-4 shadow-lg
+         border border-gray-200 dark:border-gray-700;
+}
+
+.metric-card::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-transparent to-white/5 opacity-0 transition-opacity;
+}
+
+.metric-card:hover::before {
+  @apply opacity-100;
+}
+
+.system-status {
+  @apply fixed bottom-4 right-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg
+         border border-gray-200 dark:border-gray-700 p-4;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
