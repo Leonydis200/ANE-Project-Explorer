@@ -1,13 +1,9 @@
-import type { Config } from 'tailwindcss';
-
-const config: Config = {
+export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      // your theme
-    },
+      // your cyber theme here
+    }
   },
   plugins: [],
-};
-
-export default config;
+}

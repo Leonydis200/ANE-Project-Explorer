@@ -1,37 +1,125 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-body {
-  background-color: #0a0f1a;
-  color: #00ffcc;
-  font-family: 'Fira Code', monospace;
+:root {
+  --cyber-green: #0ff;
+  --cyber-bright: #3effff;
+  --cyber-dim: #077;
 }
 
-.terminal-box {
-  background-color: rgba(10, 15, 26, 0.85);
-  border: 1px solid #00ffcc;
-  box-shadow: 0 0 10px #00ffcc;
+.font-roboto-mono {
+  font-family: "Roboto Mono", monospace;
 }
 
-.text-cyber-green {
-  color: #00ffcc;
+/* Terminal container */
+.cyber-terminal {
+  background: #000000;
+  box-shadow:
+    0 0 10px var(--cyber-green),
+    inset 0 0 15px var(--cyber-green);
+  border-radius: 0.75rem;
+  border: 1px solid var(--cyber-green);
+  display: flex;
+  flex-direction: column;
+  min-height: 360px;
+  max-height: 540px;
+  user-select: text;
+  position: relative;
+  overflow: hidden;
 }
 
-.border-cyber-green {
-  border-color: #00ffcc;
+/* Terminal output scroll */
+.terminal-output {
+  scrollbar-width: thin;
+  scrollbar-color: var(--cyber-bright) transparent;
 }
 
-.bg-dark {
-  background-color: #0a0f1a;
+.terminal-output::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.animate-blink {
-  animation: blink 1.5s step-end infinite;
+.terminal-output::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.terminal-output::-webkit-scrollbar-thumb {
+  background-color: var(--cyber-bright);
+  border-radius: 4px;
+  border: 1px solid var(--cyber-green);
+}
+
+/* Input field styling */
+input[type="text"] {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--cyber-green);
+  padding: 0.25rem 0.5rem;
+  color: var(--cyber-green);
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  outline-offset: 2px;
+}
+
+input[type="text"]:focus {
+  border-color: var(--cyber-bright);
+  box-shadow:
+    0 0 8px var(--cyber-bright),
+    inset 0 0 6px var(--cyber-bright);
+}
+
+/* Placeholder style */
+input[type="text"]::placeholder {
+  color: var(--cyber-dim);
+  opacity: 0.7;
+}
+
+/* Blinking cursor */
+.blinking-cursor {
+  width: 8px;
+  height: 22px;
+  background-color: var(--cyber-bright);
+  animation: blink 1.2s steps(2, start) infinite;
+  border-radius: 2px;
+  align-self: center;
 }
 
 @keyframes blink {
-  50% {
+  0%, 50% {
+    opacity: 1;
+  }
+  50.01%, 100% {
     opacity: 0;
   }
+}
+
+/* Neon glow text */
+.text-cyber-green {
+  color: var(--cyber-green);
+  text-shadow:
+    0 0 4px var(--cyber-green),
+    0 0 8px var(--cyber-green);
+}
+
+/* Brighter glow */
+.border-cyber-green {
+  border-color: var(--cyber-green);
+  box-shadow: 0 0 8px var(--cyber-green);
+}
+
+/* Brighter variant */
+.text-cyber-bright {
+  color: var(--cyber-bright);
+  text-shadow:
+    0 0 6px var(--cyber-bright),
+    0 0 10px var(--cyber-bright);
+}
+
+/* Dim text for placeholder */
+.text-cyber-dim {
+  color: var(--cyber-dim);
+}
+
+/* Custom shadow for terminal box */
+.shadow-cyber {
+  box-shadow:
+    0 0 15px var(--cyber-green),
+    0 0 30px var(--cyber-green);
 }

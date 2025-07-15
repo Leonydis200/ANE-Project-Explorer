@@ -1,106 +1,150 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <title>ANE Project Explorer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/cyberpunk.css">
-</head>
-<body>
-    <!-- Matrix Background Canvas -->
-    <canvas id="matrix"></canvas>
-    
-    <!-- Main Dashboard Container -->
-    <div class="cyber-container">
-        <!-- Header Section -->
-        <header class="cyber-header">
-            <h1 class="cyber-title">ANE EXPLORER</h1>
-            <nav class="cyber-nav">
-                <a href="#" class="cyber-link active">Overview</a>
-                <a href="#" class="cyber-link">NLPEmotionsPredictionControl</a>
-                <a href="#" class="cyber-link">Notifications</a>
-            </nav>
-        </header>
-        
-        <!-- Main Content -->
-        <main class="cyber-main">
-            <section class="cyber-panel">
-                <h2>ANE Overview</h2>
-                <p>Autonomous Nexus Entity - Advanced AI System</p>
-                
-                <!-- HUD Stats -->
-                <div class="cyber-hud">
-                    <div class="hud-item">
-                        <div class="hud-label">Uptime</div>
-                        <div class="hud-value" data-value="99.97">99.97%</div>
-                        <div class="hud-bar">
-                            <div class="hud-fill" style="width: 99.97%"></div>
-                        </div>
-                    </div>
-                    <div class="hud-item">
-                        <div class="hud-label">Nodes</div>
-                        <div class="hud-value" data-value="42">42</div>
-                        <div class="hud-bar">
-                            <div class="hud-fill" style="width: 100%"></div>
-                        </div>
-                    </div>
-                    <div class="hud-item">
-                        <div class="hud-label">Status</div>
-                        <div class="hud-value" data-value="100">Online</div>
-                        <div class="hud-bar">
-                            <div class="hud-fill" style="width: 100%"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Data Visualization -->
-                <div class="cyber-graph" id="uptime-graph"></div>
-            </section>
-            
-            <!-- Alerts Section -->
-            <section class="cyber-panel">
-                <h2>System Alerts</h2>
-                <div class="alert">
-                    Alert: Metric threshold breached at 06:58:42
-                    <span class="alert-date">15/07/2025, 06:58:42</span>
-                </div>
-                <div class="alert">
-                    Alert: Metric threshold breached at 06:58:32
-                    <span class="alert-date">15/07/2025, 06:58:32</span>
-                </div>
-                <div class="alert">
-                    Alert: Metric threshold breached at 06:58:22
-                    <span class="alert-date">15/07/2025, 06:58:22</span>
-                </div>
-                <div class="alert">
-                    Alert: Metric threshold breached at 06:58:12
-                    <span class="alert-date">15/07/2025, 06:58:12</span>
-                </div>
-            </section>
-            
-            <!-- Cyber Terminal -->
-            <section class="cyber-panel">
-                <h2>System Terminal</h2>
-                <div class="cyber-terminal">
-                    <div class="terminal-output"></div>
-                    <div class="terminal-input">
-                        <span class="prompt">ANE:~$ </span>
-                        <input type="text" class="command-line" autofocus>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
+@import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap");
 
-    <!-- Audio Elements -->
-    <audio id="hover-sound" src="assets/sounds/hover.wav" preload="auto"></audio>
-    <audio id="click-sound" src="assets/sounds/click.wav" preload="auto"></audio>
-    <audio id="terminal-sound" src="assets/sounds/terminal.wav" preload="auto"></audio>
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Share Tech Mono', 'Roboto Mono', monospace;
+  background-color: black;
+  color: #39ff14;
+}
 
-    <!-- JavaScript Files -->
-    <script src="js/matrix.js"></script>
-    <script src="js/animations.js"></script>
-    <script src="js/terminal.js"></script>
-    <script src="js/audio.js"></script>
-</body>
-</html>
+.cyber-container {
+  padding: 20px;
+}
+
+.cyber-header {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 10px;
+  border-bottom: 1px solid #39ff14;
+}
+
+.cyber-title {
+  font-size: 2rem;
+  color: #39ff14;
+}
+
+.cyber-nav {
+  display: flex;
+  gap: 15px;
+}
+
+.cyber-link {
+  color: #39ff14;
+  text-decoration: none;
+}
+
+.cyber-link.active {
+  font-weight: bold;
+  border-bottom: 2px solid #39ff14;
+}
+
+.cyber-main {
+  margin-top: 20px;
+}
+
+.cyber-panel {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #39ff14;
+}
+
+.cyber-panel h2 {
+  color: #39ff14;
+  margin-bottom: 10px;
+}
+
+.cyber-hud {
+  display: flex;
+  gap: 20px;
+}
+
+.hud-item {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px #39ff14;
+}
+
+.hud-label {
+  font-weight: bold;
+}
+
+.hud-value {
+  font-size: 1.5rem;
+}
+
+.hud-label,
+.hud-value {
+  color: #39ff14;
+}
+
+.hud-bar {
+  background: rgba(0, 0, 0, 0.3);
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.hud-fill {
+  background: #39ff14;
+  height: 100%;
+}
+
+.cyber-graph {
+  width: 100%;
+  height: 300px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  box-shadow: 0 0 10px #39ff14;
+  margin-top: 20px;
+}
+
+.cyber-alerts {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.alert-item {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.cyber-terminal {
+  font-family: 'Share Tech Mono', monospace;
+  background: black;
+  border: 1px solid #39ff14;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.terminal-output {
+  height: 150px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  color: #39ff14;
+}
+
+.terminal-input {
+  display: flex;
+  align-items: center;
+}
+
+.prompt {
+  margin-right: 5px;
+}
+
+.command-line {
+  flex-grow: 1;
+  background: transparent;
+  border: none;
+  color: #39ff14;
+  font-family: inherit;
+  outline: none;
+  border-bottom: 1px solid #39ff14;
+}

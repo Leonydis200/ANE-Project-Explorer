@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.font-roboto-mono {
+  font-family: 'Roboto Mono', monospace;
+}
+                </div>
+                
+                <!-- Data Visualization -->
+                <div class="cyber-graph" id="uptime-graph"></div>
+            </section>
+            
+            <!-- Alerts Section -->
+            <section class="cyber-panel">
+                <h2>System Alerts</h2>
+                <ul class="cyber-alerts">
+                    <li class="alert-item">
+                        <span class="alert-icon">⚠️</span>
+                        <span class="alert-text">Alert: Metric threshold breached at 06:58:42</span>
+                        <span class="alert-date">15/07/2025, 06:58:42</span>
+                    </li>
