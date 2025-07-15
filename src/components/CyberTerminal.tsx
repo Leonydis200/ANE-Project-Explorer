@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import useSound from 'react-use-audio';
-import React from 'react'
 
 export const CyberTerminal = () => {
   const [commands, setCommands] = useState<string[]>([]);
@@ -31,11 +30,10 @@ export const CyberTerminal = () => {
         break;
       case 'scan':
         newCommands.push('Initiating diagnostic scan...');
-        setCommands(newCommands);
         setTimeout(() => {
-          setCommands(prev => [...prev, 'Scan complete: No critical issues detected']);
+          setCommands((prev) => [...prev, 'Scan complete: No critical issues detected']);
         }, 1500);
-        return;
+        break;
       case 'clear':
         return setCommands([]);
       default:
@@ -53,20 +51,20 @@ export const CyberTerminal = () => {
 
   return (
     <motion.div
-      className="bg-black bg-opacity-70 border border-cyber-green rounded p-4"
+      className="bg-black bg-opacity-70 border border-cyber-green rounded p-4 max-w-xl mx-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
       <div
         ref={outputRef}
-        className="font-mono text-cyber-green h-48 overflow-y-auto mb-2"
+        className="font-mono text-cyber-green h-48 overflow-y-auto mb-2 whitespace-pre-wrap"
       >
         {commands.map((cmd, i) => (
           <div key={i}>{cmd}</div>
         ))}
       </div>
       <div className="flex items-center">
-        <span className="text-cyber-green mr-2">ANE:~$</span>
+        <span className="text-cyber-green mr-2 select-none">ANE:~$</span>
         <input
           type="text"
           value={input}
@@ -75,14 +73,16 @@ export const CyberTerminal = () => {
             playKeySound();
           }}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && input.trim()) {
               playEnterSound();
-              processCommand(input);
+              processCommand(input.trim());
               setInput('');
             }
           }}
           className="bg-transparent border-b border-cyber-green text-cyber-green flex-grow outline-none font-mono"
           autoFocus
+          spellCheck={false}
+          autoComplete="off"
         />
       </div>
     </motion.div>

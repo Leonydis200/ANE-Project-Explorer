@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Additional cyber styles */
+
+body {
+  background-color: #0a0f1a;
+  color: #00ffcc;
+  font-family: 'Fira Code', monospace;
+}
+
+/* Terminal box styling */
+.terminal-box {
+  background: rgba(0, 15, 26, 0.8);
+  border: 1px solid #00ffcc;
+  box-shadow: 0 0 15px #00ffcc;
+  border-radius: 0.5rem;
+  font-family: 'Fira Code', monospace;
+  color: #00ffcc;
+}
+
+/* Neon border-left blink effect */
+.animate-blink {
+  animation: blink 1.5s step-end infinite;
+  border-left-color: #ff1eff;
+  border-left-width: 2px;
+}

@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
-import './index.css'; // assuming TailwindCSS is included here
+import './styles/cyber.css';
+import { CyberTerminal } from './components/CyberTerminal';
 
-// Entry point for React app
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+const App = () => (
+  <div className="min-h-screen flex items-center justify-center bg-dark p-4">
+    <CyberTerminal />
+  </div>
 );
+
+ReactDOM.createRoot(document.getElementById('root')!).render(<App />);
