@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { dataStream, RealTimeMetrics } from '../services/DataStream'
-import { selfDiagnostics } from '../services/SelfDiagnostics'
+import { selfDiagnostics } from '../services/SelfDiagnosticsService'
 
 export function useRealTimeMetrics() {
   const [metrics, setMetrics] = useState<RealTimeMetrics | null>(null)

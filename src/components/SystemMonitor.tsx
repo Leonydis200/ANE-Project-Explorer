@@ -9,7 +9,7 @@ import {
 import { motion } from 'framer-motion'
 import { Line } from 'react-chartjs-2'
 import { dataStream } from '../services/DataStream'
-import { selfDiagnostics } from '../services/SelfDiagnostics'
+import { selfDiagnostics } from '../services/SelfDiagnosticsService'
 import { Activity, AlertTriangle, CheckCircle } from 'lucide-react'
 
 export default function SystemMonitor() {

@@ -2,7 +2,7 @@ import { dataStream } from './DataStream'
 import { BehaviorSubject, lastValueFrom } from 'rxjs'
 import * as tf from '@tensorflow/tfjs'
 import { EnhancedSystemMetrics } from './DataStream'
-import { selfDiagnostics } from './SelfDiagnostics'
+import { selfDiagnostics } from './SelfDiagnosticsService'
 
 interface ImprovementMetrics {
   performanceScore: number

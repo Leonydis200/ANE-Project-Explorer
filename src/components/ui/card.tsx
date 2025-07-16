@@ -1,9 +1,20 @@
-import { ReactNode } from 'react'
+import React from 'react';
 
-export function Card({ children }: { children: ReactNode }) {
-  return <div className="rounded-xl border bg-white dark:bg-gray-800 p-4 shadow-md">{children}</div>
+interface CardProps {
+  children: React.ReactNode;
+  className?: string;
 }
 
-export function CardContent({ children }: { children: ReactNode }) {
-  return <div className="card-content">{children}</div>
+export function Card({ children, className = '' }: CardProps) {
+  return (
+    <div
+      className={`bg-white shadow rounded border border-gray-200 ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function CardContent({ children, className = '' }: CardProps) {
+  return <div className={`p-4 ${className}`}>{children}</div>;
 }

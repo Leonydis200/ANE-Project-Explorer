@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { dataStream, EnhancedSystemMetrics } from '../services/DataStream'
-import { selfDiagnostics } from '../services/SelfDiagnostics'
+import { selfDiagnostics } from '../services/SelfDiagnosticsService'
 import { systemImprovement } from '../services/SystemImprovement'
 
 export interface LiveMetrics {
