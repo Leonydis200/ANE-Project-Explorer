@@ -1,8 +1,9 @@
+// src/components/CyberDashboard.tsx
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, CheckCircle2, AlertTriangle } from '@/components/ui/icons';
+import { AlertCircle, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { Subscription } from 'rxjs';
 import { SelfDiagnosticsService } from '@/services/SelfDiagnosticsService';
 
@@ -10,7 +11,7 @@ const diagnosticsService = new SelfDiagnosticsService();
 const PAGE_SIZE = 10;
 
 export default function CyberDashboard() {
-  const [health, setHealth] = useState(null);
+  const [health, setHealth] = useState<any>(null);
   const [alerts, setAlerts] = useState<string[]>([]);
   const [feedback, setFeedback] = useState('Idle');
   const [history, setHistory] = useState<any[]>([]);
@@ -23,7 +24,6 @@ export default function CyberDashboard() {
       diagnosticsService.getFeedbackObservable().subscribe(setFeedback),
       diagnosticsService.getDiagnosticsHistory().subscribe(setHistory),
     ];
-
     return () => subscriptions.forEach(sub => sub.unsubscribe());
   }, []);
 
@@ -63,8 +63,8 @@ export default function CyberDashboard() {
           {alerts.length > 0 ? (
             <ul className="space-y-1">
               {alerts.map((alert, idx) => (
-                <li key={idx} className="flex items-center text-sm">
-                  <AlertTriangle />
+                <li key={idx} className="flex items-center text-sm gap-2">
+                  <AlertTriangle className="text-yellow-600 w-4 h-4" />
                   {alert}
                 </li>
               ))}
@@ -79,7 +79,7 @@ export default function CyberDashboard() {
         <CardContent>
           <h2 className="text-lg font-bold mb-2">Feedback</h2>
           <div className="flex items-center gap-2">
-            <CheckCircle2 />
+            <CheckCircle2 className="text-green-600 w-4 h-4" />
             <span className="text-sm">{feedback}</span>
           </div>
         </CardContent>
