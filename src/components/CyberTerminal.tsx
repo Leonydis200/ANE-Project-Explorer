@@ -1,88 +1,181 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import useSound from 'use-sound';
+// src/components/CyberTerminal.tsx
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  KeyboardEvent,
+  ReactNode,
+} from 'react';
+import parseArgs from 'minimist';
 
-const CyberTerminal = () => {
-  const [commands, setCommands] = useState<string[]>([]);
-  const [input, setInput] = useState('');
-  const outputRef = useRef<HTMLDivElement>(null);
-  const [playKeySound] = useSound('/sounds/terminal.wav', { volume: 0.2 });
-  const [playEnterSound] = useSound('/sounds/click.wav', { volume: 0.3 });
+// --- Helper: parse a line with <color>text</color> and #NODE#Name#/NODE# markers
+function parseLine(line: string, onNodeClick: (name: string) => void): ReactNode[] {
+  const elements: ReactNode[] = [];
+  let lastIndex = 0;
 
-  const processCommand = (cmd: string) => {
-    const newCommands = [...commands, `ANE:~$ ${cmd}`];
+  // Combined regex for color tags and node markers
+  const regex = /<(?<col>green|red|yellow|blue)>(?<text>.*?)<\/\k<col>>|#NODE#(?<node>[\w-]+)#\/NODE#/g;
+  let match;
 
-    switch (cmd.toLowerCase()) {
-      case 'help':
-        newCommands.push(
-          'Available commands:',
-          '  status - Show system status',
-          '  nodes - List active nodes',
-          '  clear - Clear terminal',
-          '  scan - Run diagnostic scan'
-        );
-        break;
-      case 'status':
-        newCommands.push('System Status: ONLINE', 'Uptime: 99.97%', 'Threat Level: NOMINAL');
-        break;
-      case 'nodes':
-        newCommands.push('Active Nodes (42):', '  Core-01 to Core-42: Operational');
-        break;
-      case 'scan':
-        newCommands.push('Initiating diagnostic scan...');
-        setCommands(newCommands);
-        setTimeout(() => {
-          setCommands((prev) => [...prev, 'Scan complete: No critical issues detected']);
-        }, 1500);
-        return;
-      case 'clear':
-        return setCommands([]);
-      default:
-        newCommands.push(`Command not found: ${cmd}`);
+  while ((match = regex.exec(line)) !== null) {
+    const { index } = match;
+    // push preceding text
+    if (index > lastIndex) {
+      elements.push(line.slice(lastIndex, index));
     }
+    if (match.groups?.col) {
+      const color = match.groups.col;
+      const text = match.groups.text;
+      elements.push(
+        <span
+          key={index}
+          className={{
+            green: 'text-green-400',
+            red: 'text-red-400',
+            yellow: 'text-yellow-300',
+            blue: 'text-blue-400',
+          }[color]}
+        >
+          {text}
+        </span>
+      );
+    } else if (match.groups?.node) {
+      const nodeName = match.groups.node;
+      elements.push(
+        <button
+          key={index}
+          className="text-cyber-green underline ml-1"
+          onClick={() => onNodeClick(nodeName)}
+        >
+          {nodeName}
+        </button>
+      );
+    }
+    lastIndex = regex.lastIndex;
+  }
 
-    setCommands(newCommands);
-  };
+  // remaining text
+  if (lastIndex < line.length) {
+    elements.push(line.slice(lastIndex));
+  }
+  return elements;
+}
+
+// --- Commands & Handlers ---
+type ParsedArgs = { _: string[]; [key: string]: any };
+type Handler = (
+  args: ParsedArgs,
+  out: string[],
+  setOut: React.Dispatch<React.SetStateAction<string[]>>
+) => void;
+
+const handlers: Record<string, Handler> = {
+  help: (_args, out, setOut) =>
+    setOut([
+      ...out,
+      '<green>Available commands:</green>',
+      '  help          – Show this help',
+      '  status        – Show <green>system status</green>',
+      '  nodes         – List nodes (clickable!)',
+      '  clear         – Clear output',
+      '  scan          – Run <yellow>scan</yellow>',
+    ]),
+
+  status: (_args, out, setOut) =>
+    setOut([
+      ...out,
+      '<green>System Status:</green> <blue>ONLINE</blue>',
+      'Uptime: <blue>99.97%</blue>',
+      'Threat Level: <yellow>NOMINAL</yellow>',
+    ]),
+
+  nodes: (_args, out, setOut) => {
+    setOut([...out, 'Nodes:']);
+    ['Core-01', 'Core-02', 'Edge-01'].forEach(n =>
+      setOut(prev => [...prev, `  #NODE#${n}#/NODE#`])
+    );
+  },
+
+  clear: (_args, _out, setOut) => setOut([]),
+
+  scan: (_args, out, setOut) => {
+    setOut([...out, 'Initiating <yellow>scan</yellow>...']);
+    let pct = 0;
+    const iv = setInterval(() => {
+      pct += 25;
+      setOut(prev => [...prev, `<blue>Progress:</blue> ${pct}%`]);
+      if (pct >= 100) {
+        clearInterval(iv);
+        setOut(prev => [...prev, '<green>Scan complete.</green>']);
+      }
+    }, 400);
+  },
+};
+
+const aliasMap: Record<string, string> = {
+  h: 'help',
+  s: 'status',
+  n: 'nodes',
+  c: 'clear',
+  sc: 'scan',
+};
+
+export default function CyberTerminal() {
+  const [output, setOutput] = useState<string[]>([]);
+  const [input, setInput] = useState('');
+  const terminalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (outputRef.current) {
-      outputRef.current.scrollTop = outputRef.current.scrollHeight;
+    terminalRef.current?.scrollTo(0, terminalRef.current.scrollHeight);
+  }, [output]);
+
+  const handleNodeClick = (nodeName: string) => {
+    alert(`Drilling into node ${nodeName}...`);
+    // Implement drill-down logic here
+  };
+
+  const run = (line: string) => {
+    const parts = line.trim().split(/\s+/);
+    if (!parts[0]) return;
+    const raw = parts[0].toLowerCase();
+    const cmd = aliasMap[raw] || raw;
+    const handler = handlers[cmd];
+    const args = parseArgs(parts.slice(1));
+    setOutput(prev => [...prev, `ANE:~$ ${line}`]);
+    if (handler) handler(args, output, setOutput);
+    else setOutput(prev => [...prev, `<red>Unknown command:</red> ${raw}`]);
+  };
+
+  const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      run(input);
+      setInput('');
     }
-  }, [commands]);
+  };
 
   return (
-    <motion.div
-      className="bg-black bg-opacity-70 border border-cyber-green rounded p-4"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+    <div
+      ref={terminalRef}
+      className="bg-black text-cyber-green font-mono p-4 h-64 overflow-auto"
+      role="textbox"
+      aria-live="polite"
+      aria-label="Cyber terminal"
+      tabIndex={0}
     >
-      <div ref={outputRef} className="font-mono text-cyber-green h-48 overflow-y-auto mb-2">
-        {commands.map((cmd, i) => (
-          <div key={i}>{cmd}</div>
-        ))}
-      </div>
-      <div className="flex items-center">
-        <span className="text-cyber-green mr-2">ANE:~$</span>
+      {output.map((line, i) => (
+        <div key={i}>{parseLine(line, handleNodeClick)}</div>
+      ))}
+
+      <div className="flex mt-2">
+        <span className="mr-2">ANE:~$</span>
         <input
-          type="text"
+          className="bg-black flex-grow outline-none"
           value={input}
-          onChange={(e) => {
-            setInput(e.target.value);
-            playKeySound();
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              playEnterSound();
-              processCommand(input);
-              setInput('');
-            }
-          }}
-          className="bg-transparent border-b border-cyber-green text-cyber-green flex-grow outline-none font-mono"
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={onKeyDown}
           autoFocus
         />
       </div>
-    </motion.div>
+    </div>
   );
-};
-
-export default CyberTerminal;
+}

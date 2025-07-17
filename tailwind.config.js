@@ -1,19 +1,17 @@
-/** @type {import('tailwindcss').Config} */
-export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+// tailwind.config.js
+module.exports = {
+  content: ['./src/**/*.{js,jsx,ts,tsx,html}'],
   theme: {
     extend: {
       colors: {
-        primary: '#0f172a', // example, customize as needed
-        muted: '#f3f4f6',
-        foreground: '#111827',
-        'muted-foreground': '#6b7280',
-        accent: '#e0f2fe',
+        'cyber-green': '#39ff14',
+        'background': '#000000',
+        'panel-bg': '#111111',
       },
+      fontFamily: {
+        mono: ['"Share Tech Mono"', 'monospace'],
+      }
     },
   },
   plugins: [],
-}
+};
