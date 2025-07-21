@@ -1,0 +1,17 @@
+2025-07-21 08:46:14,020 [INFO] Starting AI Automation System
+2025-07-21 08:46:14,021 [INFO] Checking system dependencies...
+2025-07-21 08:46:15,679 [INFO] Cloning repository...
+2025-07-21 08:46:16,564 [ERROR] Fatal error: Command '['git', 'clone', '-b', 'main', 'https://github.com/Leonydis200/ANE-Project-Explorer-main', 'ANE-Project-Explorer']' returned non-zero exit status 128.
+Traceback (most recent call last):
+  File "/workspaces/ANE-Project-Explorer/./ai-automation.py", line 184, in <module>
+    main()
+  File "/workspaces/ANE-Project-Explorer/./ai-automation.py", line 170, in main
+    manage_repo()
+  File "/workspaces/ANE-Project-Explorer/./ai-automation.py", line 60, in manage_repo
+    run(["git", "clone", "-b", BRANCH, REPO_URL, str(INSTALL_DIR)])
+  File "/workspaces/ANE-Project-Explorer/./ai-automation.py", line 36, in run
+    result = subprocess.run(cmd, cwd=cwd, check=check, capture_output=capture_output, text=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.python/current/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'clone', '-b', 'main', 'https://github.com/Leonydis200/ANE-Project-Explorer-main', 'ANE-Project-Explorer']' returned non-zero exit status 128.
