@@ -1,82 +1,247 @@
-import argparse
-import subprocess
-import logging
+#!/usr/bin/env python3
+import os
 import sys
-import urllib.request
-from pathlib import Path
+import subprocess
+import json
+from datetime import datetime
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
-)
-logger = logging.getLogger(__name__)
-
-INSTALL_DIR = Path("ANE-Project-Explorer")
-REPO_URL = "https://github.com/Leonydis200/ANE-Project-Explorer-main.git"
+# Configuration
+REPO_URL = "https://github.com/Leonydis200/ANE-Project-Explorer-main"
+INSTALL_DIR = "./ANE-Project-Explorer"
 BRANCH = "main"
+USE_YARN = False  # Set to True if you prefer yarn over npm
+PROBLEMATIC_PACKAGE = "vite-plugin-checker"
 
-MODEL_URL = "https://huggingface.co/TheBloke/Llama-2-7B-GGUF/resolve/main/llama-2-7b.Q4_K_M.gguf"
-MODEL_PATH = INSTALL_DIR / "models" / "llama-2-7b.Q4_K_M.gguf"
+def log(level, message):
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    print(f"[{level}] {timestamp} {message}")
 
-def run(cmd, cwd=None):
-    logger.info(f"Running command: {' '.join(cmd)}")
-    subprocess.run(cmd, cwd=cwd, check=True)
+def run_command(cmd, cwd=None):
+    try:
+        result = subprocess.run(cmd, shell=True, cwd=cwd, check=True,
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                              text=True)
+        return True, result.stdout
+    except subprocess.CalledProcessError as e:
+        log("ERROR", f"Command failed: {cmd}\nError: {e.stderr}")
+        return False, e.stderr
+
+def check_system():
+    log("INFO", "Running system checks")
+    required_commands = ['git', 'node']
+    if USE_YARN:
+        required_commands.append('yarn')
+    else:
+        required_commands.append('npm')
+    
+    for cmd in required_commands:
+        if not run_command(f"command -v {cmd}")[0]:
+            log("ERROR", f"Missing dependency: {cmd}")
+            return False
+    log("SUCCESS", "System checks passed")
+    return True
 
 def manage_repo():
-    if INSTALL_DIR.exists():
-        logger.info("Repository exists; pulling latest changes")
-        run(["git", "reset", "--hard", "HEAD"], cwd=INSTALL_DIR)
-        run(["git", "clean", "-fd"], cwd=INSTALL_DIR)
-        run(["git", "pull", "origin", BRANCH], cwd=INSTALL_DIR)
+    log("INFO", "Managing repository")
+    if not os.path.exists(INSTALL_DIR):
+        success, _ = run_command(f"git clone -b {BRANCH} {REPO_URL} {INSTALL_DIR}")
+        if not success:
+            return False
     else:
-        logger.info("Cloning repository")
-        run(["git", "clone", "-b", BRANCH, REPO_URL, str(INSTALL_DIR)])
+        success, _ = run_command("git reset --hard HEAD && git clean -fd", INSTALL_DIR)
+        success, _ = run_command(f"git pull origin {BRANCH}", INSTALL_DIR)
+        if not success:
+            return False
+    
+    if not os.path.exists(os.path.join(INSTALL_DIR, "package.json")):
+        log("ERROR", "No package.json found - not a Node.js project")
+        return False
+    
+    log("SUCCESS", "Repository ready")
+    return True
+
+def check_package_versions():
+    log("INFO", f"Checking available versions for {PROBLEMATIC_PACKAGE}")
+    success, output = run_command(f"npm view {PROBLEMATIC_PACKAGE} versions --json")
+    if not success:
+        return False
+    
+    try:
+        versions = json.loads(output)
+        latest_version = versions[-1]
+        log("INFO", f"Available versions: {', '.join(versions[-5:])} (latest: {latest_version})")
+        return latest_version
+    except json.JSONDecodeError:
+        log("ERROR", "Could not parse version information")
+        return False
+
+def modify_package_json(latest_version):
+    package_path = os.path.join(INSTALL_DIR, "package.json")
+    try:
+        with open(package_path, 'r') as f:
+            package_data = json.load(f)
+        
+        # Check dependencies
+        for dep_type in ['dependencies', 'devDependencies']:
+            if dep_type in package_data and PROBLEMATIC_PACKAGE in package_data[dep_type]:
+                current_version = package_data[dep_type][PROBLEMATIC_PACKAGE]
+                if current_version.startswith('^'):
+                    new_version = f"^{latest_version}"
+                elif current_version.startswith('~'):
+                    new_version = f"~{latest_version}"
+                else:
+                    new_version = latest_version
+                
+                package_data[dep_type][PROBLEMATIC_PACKAGE] = new_version
+                log("INFO", f"Updating {PROBLEMATIC_PACKAGE} from {current_version} to {new_version}")
+        
+        with open(package_path, 'w') as f:
+            json.dump(package_data, f, indent=2)
+        
+        return True
+    except Exception as e:
+        log("ERROR", f"Failed to modify package.json: {str(e)}")
+        return False
 
 def install_dependencies():
-    logger.info("Installing npm dependencies")
-    run(["npm", "install"], cwd=INSTALL_DIR)
+    log("INFO", "Installing dependencies")
+    
+    # First check if we have the problematic package
+    package_path = os.path.join(INSTALL_DIR, "package.json")
+    with open(package_path, 'r') as f:
+        package_data = json.load(f)
+    
+    has_problematic = any(
+        PROBLEMATIC_PACKAGE in package_data.get(dep_type, {})
+        for dep_type in ['dependencies', 'devDependencies']
+    )
+    
+    if has_problematic:
+        latest_version = check_package_versions()
+        if latest_version:
+            if not modify_package_json(latest_version):
+                log("WARN", "Could not update package.json, trying anyway")
+    
+    # Try regular install first
+    if USE_YARN:
+        success, _ = run_command("yarn install", INSTALL_DIR)
+    else:
+        success, _ = run_command("npm install", INSTALL_DIR)
+    
+    if success:
+        log("SUCCESS", "Dependencies installed")
+        return True
+    
+    # If failed, try alternative approaches
+    log("WARN", "First install attempt failed, trying alternative methods")
+    
+    # Method 1: Install with legacy peer deps
+    if not USE_YARN:
+        success, _ = run_command("npm install --legacy-peer-deps", INSTALL_DIR)
+        if success:
+            log("SUCCESS", "Dependencies installed (with legacy peer deps)")
+            return True
+    
+    # Method 2: Try to remove node_modules and lock files
+    log("WARN", "Trying clean install")
+    run_command("rm -rf node_modules package-lock.json yarn.lock", INSTALL_DIR)
+    if USE_YARN:
+        success, _ = run_command("yarn install", INSTALL_DIR)
+    else:
+        success, _ = run_command("npm install", INSTALL_DIR)
+    
+    if success:
+        log("SUCCESS", "Dependencies installed after clean")
+        return True
+    
+    # Final attempt: Skip the problematic package
+    if has_problematic:
+        log("WARN", f"Trying to install without {PROBLEMATIC_PACKAGE}")
+        if modify_package_json("0.0.0"):
+            if USE_YARN:
+                success, _ = run_command("yarn install", INSTALL_DIR)
+            else:
+                success, _ = run_command("npm install", INSTALL_DIR)
+            
+            if success:
+                log("SUCCESS", f"Dependencies installed (without {PROBLEMATIC_PACKAGE})")
+                return True
+    
+    log("ERROR", "All dependency installation attempts failed")
+    return False
 
-def run_dev_server():
-    logger.info("Starting dev server (npm run dev)")
-    run(["npm", "run", "dev"], cwd=INSTALL_DIR)
+def build_application():
+    log("INFO", "Building application")
+    
+    package_json = os.path.join(INSTALL_DIR, "package.json")
+    with open(package_json) as f:
+        content = f.read()
+    
+    build_scripts = []
+    if '"build"' in content:
+        build_scripts.append("build")
+    if '"compile"' in content:
+        build_scripts.append("compile")
+    
+    if not build_scripts:
+        log("WARN", "No build scripts found in package.json, skipping build")
+        return True
+    
+    for script in build_scripts:
+        if USE_YARN:
+            success, _ = run_command(f"yarn run {script}", INSTALL_DIR)
+        else:
+            success, _ = run_command(f"npm run {script}", INSTALL_DIR)
+        
+        if success:
+            log("SUCCESS", f"Application built with '{script}' script")
+            return True
+    
+    log("ERROR", "All build attempts failed")
+    return False
 
-def build_production():
-    logger.info("Building production bundle (npm run build)")
-    run(["npm", "run", "build"], cwd=INSTALL_DIR)
-
-def download_model():
-    logger.info(f"Downloading model from {MODEL_URL}")
-    MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
-        logger.info(f"Model downloaded to {MODEL_PATH}")
-    except Exception as e:
-        logger.error(f"Failed to download model: {e}")
-        sys.exit(1)
+def run_application():
+    log("INFO", "Starting application")
+    
+    package_json = os.path.join(INSTALL_DIR, "package.json")
+    with open(package_json) as f:
+        content = f.read()
+    
+    run_scripts = []
+    if '"start"' in content:
+        run_scripts.append("start")
+    if '"dev"' in content:
+        run_scripts.append("dev")
+    if '"serve"' in content:
+        run_scripts.append("serve")
+    
+    if not run_scripts:
+        log("ERROR", "No recognized run scripts found in package.json")
+        return False
+    
+    for script in run_scripts:
+        if USE_YARN:
+            success, output = run_command(f"yarn run {script}", INSTALL_DIR)
+        else:
+            success, output = run_command(f"npm run {script}", INSTALL_DIR)
+        
+        if success:
+            log("SUCCESS", f"Application running with '{script}' script")
+            return True
+    
+    log("ERROR", "All run attempts failed")
+    return False
 
 def main():
-    parser = argparse.ArgumentParser(description="AI Automation Script for ANE-Project-Explorer")
-    parser.add_argument("--dev", action="store_true", help="Run dev server instead of production build")
-    parser.add_argument("--download-model", action="store_true", help="Download AI model")
-    args = parser.parse_args()
-
-    try:
-        logger.info("Starting automation script")
-        manage_repo()
-        install_dependencies()
-
-        if args.download_model:
-            download_model()
-
-        if args.dev:
-            run_dev_server()
-        else:
-            build_production()
-
-        logger.info("Automation completed successfully")
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Command failed: {e}")
+    if not check_system():
+        sys.exit(1)
+    if not manage_repo():
+        sys.exit(1)
+    if not install_dependencies():
+        sys.exit(1)
+    if not build_application():
+        sys.exit(1)
+    if not run_application():
         sys.exit(1)
 
 if __name__ == "__main__":
