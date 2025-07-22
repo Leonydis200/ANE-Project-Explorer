@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 
 # Configuration
-REPO_URL = "https://github.com/Leonydis200/ANE-Project-Explorer-main"
+REPO_URL = "https://github.com/Leonydis200/ANE-Project-Explorer-main/"
 INSTALL_DIR = "./ANE-Project-Explorer"
 BRANCH = "main"
 USE_YARN = False  # Set to True if you prefer yarn over npm

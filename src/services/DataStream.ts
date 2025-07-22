@@ -305,8 +305,3 @@ interface PerformanceMetrics {
   network: number;
   timestamp: number;
 }
-
-// Fix the method implementation
-public getMetricsStream(): Observable<PerformanceMetrics> {
-  // implementation
-}
