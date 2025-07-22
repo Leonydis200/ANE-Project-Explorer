@@ -1,5 +1,4 @@
 import React from 'react';
-import { Line } from 'react-chartjs-2';
 import { 
   AdvancedMetrics, 
   SystemHealth, 
@@ -9,7 +8,8 @@ import {
 import { motion } from 'framer-motion'
 import { Line } from 'react-chartjs-2'
 import { dataStream } from '../services/DataStream'
-import { selfDiagnostics } from '../services/SelfDiagnosticsService'
+import SelfDiagnosticsService from '../services/SelfDiagnosticsService';
+const selfDiagnostics = new SelfDiagnosticsService();
 import { Activity, AlertTriangle, CheckCircle } from 'lucide-react'
 
 export default function SystemMonitor() {

@@ -1,80 +1,53 @@
-import * as React from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import * as React from "react"
+import * as TabsPrimitive from "@radix-ui/react-tabs"
 
-interface Tab {
-  title: string
-  value: string
-}
+import { cn } from "@/lib/utils"
 
-interface TabsProps {
-  tabs: Tab[]
-  activeTab: string
-  onChange: (value: string) => void
-  children: React.ReactNode
-  divProps?: React.HTMLAttributes<HTMLDivElement>
-}
+const Tabs = TabsPrimitive.Root
 
-interface TabsContentProps {
-  value: string
-  activeTab: string
-  children: React.ReactNode
-}
+const TabsList = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.List>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.List
+    ref={ref}
+    className={cn(
+      "inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground",
+      className
+    )}
+    {...props}
+  />
+))
+TabsList.displayName = TabsPrimitive.List.displayName
 
-export const Tabs = ({ tabs, activeTab, onChange, children, divProps }: TabsProps) => {
-  const tabRefs = React.useRef<(HTMLButtonElement | null)[]>([])
+const TabsTrigger = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow",
+      className
+    )}
+    {...props}
+  />
+))
+TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
-  // Keyboard navigation
-  const handleKeyDown = (e: React.KeyboardEvent, idx: number) => {
-    if (e.key === 'ArrowRight') {
-      tabRefs.current[(idx + 1) % tabs.length]?.focus()
-    } else if (e.key === 'ArrowLeft') {
-      tabRefs.current[(idx - 1 + tabs.length) % tabs.length]?.focus()
-    }
-  }
+const TabsContent = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Content
+    ref={ref}
+    className={cn(
+      "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+      className
+    )}
+    {...props}
+  />
+))
+TabsContent.displayName = TabsPrimitive.Content.displayName
 
-  return (
-    <div {...divProps}>
-      <div className="flex space-x-4 border-b border-muted p-2" role="tablist">
-        {tabs.map((tab, idx) => (
-          <button
-            key={tab.value}
-            ref={el => tabRefs.current[idx] = el}
-            onClick={() => onChange(tab.value)}
-            onKeyDown={e => handleKeyDown(e, idx)}
-            role="tab"
-            aria-selected={activeTab === tab.value}
-            tabIndex={activeTab === tab.value ? 0 : -1}
-            className={`pb-2 px-4 text-sm font-medium transition-colors border-b-2 ${
-              activeTab === tab.value
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {tab.title}
-          </button>
-        ))}
-      </div>
-      <div className="relative min-h-[100px] mt-4" role="tabpanel">
-        {children}
-      </div>
-    </div>
-  )
-}
-
-export const TabsContent = ({ value, activeTab, children }: TabsContentProps) => {
-  return (
-    <AnimatePresence mode="wait">
-      {activeTab === value && (
-        <motion.div
-          key={value}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
-        >
-          {children}
-        </motion.div>
-      )}
-    </AnimatePresence>
-  )
-}
+export { Tabs, TabsList, TabsTrigger, TabsContent }

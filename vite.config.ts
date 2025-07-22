@@ -1,14 +1,32 @@
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { VitePWA } from 'vite-plugin-pwa';
 import checker from 'vite-plugin-checker';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vite';
 
-export default defineConfig(({ command, mode }) => {
-  const isDev = command === 'serve';
-  
+export default defineConfig({
+  plugins: [react()],
+  define: {
+    'import.meta.env': {
+      DEV: process.env.NODE_ENV === 'development',
+      PROD: process.env.NODE_ENV === 'production',
+      VITE_APP_NAME: JSON.stringify(process.env.VITE_APP_NAME || 'Application')
+    }
+  }
+});
+  plugins: [react()],
+  define: {
+    'import.meta.env': {
+      DEV: process.env.NODE_ENV === 'development',
+      PROD: process.env.NODE_ENV === 'production',
+      VITE_APP_NAME: JSON.stringify(process.env.VITE_APP_NAME || 'Application')
+    }
+  }
+});
+exprt default defineConfig(({ command, mode }) => {
+  const isDev = command === 'serve'
   return {
     plugins: [
       react(),

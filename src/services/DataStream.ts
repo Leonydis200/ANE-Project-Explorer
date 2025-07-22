@@ -85,7 +85,50 @@ export class DataStreamService {
     this.socket = this.initializeSocket();
     this.setupSocketHandlers();
   }
+    public triggerSelfDiagnostics() {
+  return this.sendCommand('self-diagnostics', {});
+}
 
+public triggerSelfRepair() {
+  return this.sendCommand('self-repair', {});
+}
+
+public triggerSelfImprovement() {
+  return this.sendCommand('self-improvement', {});
+}
+
+public triggerSelfUpdate() {
+  return this.sendCommand('self-update', {});
+}
+
+// Add all missing methods
+public getPerformanceMetrics() {
+  return new Observable<PerformanceMetrics>();
+}
+
+public getDiagnosticsStream() {
+  return new Observable<any>();
+}
+
+public getRepairStream() {
+  return new Observable<any>();
+}
+
+public getImprovementStream() {
+  return new Observable<any>();
+}
+
+public getUpdateStream() {
+  return new Observable<any>();
+}
+
+public getFeedbackStream() {
+  return new Observable<any>();
+}
+
+public getUserCommandStream() {
+  return new Observable<any>();
+}
   private initializeSocket(): Socket {
     return io(process.env.REACT_APP_WS_URL || 'ws://localhost:3001', {
       reconnection: true,

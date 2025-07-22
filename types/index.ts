@@ -16,11 +16,14 @@ export type SystemAlert = {
   id: string;
   message: string;
   severity: 'low' | 'medium' | 'high';
-  timestamp: Date;
 };
 
 export type PerformanceMetrics = {
   cpu: number;
   memory: number;
   responseTime: number;
+};
+
+export type EnhancedSystemMetrics = {
+  // Add your specific metric properties here
 };

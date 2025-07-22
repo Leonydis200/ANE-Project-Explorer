@@ -1,6 +1,6 @@
 import React, { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ErrorBoundary } from './components/common/ErrorBoundary';
+import ErrorBoundary from './components/common/ErrorBoundary';
 import { ThemeProvider } from './components/ThemeProvider';
 import App from './App';
 import './index.css';
