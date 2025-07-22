@@ -28,6 +28,150 @@ export class SelfDiagnosticsService {
   private diagnosticsHistory = new BehaviorSubject<any[]>([]);
   private mlModel: tf.LayersModel | null = null;
 
+import { BehaviorSubject, interval, lastValueFrom, Observable } from 'rxjs';
+import * as tf from '@tensorflow/tfjs';
+import { dataStream } from './DataStream';
+
+interface DiagnosticResult {
+  status: 'success' | 'warning' | 'error';
+  message: string;
+  details: any;
+  timestamp: number;
+}
+
+interface SystemHealth {
+  status: 'online' | 'offline' | 'degraded';
+  overall: number;
+  components: Record<string, number>;
+  lastCheck: Date;
+  issues: string[];
+  indicators: {
+    id: string;
+    name: string;
+    status: 'ok' | 'warning' | 'critical';
+    value: number;
+    unit: string;
+  }[];
+}
+
+export class SelfDiagnosticsService {
+  private healthSubject = new BehaviorSubject<SystemHealth>({
+    status: 'online',
+    overall: 100,
+    components: {},
+    lastCheck: new Date(),
+    issues: [],
+    indicators: []
+  });
+  
+  private alertsSubject = new BehaviorSubject<string[]>([]);
+  private feedbackSubject = new BehaviorSubject<string>('Idle');
+  private diagnosticsHistory = new BehaviorSubject<Array<{
+    timestamp: Date;
+    results: DiagnosticResult[];
+  }>>([]);
+  
+  private mlModel: tf.LayersModel | null = null;
+
+  constructor() {
+    this.initializeMonitoring();
+    this.setupAutomaticRepair();
+    this.initializeMLModel();
+  }
+
+  // ... (keep all existing private methods the same)
+
+  public getHealthStream(): Observable<SystemHealth> {
+    return new Observable<SystemHealth>(subscriber => {
+      // Initial health data
+      subscriber.next(this.healthSubject.value);
+      
+      // Subscribe to health updates
+      const subscription = this.healthSubject.subscribe(subscriber);
+      
+      // Cleanup function
+      return () => subscription.unsubscribe();
+    });
+  }
+
+  public getAlertsObservable(): Observable<string[]> {
+    return this.alertsSubject.asObservable();
+  }
+
+  public getFeedbackObservable(): Observable<string> {
+    return this.feedbackSubject.asObservable();
+  }
+
+  public getDiagnosticsHistory(): Observable<Array<{
+    timestamp: Date;
+    results: DiagnosticResult[];
+  }>> {
+    return this.diagnosticsHistory.asObservable();
+  }
+
+  // ... (rest of the existing public methods)
+
+  private async initializeMLModel() {
+    try {
+      this.mlModel = await tf.loadLayersModel('/models/diagnostics-model.json');
+      this.feedbackSubject.next('ML model loaded successfully');
+      this.startPredictiveMaintenance();
+    } catch (error) {
+      console.error('Failed to load ML model:', error);
+      this.feedbackSubject.next('ML model loading failed');
+      this.alertsSubject.next([
+        ...this.alertsSubject.value,
+        'Failed to load diagnostic ML model'
+      ]);
+    }
+  }
+
+  private async predictSystemIssues(): Promise<{ risk: number; issues: string[] }> {
+    if (!this.mlModel) {
+      throw new Error('ML model not loaded');
+    }
+
+    try {
+      const metrics = await lastValueFrom(dataStream.getMetricsStream());
+      
+      // Convert metrics to tensor
+      const input = tf.tensor2d([
+        [
+          metrics.cpu,
+          metrics.memory,
+          metrics.network,
+          metrics.disk,
+          metrics.errorRate || 0
+        ]
+      ]);
+
+      // Make prediction
+      const prediction = this.mlModel.predict(input) as tf.Tensor;
+      const predictionData = await prediction.data();
+      
+      // Cleanup tensors
+      input.dispose();
+      prediction.dispose();
+
+      // Interpret results
+      const risk = predictionData[0];
+      const potentialIssues: string[] = [];
+      
+      if (predictionData[1] > 0.5) potentialIssues.push('CPU overload');
+      if (predictionData[2] > 0.5) potentialIssues.push('Memory leak');
+      if (predictionData[3] > 0.5) potentialIssues.push('Network congestion');
+      if (predictionData[4] > 0.5) potentialIssues.push('Disk I/O bottleneck');
+
+      return {
+        risk,
+        issues: potentialIssues
+      };
+    } catch (error) {
+      console.error('Prediction failed:', error);
+      throw error;
+    }
+  }
+
   constructor() {
     this.initializeMonitoring();
     this.setupAutomaticRepair();
@@ -445,5 +589,35 @@ export class SelfDiagnosticsService {
       return this.performAutoRepair(health.issues);
     }
     return Promise.resolve();
+  }
+}
+
+// Add missing method
+public getHealthStream(): Observable<SystemHealth> {
+  return new Observable(subscriber => {
+    // implementation
+  });
+}
+// Before (problematic):
+public getHealthStream(): Observable<SystemHealth> {
+  return new Observable(subscriber => {
+  });
+}
+
+// After - full corrected implementation:
+class SelfDiagnosticsService {
+  public getHealthStream(): Observable<SystemHealth> {
+    return new Observable<SystemHealth>(subscriber => {
+      // Implementation example:
+      const healthData: SystemHealth = {
+        status: 'healthy',
+        indicators: []
+      };
+      subscriber.next(healthData);
+      
+      return () => {
+        // Cleanup logic
+      };
+    });
   }
 }

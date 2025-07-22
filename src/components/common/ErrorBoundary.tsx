@@ -1,4 +1,3 @@
-// src/components/common/ErrorBoundary.tsx
 import * as React from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -26,7 +25,7 @@ interface ErrorBoundaryState {
   componentStack: string;
   isRetrying: boolean;
   showDetails: boolean;
-  lastResetKey: string | number | null;
+  lastResetKey: string | null;
   retryCount: number;
 }
 
@@ -53,6 +52,7 @@ interface ErrorBoundaryProps {
   loadingComponent?: React.ReactNode;
   logErrors?: boolean;
   showErrorDetailsInDev?: boolean;
+  maxRetryAttempts?: number;
 }
 
 // Fallback component props
@@ -88,7 +88,7 @@ const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
   isRetrying = false,
   showDetails = false,
   toggleDetails,
-  goHome = () => (window.location.href = '/'),
+  goHome = () => { window.location.href = '/'; },
   copyErrorToClipboard = () => {},
   errorMessage = 'Something went wrong. Please try again later.',
   errorTitle = 'An unexpected error occurred',
@@ -97,9 +97,11 @@ const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
   retryButtonText = 'Try again',
   homeButtonText = 'Go to home',
   className,
+  retryCount = 0,
+  maxRetryAttempts = 3,
 }) => {
   const formattedTimestamp = React.useMemo(
-    () => new Date(errorTimestamp).toLocaleString(),
+    () => (errorTimestamp ? new Date(errorTimestamp).toLocaleString() : 'Unknown time'),
     [errorTimestamp]
   );
 
@@ -119,9 +121,9 @@ const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
   }, [error, errorInfo, errorId, formattedTimestamp, copyErrorToClipboard]);
 
   const handleRetry = React.useCallback(() => {
-    if (isRetrying) return;
+    if (isRetrying || (maxRetryAttempts > 0 && retryCount >= maxRetryAttempts)) return;
     resetErrorBoundary();
-  }, [isRetrying, resetErrorBoundary]);
+  }, [isRetrying, resetErrorBoundary, maxRetryAttempts, retryCount]);
 
   return (
     <div 
@@ -132,10 +134,16 @@ const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
     >
       <Alert variant="destructive">
         <AlertTitle className="text-lg font-semibold">
-          {errorTitle}
+          {typeof errorTitle === 'function' ? errorTitle(error) : errorTitle}
         </AlertTitle>
         <AlertDescription className="mt-2">
-          <p className="mb-3">{errorMessage}</p>
+          <p className="mb-3">{typeof errorMessage === 'function' ? errorMessage(error) : errorMessage}</p>
+          
+          {maxRetryAttempts > 0 && retryCount >= maxRetryAttempts && (
+            <p className="text-sm text-muted-foreground mb-3">
+              Maximum retry attempts ({maxRetryAttempts}) reached.
+            </p>
+          )}
           
           <div className="mt-4 space-y-4">
             <div className="text-sm text-muted-foreground">
@@ -144,7 +152,7 @@ const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {showRetry && (
+              {showRetry && maxRetryAttempts > 0 && retryCount < maxRetryAttempts && (
                 <Button
                   variant="outline"
                   onClick={handleRetry}
@@ -230,12 +238,12 @@ const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
 
 // Main ErrorBoundary component
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  static getDerivedStateFromError(error: Error) {
+  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     return {
       hasError: true,
       error,
       errorInfo: null,
-      errorId: `err_${Math.random().toString(36).substr(2, 9)}`,
+      errorId: `err_${Math.random().toString(36).substring(2, 11)}`,
       errorTimestamp: Date.now(),
       componentStack: '',
       isRetrying: false,
@@ -259,20 +267,20 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   };
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    this.setState({ errorInfo, componentStack: errorInfo.componentStack });
+    this.setState({ 
+      errorInfo, 
+      componentStack: errorInfo.componentStack || '' 
+    });
 
-    // Log error to error tracking service if available
     if (this.props.logErrors !== false) {
       console.error('ErrorBoundary caught an error:', error, errorInfo);
     }
 
-    // Call onError callback if provided
     if (this.props.onError && this.state.errorId) {
       this.props.onError(error, errorInfo, this.state.errorId);
     }
 
-    // Track error in development
-    if (import.meta.env.DEV) {
+    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
       window.__REACT_ERROR_BOUNDARY_RECOVERED_ERRORS__ = 
         window.__REACT_ERROR_BOUNDARY_RECOVERED_ERRORS__ || [];
       window.__REACT_ERROR_BOUNDARY_RECOVERED_ERRORS__.push({
@@ -286,7 +294,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   static getDerivedStateFromProps(
     nextProps: ErrorBoundaryProps,
     prevState: ErrorBoundaryState
-  ) {
+  ): Partial<ErrorBoundaryState> | null {
     const { resetKeys } = nextProps;
     const { lastResetKey } = prevState;
 
@@ -317,19 +325,16 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   ) {
     const { resetKeys, onResetKeysChange } = this.props;
     
-    if (resetKeys !== prevProps.resetKeys) {
+    if (JSON.stringify(resetKeys) !== JSON.stringify(prevProps.resetKeys)) {
       onResetKeysChange?.(prevProps.resetKeys, resetKeys);
     }
 
     if (this.state.error && !prevState.error) {
-      // Error was just set - log it
       this.logError(this.state.error, this.state.errorInfo);
     }
   }
 
   logError(error: Error, errorInfo: React.ErrorInfo | null) {
-    // In a real app, you would send the error to an error reporting service
-    // Example: logErrorToService(error, errorInfo);
     console.error('ErrorBoundary caught an error:', error, errorInfo);
   }
 
@@ -350,9 +355,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
         retryCount: this.state.retryCount + 1,
       },
       () => {
-        if (onReset) {
-          onReset(error);
-        }
+        onReset?.(error);
       }
     );
   };
@@ -378,7 +381,8 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       componentStack: errorInfo?.componentStack,
     };
 
-    navigator.clipboard.writeText(JSON.stringify(errorDetails, null, 2));
+    navigator.clipboard.writeText(JSON.stringify(errorDetails, null, 2))
+      .catch(err => console.error('Failed to copy error:', err));
   };
 
   render() {
@@ -393,6 +397,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       retryButtonText = 'Try again',
       homeButtonText = 'Go to home',
       className,
+      maxRetryAttempts = 3,
     } = this.props;
 
     const {
@@ -403,14 +408,15 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       errorTimestamp,
       isRetrying,
       showDetails,
+      retryCount,
     } = this.state;
 
-    if (!hasError) {
+    if (!hasError || !error) {
       return children;
     }
 
     const fallbackProps: ErrorBoundaryFallbackProps = {
-      error: error!,
+      error,
       errorInfo,
       errorId,
       errorTimestamp,
@@ -421,16 +427,18 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       goHome: this.goHome,
       copyErrorToClipboard: this.copyErrorToClipboard,
       errorMessage: typeof errorMessage === 'function' 
-        ? errorMessage(error!) 
+        ? errorMessage(error) 
         : errorMessage,
       errorTitle: typeof errorTitle === 'function' 
-        ? errorTitle(error!) 
+        ? errorTitle(error) 
         : errorTitle,
       showRetry,
       showHomeButton,
       retryButtonText,
       homeButtonText,
       className,
+      retryCount,
+      maxRetryAttempts,
     };
 
     if (typeof fallbackRender === 'function') {
@@ -445,13 +453,8 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 }
 
-// Export the ErrorBoundary component with proper TypeScript types
 export default ErrorBoundary;
-
-// Export the fallback component for external use
 export { ErrorBoundaryFallback };
-
-// Export types for external use
 export type { 
   ErrorBoundaryProps, 
   ErrorBoundaryState, 

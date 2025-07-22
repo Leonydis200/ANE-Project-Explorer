@@ -94,8 +94,9 @@ interface ThemeProviderProps {
   onResolvedThemeChange?: (theme: 'light' | 'dark') => void;
 }
 
-// Helper function to safely access localStorage
-getLocalStorage = (key: string): string | null => {
+// Helper functions to safely access localStorage
+const getLocalStorage = (key: string): string | null => {
+  if (typeof window === 'undefined') return null;
   try {
     return window.localStorage.getItem(key);
   } catch (error) {
@@ -104,8 +105,8 @@ getLocalStorage = (key: string): string | null => {
   }
 };
 
-// Helper function to safely set localStorage
-setLocalStorage = (key: string, value: string): void => {
+const setLocalStorage = (key: string, value: string): void => {
+  if (typeof window === 'undefined') return;
   try {
     window.localStorage.setItem(key, value);
   } catch (error) {
@@ -124,30 +125,20 @@ export function ThemeProvider({
   onResolvedThemeChange,
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(() => {
-    try {
-      return (getLocalStorage(storageKey) as Theme) || defaultTheme;
-    } catch (e) {
-      console.warn('Failed to read theme from localStorage', e);
-      return defaultTheme;
-    }
+    const storedTheme = getLocalStorage(storageKey);
+    return storedTheme ? (storedTheme as Theme) : defaultTheme;
   });
 
-  // Memoize the resolved theme to prevent unnecessary re-renders
-  const resolvedTheme = useCallback((): 'light' | 'dark' => {
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(() => {
     if (!enableSystem) return 'light';
-
     if (theme === 'system') {
-      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      return isDark ? 'dark' : 'light';
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
-
     return theme === 'dark' ? 'dark' : 'light';
-  }, [theme, enableSystem]);
+  });
 
-  // Store the current resolved theme in a ref to avoid unnecessary effects
-  const currentResolvedTheme = useRef(resolvedTheme());
-
-  const [colors, setColors] = useState<Record<string, ThemeColor>>(DEFAULT_COLORS);
+  const [colors, setColors] = useState<ThemeColors>(DEFAULT_COLORS);
+  const currentResolvedTheme = useRef(resolvedTheme);
 
   const applyTheme = useCallback((newTheme: Theme) => {
     if (typeof window === 'undefined') return;
@@ -166,8 +157,7 @@ export function ThemeProvider({
     
     // Update color scheme
     if (enableColorScheme) {
-      const colorScheme = isDark ? 'dark' : 'light';
-      root.style.colorScheme = colorScheme;
+      root.style.colorScheme = isDark ? 'dark' : 'light';
     }
 
     // Apply CSS variables for colors
@@ -175,29 +165,35 @@ export function ThemeProvider({
       root.style.setProperty(cssVariable, isDark ? dark : light);
     });
 
-    setResolvedTheme(isDark ? 'dark' : 'light');
-  }, [colors, enableColorScheme]);
+    const newResolvedTheme = isDark ? 'dark' : 'light';
+    setResolvedTheme(newResolvedTheme);
+    currentResolvedTheme.current = newResolvedTheme;
+    onResolvedThemeChange?.(newResolvedTheme);
+  }, [colors, enableColorScheme, onResolvedThemeChange]);
 
   // Apply theme changes to the document
   useEffect(() => {
-    const root = window.document.documentElement;
-    const newResolvedTheme = resolvedTheme();
+    if (typeof window === 'undefined') return;
 
-    // Only update if the theme has actually changed
+    const newResolvedTheme = (() => {
+      if (!enableSystem) return 'light';
+      if (theme === 'system') {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      return theme === 'dark' ? 'dark' : 'light';
+    })();
+
     if (newResolvedTheme === currentResolvedTheme.current) return;
 
-    // Apply theme class
+    const root = window.document.documentElement;
     root.classList.remove('light', 'dark');
     root.classList.add(newResolvedTheme);
 
-    // Apply color scheme if enabled
     if (enableColorScheme) {
       root.style.colorScheme = newResolvedTheme;
     }
 
-    // Batch DOM updates with requestAnimationFrame for better performance
     requestAnimationFrame(() => {
-      // Apply CSS variables for colors
       Object.values(colors).forEach((color) => {
         root.style.setProperty(
           color.cssVariable,
@@ -206,19 +202,20 @@ export function ThemeProvider({
       });
     });
 
-    // Update the ref
     currentResolvedTheme.current = newResolvedTheme;
-    
-    // Call the optional callback
+    setResolvedTheme(newResolvedTheme);
     onResolvedThemeChange?.(newResolvedTheme);
-  }, [resolvedTheme, colors, enableColorScheme, onResolvedThemeChange]);
+  }, [theme, colors, enableColorScheme, enableSystem, onResolvedThemeChange]);
 
   // Handle system theme changes
   useEffect(() => {
     if (theme !== 'system' || typeof window === 'undefined') return;
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = () => applyTheme('system');
+    const handleChange = () => {
+      setThemeState('system'); // Force re-render
+      applyTheme('system');
+    };
     
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
@@ -226,53 +223,22 @@ export function ThemeProvider({
 
   // Apply theme on mount and when theme changes
   useEffect(() => {
-    if (disableTransitionOnChange) {
-      const css = document.createElement('style');
-      css.textContent = `
-        * {
-          transition: none !important;
-        }
-      `;
-      document.head.appendChild(css);
-      
-      // Force a reflow
-      const _ = window.getComputedStyle(document.body).opacity;
-      
-      return () => {
-        // Remove the style element after the component is unmounted
-        requestAnimationFrame(() => {
-          document.head.removeChild(css);
-        });
-      };
-    }
-  }, [theme, disableTransitionOnChange]);
-
-  useEffect(() => {
     applyTheme(theme);
   }, [theme, applyTheme]);
 
-  // Memoize the setTheme function to prevent unnecessary re-renders
   const setTheme = useCallback(
     (newTheme: Theme) => {
-      if (disableTransitionOnChange) {
+      if (disableTransitionOnChange && typeof window !== 'undefined') {
         document.documentElement.classList.add('no-transition');
       }
 
-      // Only update if theme has actually changed
       if (theme === newTheme) return;
 
-      // Save to localStorage
       setLocalStorage(storageKey, newTheme);
-
-      // Update state
       setThemeState(newTheme);
-      
-      // Call the optional callback
       onThemeChange?.(newTheme);
 
-      // Re-enable transitions after a short delay
-      if (disableTransitionOnChange) {
-        // Force reflow
+      if (disableTransitionOnChange && typeof window !== 'undefined') {
         requestAnimationFrame(() => {
           document.documentElement.offsetHeight;
           document.documentElement.classList.remove('no-transition');
@@ -282,30 +248,12 @@ export function ThemeProvider({
     [disableTransitionOnChange, storageKey, theme, onThemeChange]
   );
 
-  // Memoize the toggle function
   const toggleTheme = useCallback(() => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   }, [theme, setTheme]);
 
-  // Handle system theme changes
-  useEffect(() => {
-    if (!enableSystem || theme !== 'system') return;
-
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
-    const handleChange = () => {
-      // Force a re-render when system theme changes and theme is set to 'system'
-      setThemeState('system');
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, [enableSystem, theme]);
-
-  // Memoize the addColor function to prevent unnecessary re-renders
   const addColor = useCallback((name: string, color: ThemeColor) => {
     setColors((prev) => {
-      // Only update if the color is new or has changed
       if (prev[name] && 
           prev[name].light === color.light && 
           prev[name].dark === color.dark && 
@@ -319,39 +267,31 @@ export function ThemeProvider({
     });
   }, []);
 
-  // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => ({
     theme,
-    resolvedTheme: resolvedTheme(),
+    resolvedTheme,
     setTheme,
     toggleTheme,
-    isDark: resolvedTheme() === 'dark',
+    isDark: resolvedTheme === 'dark',
     colors,
     addColor,
   }), [theme, resolvedTheme, setTheme, toggleTheme, colors, addColor]);
 
-  // Use React.memo to prevent unnecessary re-renders of children
-  const MemoizedChildren = useMemo(() => children, [children]);
-
   return (
     <ThemeContext.Provider value={contextValue}>
-      {MemoizedChildren}
+      {children}
     </ThemeContext.Provider>
   );
 }
 
-// Custom hook to use the theme context
 export function useTheme() {
   const context = useContext(ThemeContext);
-  
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }
-  
   return context;
 }
 
-// Higher-order component for class components
 export function withTheme<P extends { theme?: ThemeContextType }>(
   WrappedComponent: React.ComponentType<P>
 ) {
@@ -363,17 +303,15 @@ export function withTheme<P extends { theme?: ThemeContextType }>(
   };
   
   ComponentWithTheme.displayName = `withTheme(${displayName})`;
-  
   return ComponentWithTheme;
-};
+}
 
 export const ThemeSwitcher = () => {
-  const { theme, setTheme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   
   return (
     <div className="flex items-center gap-2">
       <button
-        type="button"
         onClick={() => setTheme('light')}
         className={cn(
           'p-2 rounded-md',
@@ -386,7 +324,6 @@ export const ThemeSwitcher = () => {
         ☀️
       </button>
       <button
-        type="button"
         onClick={() => setTheme('dark')}
         className={cn(
           'p-2 rounded-md',
@@ -399,7 +336,6 @@ export const ThemeSwitcher = () => {
         🌙
       </button>
       <button
-        type="button"
         onClick={() => setTheme('system')}
         className={cn(
           'p-2 rounded-md',

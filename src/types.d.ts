@@ -14,3 +14,18 @@ type SystemAlert = {
   message: string;
   severity: 'low' | 'medium' | 'high';
 };
+// Fix issues declarations
+interface BaseSystemMetrics {
+  issues: string[]; // Make consistent across all interfaces
+  // other common properties
+}
+
+interface AdvancedMetrics extends BaseSystemMetrics {
+  disk: number;
+  // other specific properties
+}
+
+interface EnhancedSystemMetrics extends BaseSystemMetrics {
+  performance?: never; // Remove or properly define
+  // other properties
+}

@@ -52,3 +52,17 @@ export function useRealTimeMetrics() {
     sendUserCommand: dataStream.sendUserCommand.bind(dataStream),
   }
 }
+// Update imports
+import DataStreamService from '../services/DataStream';
+import SelfDiagnosticsService from '../services/SelfDiagnosticsService';
+
+// Initialize services
+const dataStream = new DataStreamService();
+const selfDiagnostics = new SelfDiagnosticsService();
+
+// Fix type usage
+const [health, setHealth] = useState<SystemHealth | null>(null);
+const [alerts, setAlerts] = useState<SystemAlert[]>([]);
+
+const api = {
+  sendUserCommand: dataStream.sendCommand.bind(dataStream)

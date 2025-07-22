@@ -1,4 +1,3 @@
-// src/components/CyberDashboard.tsx
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -7,14 +6,30 @@ import { AlertCircle, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { Subscription } from 'rxjs';
 import { SelfDiagnosticsService } from '@/services/SelfDiagnosticsService';
 
+interface HealthData {
+  overall: number;
+  components: Record<string, number>;
+  lastCheck: string | number | Date;
+}
+
+interface AlertData {
+  message: string;
+  status: 'error' | 'warning' | 'success';
+}
+
+interface HistoryEntry {
+  timestamp: string | number | Date;
+  results: AlertData[];
+}
+
 const diagnosticsService = new SelfDiagnosticsService();
 const PAGE_SIZE = 10;
 
 export default function CyberDashboard() {
-  const [health, setHealth] = useState<any>(null);
+  const [health, setHealth] = useState<HealthData | null>(null);
   const [alerts, setAlerts] = useState<string[]>([]);
   const [feedback, setFeedback] = useState('Idle');
-  const [history, setHistory] = useState<any[]>([]);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [page, setPage] = useState(0);
 
   useEffect(() => {
@@ -43,7 +58,7 @@ export default function CyberDashboard() {
                 {Object.entries(health.components).map(([key, value]) => (
                   <div key={key} className="text-sm">
                     <p className="font-medium capitalize">{key}</p>
-                    <Progress value={value} />
+                    <Progress value={Number(value)} />
                   </div>
                 ))}
               </div>

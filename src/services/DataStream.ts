@@ -296,3 +296,17 @@ public getUserCommandStream() {
 }
 
 export const dataStream = new DataStreamService();
+
+// Add PerformanceMetrics interface
+interface PerformanceMetrics {
+  cpu: number;
+  memory: number;
+  disk: number;
+  network: number;
+  timestamp: number;
+}
+
+// Fix the method implementation
+public getMetricsStream(): Observable<PerformanceMetrics> {
+  // implementation
+}
