@@ -1,5 +1,4 @@
-import React from 'react';
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, JSX } from 'react';
 import { AnimatePresence, motion } from 'framer-motion'
 import { Tabs, TabsContent } from '@/components/ui/Tabs'
 import { Brain, ActivitySquare, Bot, Radar, Settings2 } from 'lucide-react'
