@@ -1,3 +1,4 @@
+import React from 'react';
 import React from 'react'
 import { Home, Bell, Info, Settings2 } from 'lucide-react'
 

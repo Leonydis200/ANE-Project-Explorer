@@ -1,3 +1,4 @@
+import React from 'react';
 import { useParams, Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { Brain, ActivitySquare, Bot, Radar, Settings2 } from 'lucide-react'

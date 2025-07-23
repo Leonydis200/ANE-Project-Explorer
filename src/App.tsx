@@ -28,8 +28,8 @@ import {
   QueryClient, 
   QueryClientProvider, 
   QueryErrorResetBoundary,
-  type QueryCache,
-  type MutationCache,
+  import { QueryCache } from '@tanstack/react-query',
+  import { MutationCache } from '@tanstack/react-query',
   type Query
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -148,7 +148,7 @@ const createQueryClient = () => {
     defaultOptions: {
       queries: {
         staleTime: 5 * 60 * 1000, // 5 minutes
-        cacheTime: 10 * 60 * 1000, // 10 minutes
+        gcTime: 10 * 60 * 1000, // 10 minutes
         refetchOnWindowFocus: false,
         refetchOnMount: true,
         refetchOnReconnect: 'always',
@@ -548,7 +548,7 @@ const App: FC = () => {
             <>
               <ReactQueryDevtools 
                 initialIsOpen={false} 
-                position="bottom-right"
+                position={{ bottom: 0, right: 0 }}
                 toggleButtonProps={{ 
                   style: { 
                     bottom: '4rem',

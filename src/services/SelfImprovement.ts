@@ -52,7 +52,7 @@ export class SelfImprovementService {
     });
 
     this.model = model;
-    await this.trainModel();
+    await this.trainNewModel();
   }
 
   private startMonitoring() {

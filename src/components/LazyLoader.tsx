@@ -1,3 +1,4 @@
+import React from 'react';
 import React, { Suspense } from 'react';
 
 interface LazyLoaderProps {

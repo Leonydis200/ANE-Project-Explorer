@@ -1,3 +1,4 @@
+import React from 'react';
 import React, { useEffect, useState } from 'react';
 import { Brain, ActivitySquare, Bot, Radar, Settings2 } from 'lucide-react';
 import { motion } from 'framer-motion';

@@ -1,3 +1,4 @@
+import React from 'react';
 // src/components/CyberTerminal.tsx
 import React, {
   useState,

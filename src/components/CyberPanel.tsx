@@ -1,3 +1,4 @@
+import React from 'react';
 import React from 'react'
 
 export function CyberPanel({ title, children }: { title: string; children: React.ReactNode }) {

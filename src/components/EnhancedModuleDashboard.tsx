@@ -1,3 +1,4 @@
+import React from 'react';
 import React, { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Tabs, TabsContent } from '@/components/ui/Tabs'

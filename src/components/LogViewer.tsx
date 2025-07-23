@@ -1,4 +1,5 @@
 import React from 'react';
+import React from 'react';
 
 interface LogViewerProps {
   logs: Array<{ timestamp: string; message: string; type?: string }>;
