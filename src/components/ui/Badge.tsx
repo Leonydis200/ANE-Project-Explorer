@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
-const Badge: React.FC<any> = props => <div {...props} />
-export default Badge
+const Badge: React.FC<any> = (props) => <div {...props} />;
+export default Badge;

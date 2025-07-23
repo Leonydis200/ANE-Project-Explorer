@@ -1,9 +1,9 @@
-import React from 'react'
-import { Home, Bell, Info, Settings2 } from 'lucide-react'
+import React from 'react';
+import { Home, Bell, Info, Settings2 } from 'lucide-react';
 
 interface SidebarProps {
-  active: string
-  onSelect: (id: string) => void
+  active: string;
+  onSelect: (id: string) => void;
 }
 
 const sidebarItems = [
@@ -11,7 +11,7 @@ const sidebarItems = [
   { id: 'notifications', icon: Bell, label: 'Alerts' },
   { id: 'info', icon: Info, label: 'Info' },
   { id: 'settings', icon: Settings2, label: 'Settings' },
-]
+];
 
 export default function Sidebar({ active, onSelect }: SidebarProps) {
   return (
@@ -29,5 +29,5 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
         </button>
       ))}
     </aside>
-  )
+  );
 }

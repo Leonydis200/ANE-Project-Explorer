@@ -8,15 +8,15 @@ interface LogViewerProps {
   'aria-relevant'?: React.AriaAttributes['aria-relevant'];
 }
 
-const LogViewer: React.FC<LogViewerProps> = ({ 
-  logs, 
+const LogViewer: React.FC<LogViewerProps> = ({
+  logs,
   isDarkMode,
   'aria-live': ariaLive,
   'aria-atomic': ariaAtomic,
-  'aria-relevant': ariaRelevant
+  'aria-relevant': ariaRelevant,
 }) => {
   return (
-    <div 
+    <div
       className={`rounded-2xl shadow-xl p-5 transition-colors duration-300 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}
       aria-live={ariaLive}
       aria-atomic={ariaAtomic}
@@ -27,28 +27,28 @@ const LogViewer: React.FC<LogViewerProps> = ({
       </h3>
       <div className="space-y-2 max-h-60 overflow-y-auto">
         {logs.map((log, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className={`text-xs p-2 rounded-lg ${
-              isDarkMode 
-                ? log.type === 'warning' 
-                  ? 'bg-yellow-900/30' 
+              isDarkMode
+                ? log.type === 'warning'
+                  ? 'bg-yellow-900/30'
                   : 'bg-gray-700/30'
-                : log.type === 'warning' 
-                  ? 'bg-yellow-100' 
+                : log.type === 'warning'
+                  ? 'bg-yellow-100'
                   : 'bg-gray-100'
             }`}
           >
-            <span className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>
-              {log.timestamp}
-            </span>
-            <span className={`ml-2 ${
-              log.type === 'warning' 
-                ? 'text-yellow-600 dark:text-yellow-400' 
-                : isDarkMode 
-                  ? 'text-gray-300' 
-                  : 'text-gray-700'
-            }`}>
+            <span className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>{log.timestamp}</span>
+            <span
+              className={`ml-2 ${
+                log.type === 'warning'
+                  ? 'text-yellow-600 dark:text-yellow-400'
+                  : isDarkMode
+                    ? 'text-gray-300'
+                    : 'text-gray-700'
+              }`}
+            >
               {log.message}
             </span>
           </div>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
-const CyberButton: React.FC<any> = props => <div {...props} />
-export default CyberButton
+const CyberButton: React.FC<any> = (props) => <div {...props} />;
+export default CyberButton;

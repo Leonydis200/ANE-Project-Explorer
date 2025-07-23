@@ -1,19 +1,21 @@
-import { useState, useEffect } from 'react'
-import { dataStream, RealTimeMetrics } from '../services/DataStream'
-import { selfDiagnostics } from '../services/SelfDiagnosticsService'
+import { useState, useEffect } from 'react';
+import { dataStream, RealTimeMetrics } from '../services/DataStream';
+import { selfDiagnostics } from '../services/SelfDiagnosticsService';
 
 export function useRealTimeMetrics() {
-  const [metrics, setMetrics] = useState<RealTimeMetrics | null>(null)
-  const [health, setHealth] = useState<SystemHealth | null>(null)
-  const [alerts, setAlerts] = useState<SystemAlert[]>([])
-  const [diagnostics, setDiagnostics] = useState<any>(null)
-  const [repair, setRepair] = useState<any>(null)
-  const [improvement, setImprovement] = useState<any>(null)
-  const [update, setUpdate] = useState<any>(null)
-  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'error'>('disconnected')
-  const [isLoading, setIsLoading] = useState(true)
-  const [feedback, setFeedback] = useState<string>('')
-  const [userCommand, setUserCommand] = useState<any>(null)
+  const [metrics, setMetrics] = useState<RealTimeMetrics | null>(null);
+  const [health, setHealth] = useState<SystemHealth | null>(null);
+  const [alerts, setAlerts] = useState<SystemAlert[]>([]);
+  const [diagnostics, setDiagnostics] = useState<any>(null);
+  const [repair, setRepair] = useState<any>(null);
+  const [improvement, setImprovement] = useState<any>(null);
+  const [update, setUpdate] = useState<any>(null);
+  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'error'>(
+    'disconnected'
+  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [feedback, setFeedback] = useState<string>('');
+  const [userCommand, setUserCommand] = useState<any>(null);
 
   useEffect(() => {
     const subscriptions = [
@@ -27,14 +29,14 @@ export function useRealTimeMetrics() {
       dataStream.getConnectionStatus().subscribe(setConnectionStatus),
       dataStream.getFeedbackStream().subscribe(setFeedback),
       dataStream.getUserCommandStream().subscribe(setUserCommand),
-    ]
+    ];
 
-    setIsLoading(false)
+    setIsLoading(false);
 
     return () => {
-      subscriptions.forEach((sub) => sub.unsubscribe())
-    }
-  }, [])
+      subscriptions.forEach((sub) => sub.unsubscribe());
+    };
+  }, []);
 
   return {
     metrics,
@@ -50,5 +52,5 @@ export function useRealTimeMetrics() {
     feedback,
     userCommand,
     sendUserCommand: dataStream.sendUserCommand.bind(dataStream),
-  }
+  };
 }

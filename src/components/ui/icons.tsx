@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
-const icons: React.FC<any> = props => <div {...props} />
-export default icons
+const icons: React.FC<any> = (props) => <div {...props} />;
+export default icons;

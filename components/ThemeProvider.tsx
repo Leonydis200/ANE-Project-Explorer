@@ -149,34 +149,37 @@ export function ThemeProvider({
 
   const [colors, setColors] = useState<Record<string, ThemeColor>>(DEFAULT_COLORS);
 
-  const applyTheme = useCallback((newTheme: Theme) => {
-    if (typeof window === 'undefined') return;
+  const applyTheme = useCallback(
+    (newTheme: Theme) => {
+      if (typeof window === 'undefined') return;
 
-    const root = window.document.documentElement;
-    const isDark = newTheme === 'dark' || 
-                  (newTheme === 'system' && 
-                   window.matchMedia('(prefers-color-scheme: dark)').matches);
+      const root = window.document.documentElement;
+      const isDark =
+        newTheme === 'dark' ||
+        (newTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
-    // Apply theme classes
-    root.classList.remove('light', 'dark');
-    root.classList.add(isDark ? 'dark' : 'light');
-    
-    // Update data-theme attribute
-    root.setAttribute('data-theme', isDark ? 'dark' : 'light');
-    
-    // Update color scheme
-    if (enableColorScheme) {
-      const colorScheme = isDark ? 'dark' : 'light';
-      root.style.colorScheme = colorScheme;
-    }
+      // Apply theme classes
+      root.classList.remove('light', 'dark');
+      root.classList.add(isDark ? 'dark' : 'light');
 
-    // Apply CSS variables for colors
-    Object.values(colors).forEach(({ light, dark, cssVariable }) => {
-      root.style.setProperty(cssVariable, isDark ? dark : light);
-    });
+      // Update data-theme attribute
+      root.setAttribute('data-theme', isDark ? 'dark' : 'light');
 
-    setResolvedTheme(isDark ? 'dark' : 'light');
-  }, [colors, enableColorScheme]);
+      // Update color scheme
+      if (enableColorScheme) {
+        const colorScheme = isDark ? 'dark' : 'light';
+        root.style.colorScheme = colorScheme;
+      }
+
+      // Apply CSS variables for colors
+      Object.values(colors).forEach(({ light, dark, cssVariable }) => {
+        root.style.setProperty(cssVariable, isDark ? dark : light);
+      });
+
+      setResolvedTheme(isDark ? 'dark' : 'light');
+    },
+    [colors, enableColorScheme]
+  );
 
   // Apply theme changes to the document
   useEffect(() => {
@@ -208,7 +211,7 @@ export function ThemeProvider({
 
     // Update the ref
     currentResolvedTheme.current = newResolvedTheme;
-    
+
     // Call the optional callback
     onResolvedThemeChange?.(newResolvedTheme);
   }, [resolvedTheme, colors, enableColorScheme, onResolvedThemeChange]);
@@ -219,7 +222,7 @@ export function ThemeProvider({
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = () => applyTheme('system');
-    
+
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, [theme, applyTheme]);
@@ -234,10 +237,10 @@ export function ThemeProvider({
         }
       `;
       document.head.appendChild(css);
-      
+
       // Force a reflow
       const _ = window.getComputedStyle(document.body).opacity;
-      
+
       return () => {
         // Remove the style element after the component is unmounted
         requestAnimationFrame(() => {
@@ -266,7 +269,7 @@ export function ThemeProvider({
 
       // Update state
       setThemeState(newTheme);
-      
+
       // Call the optional callback
       onThemeChange?.(newTheme);
 
@@ -292,7 +295,7 @@ export function ThemeProvider({
     if (!enableSystem || theme !== 'system') return;
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     const handleChange = () => {
       // Force a re-render when system theme changes and theme is set to 'system'
       setThemeState('system');
@@ -306,10 +309,12 @@ export function ThemeProvider({
   const addColor = useCallback((name: string, color: ThemeColor) => {
     setColors((prev) => {
       // Only update if the color is new or has changed
-      if (prev[name] && 
-          prev[name].light === color.light && 
-          prev[name].dark === color.dark && 
-          prev[name].cssVariable === color.cssVariable) {
+      if (
+        prev[name] &&
+        prev[name].light === color.light &&
+        prev[name].dark === color.dark &&
+        prev[name].cssVariable === color.cssVariable
+      ) {
         return prev;
       }
       return {
@@ -320,34 +325,33 @@ export function ThemeProvider({
   }, []);
 
   // Memoize the context value to prevent unnecessary re-renders
-  const contextValue = useMemo(() => ({
-    theme,
-    resolvedTheme: resolvedTheme(),
-    setTheme,
-    toggleTheme,
-    isDark: resolvedTheme() === 'dark',
-    colors,
-    addColor,
-  }), [theme, resolvedTheme, setTheme, toggleTheme, colors, addColor]);
+  const contextValue = useMemo(
+    () => ({
+      theme,
+      resolvedTheme: resolvedTheme(),
+      setTheme,
+      toggleTheme,
+      isDark: resolvedTheme() === 'dark',
+      colors,
+      addColor,
+    }),
+    [theme, resolvedTheme, setTheme, toggleTheme, colors, addColor]
+  );
 
   // Use React.memo to prevent unnecessary re-renders of children
   const MemoizedChildren = useMemo(() => children, [children]);
 
-  return (
-    <ThemeContext.Provider value={contextValue}>
-      {MemoizedChildren}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={contextValue}>{MemoizedChildren}</ThemeContext.Provider>;
 }
 
 // Custom hook to use the theme context
 export function useTheme() {
   const context = useContext(ThemeContext);
-  
+
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }
-  
+
   return context;
 }
 
@@ -356,20 +360,20 @@ export function withTheme<P extends { theme?: ThemeContextType }>(
   WrappedComponent: React.ComponentType<P>
 ) {
   const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
-  
+
   const ComponentWithTheme = (props: Omit<P, 'theme'>) => {
     const theme = useTheme();
     return <WrappedComponent {...(props as P)} theme={theme} />;
   };
-  
+
   ComponentWithTheme.displayName = `withTheme(${displayName})`;
-  
+
   return ComponentWithTheme;
-};
+}
 
 export const ThemeSwitcher = () => {
   const { theme, setTheme, toggleTheme } = useTheme();
-  
+
   return (
     <div className="flex items-center gap-2">
       <button
@@ -377,9 +381,7 @@ export const ThemeSwitcher = () => {
         onClick={() => setTheme('light')}
         className={cn(
           'p-2 rounded-md',
-          theme === 'light' 
-            ? 'bg-primary text-primary-foreground' 
-            : 'hover:bg-muted/50'
+          theme === 'light' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted/50'
         )}
         aria-label="Light theme"
       >
@@ -390,9 +392,7 @@ export const ThemeSwitcher = () => {
         onClick={() => setTheme('dark')}
         className={cn(
           'p-2 rounded-md',
-          theme === 'dark' 
-            ? 'bg-primary text-primary-foreground' 
-            : 'hover:bg-muted/50'
+          theme === 'dark' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted/50'
         )}
         aria-label="Dark theme"
       >
@@ -403,9 +403,7 @@ export const ThemeSwitcher = () => {
         onClick={() => setTheme('system')}
         className={cn(
           'p-2 rounded-md',
-          theme === 'system' 
-            ? 'bg-primary text-primary-foreground' 
-            : 'hover:bg-muted/50'
+          theme === 'system' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted/50'
         )}
         aria-label="System theme"
       >

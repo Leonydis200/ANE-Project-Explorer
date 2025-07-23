@@ -7,16 +7,13 @@ const themes = [
   { value: 'system', label: 'System', icon: '💻' },
 ] as const;
 
-type ThemeValue = typeof themes[number]['value'];
+type ThemeValue = (typeof themes)[number]['value'];
 
 export const ThemeSwitcher: React.FC<{ className?: string }> = ({ className = '' }) => {
   const { theme, setTheme } = useTheme();
 
   return (
-    <nav
-      aria-label="Theme switcher"
-      className={`flex items-center gap-2 ${className}`}
-    >
+    <nav aria-label="Theme switcher" className={`flex items-center gap-2 ${className}`}>
       {themes.map(({ value, label, icon }) => (
         <button
           key={value}

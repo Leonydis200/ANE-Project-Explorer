@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 
 export default function UserPanel() {
-  const [name, setName] = useState('')
-  const [submitted, setSubmitted] = useState(false)
+  const [name, setName] = useState('');
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setSubmitted(true)
-  }
+    e.preventDefault();
+    setSubmitted(true);
+  };
 
   return (
     <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-6 mt-8">
@@ -19,7 +19,7 @@ export default function UserPanel() {
             <input
               type="text"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
               className="mt-2 block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-primary"
               placeholder="Your name"
               required
@@ -38,5 +38,5 @@ export default function UserPanel() {
         </div>
       )}
     </div>
-  )
+  );
 }

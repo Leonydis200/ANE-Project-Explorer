@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
-const ModuleViewer: React.FC<any> = props => <div {...props} />
-export default ModuleViewer
+const ModuleViewer: React.FC<any> = (props) => <div {...props} />;
+export default ModuleViewer;

@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react'
-import { useTheme } from './ThemeProvider'
-import { Moon, Sun, Monitor } from 'lucide-react'
+import React, { useState, useEffect } from 'react';
+import { useTheme } from './ThemeProvider';
+import { Moon, Sun, Monitor } from 'lucide-react';
 
 export default function UserPreferences() {
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme } = useTheme();
   const [preferences, setPreferences] = useState(() => {
-    const saved = localStorage.getItem('userPreferences')
-    return saved ? JSON.parse(saved) : { name: '', notifications: true }
-  })
+    const saved = localStorage.getItem('userPreferences');
+    return saved ? JSON.parse(saved) : { name: '', notifications: true };
+  });
 
   const updatePreferences = (updates: Partial<typeof preferences>) => {
-    const newPrefs = { ...preferences, ...updates }
-    setPreferences(newPrefs)
-    localStorage.setItem('userPreferences', JSON.stringify(newPrefs))
-  }
+    const newPrefs = { ...preferences, ...updates };
+    setPreferences(newPrefs);
+    localStorage.setItem('userPreferences', JSON.stringify(newPrefs));
+  };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-6">
@@ -45,12 +45,12 @@ export default function UserPreferences() {
           <input
             type="checkbox"
             checked={preferences.notifications}
-            onChange={e => updatePreferences({ notifications: e.target.checked })}
+            onChange={(e) => updatePreferences({ notifications: e.target.checked })}
             className="rounded border-gray-300"
           />
           Enable notifications
         </label>
       </div>
     </div>
-  )
+  );
 }

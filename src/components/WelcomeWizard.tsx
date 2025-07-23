@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
-const WelcomeWizard: React.FC<any> = props => <div {...props} />
-export default WelcomeWizard
+const WelcomeWizard: React.FC<any> = (props) => <div {...props} />;
+export default WelcomeWizard;

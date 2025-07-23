@@ -47,8 +47,8 @@ export function debounce<T extends (...args: any[]) => void>(
   delay: number
 ): (...args: Parameters<T>) => void {
   let timeoutId: ReturnType<typeof setTimeout>;
-  
-  return function(...args: Parameters<T>) {
+
+  return function (...args: Parameters<T>) {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => fn(...args), delay);
   };
@@ -59,8 +59,8 @@ export function throttle<T extends (...args: any[]) => void>(
   limit: number
 ): (...args: Parameters<T>) => void {
   let inThrottle = false;
-  
-  return function(...args: Parameters<T>) {
+
+  return function (...args: Parameters<T>) {
     if (!inThrottle) {
       fn(...args);
       inThrottle = true;
@@ -70,5 +70,5 @@ export function throttle<T extends (...args: any[]) => void>(
 }
 
 export function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

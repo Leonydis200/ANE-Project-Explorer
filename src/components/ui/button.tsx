@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
-const button: React.FC<any> = props => <div {...props} />
-export default button
+const button: React.FC<any> = (props) => <div {...props} />;
+export default button;

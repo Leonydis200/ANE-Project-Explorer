@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
-const LazyLoader: React.FC<any> = props => <div {...props} />
-export default LazyLoader
+const LazyLoader: React.FC<any> = (props) => <div {...props} />;
+export default LazyLoader;

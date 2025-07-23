@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
-const LogViewer: React.FC<any> = props => <div {...props} />
-export default LogViewer
+const LogViewer: React.FC<any> = (props) => <div {...props} />;
+export default LogViewer;

@@ -77,7 +77,9 @@ export interface AdvancedMetrics extends EnhancedSystemMetrics {
 export class DataStreamService {
   private socket: Socket;
   private metricsSubject = new BehaviorSubject<AdvancedMetrics>(this.getInitialMetrics());
-  private connectionStatus = new BehaviorSubject<'connected' | 'disconnected' | 'error'>('disconnected');
+  private connectionStatus = new BehaviorSubject<'connected' | 'disconnected' | 'error'>(
+    'disconnected'
+  );
   private maxReconnectAttempts = 5;
   private reconnectAttempts = 0;
 
@@ -121,7 +123,9 @@ export class DataStreamService {
   private handleDisconnect() {
     this.reconnectAttempts++;
     if (this.reconnectAttempts <= this.maxReconnectAttempts) {
-      console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+      console.log(
+        `Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`
+      );
       setTimeout(() => {
         this.socket.connect();
       }, 1000);
@@ -131,32 +135,33 @@ export class DataStreamService {
   }
 
   public setupMetricsCollection() {
-    interval(1000).pipe(
-      mergeMap(() => this.collectSystemMetrics().pipe(
-        retryWhen(errors => errors.pipe(
-          delay(1000),
-          take(this.maxReconnectAttempts)
-        ))
-      ))
-    ).subscribe({
-      next: metrics => this.metricsSubject.next(metrics),
-      error: error => {
-        console.error('Metrics collection error:', error);
-        this.connectionStatus.next('error');
-      }
-    });
+    interval(1000)
+      .pipe(
+        mergeMap(() =>
+          this.collectSystemMetrics().pipe(
+            retryWhen((errors) => errors.pipe(delay(1000), take(this.maxReconnectAttempts)))
+          )
+        )
+      )
+      .subscribe({
+        next: (metrics) => this.metricsSubject.next(metrics),
+        error: (error) => {
+          console.error('Metrics collection error:', error);
+          this.connectionStatus.next('error');
+        },
+      });
   }
 
   private collectSystemMetrics(): Observable<AdvancedMetrics> {
-    return new Observable<AdvancedMetrics>(subscriber => {
+    return new Observable<AdvancedMetrics>((subscriber) => {
       const handler = (metrics: AdvancedMetrics) => {
         subscriber.next(metrics);
         subscriber.complete();
       };
-      
+
       this.socket.once('systemMetrics', handler);
       this.socket.emit('requestSystemMetrics');
-      
+
       return () => {
         this.socket.off('systemMetrics', handler);
       };

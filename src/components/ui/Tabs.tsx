@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
-const Tabs: React.FC<any> = props => <div {...props} />
-export default Tabs
+const Tabs: React.FC<any> = (props) => <div {...props} />;
+export default Tabs;

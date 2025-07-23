@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
-const ModuleDetailPage: React.FC<any> = props => <div {...props} />
-export default ModuleDetailPage
+const ModuleDetailPage: React.FC<any> = (props) => <div {...props} />;
+export default ModuleDetailPage;

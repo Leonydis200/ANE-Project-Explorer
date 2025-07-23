@@ -1,15 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import { Bell, X } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import React, { useEffect, useState } from 'react';
+import { Bell, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface LogEntry {
-  id: number
-  message: string
-  timestamp: string
+  id: number;
+  message: string;
+  timestamp: string;
 }
 
-export default function NotificationDrawer({ open, onClose }: { open: boolean, onClose: () => void }) {
-  const [logs, setLogs] = useState<LogEntry[]>([])
+export default function NotificationDrawer({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
+  const [logs, setLogs] = useState<LogEntry[]>([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -17,11 +23,11 @@ export default function NotificationDrawer({ open, onClose }: { open: boolean, o
         id: Date.now(),
         message: `Alert: Metric threshold breached at ${new Date().toLocaleTimeString()}`,
         timestamp: new Date().toLocaleString(),
-      }
-      setLogs(prev => [newLog, ...prev.slice(0, 9)])
-    }, 10000)
-    return () => clearInterval(interval)
-  }, [])
+      };
+      setLogs((prev) => [newLog, ...prev.slice(0, 9)]);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <AnimatePresence>
@@ -42,7 +48,7 @@ export default function NotificationDrawer({ open, onClose }: { open: boolean, o
           {logs.length === 0 ? (
             <p className="text-muted-foreground">No recent alerts.</p>
           ) : (
-            logs.map(log => (
+            logs.map((log) => (
               <div key={log.id} className="mb-2 p-3 bg-muted rounded">
                 <div className="text-sm font-medium">{log.message}</div>
                 <div className="text-xs text-muted-foreground">{log.timestamp}</div>
@@ -52,5 +58,5 @@ export default function NotificationDrawer({ open, onClose }: { open: boolean, o
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }

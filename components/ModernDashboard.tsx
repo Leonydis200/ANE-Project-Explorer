@@ -1,33 +1,32 @@
-
-import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { FileSearch, Plus, RefreshCw, AlertCircle, Info, Brain } from 'lucide-react'
-import { toast } from 'react-hot-toast'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { useRealTimeMetrics } from '../hooks/useRealTimeMetrics'
-import { dataStream } from '../services/DataStream'
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FileSearch, Plus, RefreshCw, AlertCircle, Info, Brain } from 'lucide-react';
+import { toast } from 'react-hot-toast';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { useRealTimeMetrics } from '../hooks/useRealTimeMetrics';
+import { dataStream } from '../services/DataStream';
 
 interface Project {
-  id: string
-  name: string
-  description: string
-  status: 'active' | 'warning' | 'error'
-  version: string
-  lastUpdated: string
-  type: string
+  id: string;
+  name: string;
+  description: string;
+  status: 'active' | 'warning' | 'error';
+  version: string;
+  lastUpdated: string;
+  type: string;
 }
 
 interface Module {
-  id: string
-  title: string
-  description: string
-  alerts: number
-  color: string
-  icon: JSX.Element
-  metrics: Record<string, string | number>
+  id: string;
+  title: string;
+  description: string;
+  alerts: number;
+  color: string;
+  icon: JSX.Element;
+  metrics: Record<string, string | number>;
 }
 
 const modules: Module[] = [
@@ -59,43 +58,43 @@ const modules: Module[] = [
       packetLoss: '0.2%',
     },
   },
-]
+];
 
-const categories = ['all', 'development', 'research', 'maintenance']
+const categories = ['all', 'development', 'research', 'maintenance'];
 
 export default function ModernDashboard() {
-  const [tab, setTab] = useState('overview')
-  const [expandedMetrics, setExpandedMetrics] = useState<Record<string, boolean>>({})
-  const [projects, setProjects] = useState<Project[]>([])
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [showModal, setShowModal] = useState(false)
-  const [autoRefresh, setAutoRefresh] = useState(true)
+  const [tab, setTab] = useState('overview');
+  const [expandedMetrics, setExpandedMetrics] = useState<Record<string, boolean>>({});
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [showModal, setShowModal] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(true);
 
-  const { diagnostics, repair, improvement, feedback } = useRealTimeMetrics()
+  const { diagnostics, repair, improvement, feedback } = useRealTimeMetrics();
 
   useEffect(() => {
     fetch('/api/projects.json')
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(setProjects)
-      .catch(console.error)
-  }, [])
+      .catch(console.error);
+  }, []);
 
   useEffect(() => {
     if (autoRefresh) {
       const interval = setInterval(() => {
         fetch('/api/projects.json')
-          .then(res => res.json())
-          .then(setProjects)
-      }, 10000)
-      return () => clearInterval(interval)
+          .then((res) => res.json())
+          .then(setProjects);
+      }, 10000);
+      return () => clearInterval(interval);
     }
-  }, [autoRefresh])
+  }, [autoRefresh]);
 
   const handleTabChange = (newTab: string) => {
-    setTab(newTab)
-    toast.dismiss()
-    const module = modules.find(m => m.id === newTab)
+    setTab(newTab);
+    toast.dismiss();
+    const module = modules.find((m) => m.id === newTab);
     if (module?.alerts) {
       toast(
         <div className="flex items-start gap-3">
@@ -105,36 +104,34 @@ export default function ModernDashboard() {
               {module.title} has {module.alerts} active alert
               {module.alerts > 1 ? 's' : ''}
             </p>
-            <p className="text-sm text-muted-foreground">
-              Check the monitoring panel for details
-            </p>
+            <p className="text-sm text-muted-foreground">Check the monitoring panel for details</p>
           </div>
         </div>,
         { duration: 3000 }
-      )
+      );
     }
-  }
+  };
 
   const toggleMetricExpansion = (moduleId: string) => {
-    setExpandedMetrics(prev => ({
+    setExpandedMetrics((prev) => ({
       ...prev,
       [moduleId]: !prev[moduleId],
-    }))
-  }
+    }));
+  };
 
   const filteredProjects = projects.filter(
-    p =>
+    (p) =>
       (selectedCategory === 'all' || p.type === selectedCategory) &&
       (p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.description.toLowerCase().includes(searchQuery.toLowerCase()))
-  )
+  );
 
   const stats = {
     total: projects.length,
-    active: projects.filter(p => p.status === 'active').length,
-    development: projects.filter(p => p.type === 'development').length,
-    attention: projects.filter(p => p.status === 'warning' || p.status === 'error').length,
-  }
+    active: projects.filter((p) => p.status === 'active').length,
+    development: projects.filter((p) => p.type === 'development').length,
+    attention: projects.filter((p) => p.status === 'warning' || p.status === 'error').length,
+  };
 
   return (
     <div className="modern-layout">
@@ -153,12 +150,12 @@ export default function ModernDashboard() {
                 type="text"
                 placeholder="Search projects..."
                 className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
-                onChange={e => setSearchQuery(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
           </div>
           <nav className="p-4 space-y-2">
-            {categories.map(cat => (
+            {categories.map((cat) => (
               <button
                 key={cat}
                 className={`nav-item${selectedCategory === cat ? ' active' : ''}`}
@@ -189,7 +186,7 @@ export default function ModernDashboard() {
 
             <Tabs value={tab} onValueChange={handleTabChange} className="w-full mb-8">
               <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
-                {modules.map(module => (
+                {modules.map((module) => (
                   <Tooltip key={module.id}>
                     <TooltipTrigger asChild>
                       <TabsTrigger
@@ -209,7 +206,7 @@ export default function ModernDashboard() {
               </TabsList>
 
               <AnimatePresence mode="wait">
-                {modules.map(module => (
+                {modules.map((module) => (
                   <TabsContent key={module.id} value={module.id}>
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
@@ -243,7 +240,9 @@ export default function ModernDashboard() {
 
                           <div className="mt-8">
                             <div className="flex items-center justify-between mb-4">
-                              <h4 className="text-sm font-medium text-muted-foreground">PERFORMANCE METRICS</h4>
+                              <h4 className="text-sm font-medium text-muted-foreground">
+                                PERFORMANCE METRICS
+                              </h4>
                               {Object.keys(module.metrics).length > 3 && (
                                 <button
                                   onClick={() => toggleMetricExpansion(module.id)}
@@ -262,7 +261,9 @@ export default function ModernDashboard() {
                                     key={key}
                                     className="border rounded-lg p-4 bg-muted/5 hover:bg-muted/10 transition-colors"
                                   >
-                                    <p className="text-sm text-muted-foreground font-medium capitalize">{key}</p>
+                                    <p className="text-sm text-muted-foreground font-medium capitalize">
+                                      {key}
+                                    </p>
                                     <p className="text-lg font-semibold mt-1">{value}</p>
                                   </div>
                                 ))}
@@ -288,7 +289,7 @@ export default function ModernDashboard() {
 
             {/* Projects Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProjects.map(project => (
+              {filteredProjects.map((project) => (
                 <motion.div
                   key={project.id}
                   className="project-card"
@@ -358,5 +359,5 @@ export default function ModernDashboard() {
         </main>
       </div>
     </div>
-  )
+  );
 }

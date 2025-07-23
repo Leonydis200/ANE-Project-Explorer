@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 export function CyberButton({ label, onClick }: { label: string; onClick: () => void }) {
   return (
@@ -8,6 +8,5 @@ export function CyberButton({ label, onClick }: { label: string; onClick: () => 
     >
       {label}
     </button>
-  )
+  );
 }
-

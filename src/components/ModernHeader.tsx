@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
-const ModernHeader: React.FC<any> = props => <div {...props} />
-export default ModernHeader
+const ModernHeader: React.FC<any> = (props) => <div {...props} />;
+export default ModernHeader;

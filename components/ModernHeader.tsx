@@ -1,5 +1,5 @@
-import { Brain } from 'lucide-react'
-import { ThemeSwitcher } from './common/ThemeSwitcher'
+import { Brain } from 'lucide-react';
+import { ThemeSwitcher } from './common/ThemeSwitcher';
 
 export default function ModernHeader() {
   return (
@@ -21,5 +21,5 @@ export default function ModernHeader() {
         <ThemeSwitcher />
       </div>
     </header>
-  )
+  );
 }

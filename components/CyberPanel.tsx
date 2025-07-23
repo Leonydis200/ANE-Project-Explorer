@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 export function CyberPanel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -6,6 +6,5 @@ export function CyberPanel({ title, children }: { title: string; children: React
       <h2 className="text-accent text-2xl font-mono mb-4">{title}</h2>
       <div className="text-light font-mono text-sm space-y-2">{children}</div>
     </div>
-  )
+  );
 }
-

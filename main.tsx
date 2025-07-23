@@ -31,8 +31,8 @@ const root = createRoot(rootElement);
 // Initial render with error boundary and suspense
 root.render(
   <StrictMode>
-    <ErrorBoundary 
-      fallback={(
+    <ErrorBoundary
+      fallback={
         <div className="flex h-screen w-full items-center justify-center bg-background p-4">
           <div className="max-w-md rounded-lg border border-red-400 bg-red-50 p-6 text-center text-red-800">
             <h2 className="mb-2 text-xl font-bold">Application Error</h2>
@@ -45,7 +45,7 @@ root.render(
             </button>
           </div>
         </div>
-      )}
+      }
     >
       <Suspense
         fallback={

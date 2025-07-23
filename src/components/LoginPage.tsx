@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
-const LoginPage: React.FC<any> = props => <div {...props} />
-export default LoginPage
+const LoginPage: React.FC<any> = (props) => <div {...props} />;
+export default LoginPage;

@@ -1,2 +1,2 @@
 // Auto-stub
-export {}
+export {};

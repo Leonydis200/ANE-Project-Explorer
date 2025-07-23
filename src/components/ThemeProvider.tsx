@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
-const ThemeProvider: React.FC<any> = props => <div {...props} />
-export default ThemeProvider
+const ThemeProvider: React.FC<any> = (props) => <div {...props} />;
+export default ThemeProvider;

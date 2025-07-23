@@ -8,26 +8,23 @@ interface SystemControlPanelProps {
   isDarkMode: boolean;
 }
 
-const SystemControlPanel: React.FC<SystemControlPanelProps> = ({ 
-  isRunning, 
+const SystemControlPanel: React.FC<SystemControlPanelProps> = ({
+  isRunning,
   simulateSystem,
-  isDarkMode
+  isDarkMode,
 }) => {
   const handleClick = () => {
     simulateSystem();
-    toast.success(
-      isRunning 
-        ? 'System shutdown initiated' 
-        : 'System startup sequence activated',
-      {
-        icon: isRunning ? '🛑' : '🚀',
-        position: 'bottom-right'
-      }
-    );
+    toast.success(isRunning ? 'System shutdown initiated' : 'System startup sequence activated', {
+      icon: isRunning ? '🛑' : '🚀',
+      position: 'bottom-right',
+    });
   };
 
   return (
-    <div className={`rounded-2xl shadow-xl p-5 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
+    <div
+      className={`rounded-2xl shadow-xl p-5 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}
+    >
       <h3 className={`text-lg font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
         System Control
       </h3>

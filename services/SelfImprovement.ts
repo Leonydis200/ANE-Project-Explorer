@@ -17,7 +17,7 @@ export class SelfImprovementService {
   private optimizationHistory = new BehaviorSubject<OptimizationResult[]>([]);
   private learningRate = new BehaviorSubject<number>(0.001);
   private isOptimizing = false;
-  private statusStream = new BehaviorSubject<string>('idle')
+  private statusStream = new BehaviorSubject<string>('idle');
 
   constructor() {
     this.initialize();
@@ -62,13 +62,13 @@ export class SelfImprovementService {
   }
 
   getStatusStream() {
-    return this.statusStream.asObservable()
+    return this.statusStream.asObservable();
   }
 
   private async analyzePerformance() {
-    this.statusStream.next('analyzing')
+    this.statusStream.next('analyzing');
     // Implementation for performance analysis
-    this.statusStream.next('idle')
+    this.statusStream.next('idle');
   }
 
   private scheduleSelfImprovement() {
@@ -80,9 +80,9 @@ export class SelfImprovementService {
   }
 
   private async performSelfImprovement() {
-    this.statusStream.next('improving')
+    this.statusStream.next('improving');
     // Implementation for self-improvement logic
-    this.statusStream.next('idle')
+    this.statusStream.next('idle');
   }
 }
 

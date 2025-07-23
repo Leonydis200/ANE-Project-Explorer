@@ -1,36 +1,36 @@
-import * as React from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import * as React from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface Tab {
-  title: string
-  value: string
+  title: string;
+  value: string;
 }
 
 interface TabsProps {
-  tabs: Tab[]
-  activeTab: string
-  onChange: (value: string) => void
-  children: React.ReactNode
-  divProps?: React.HTMLAttributes<HTMLDivElement>
+  tabs: Tab[];
+  activeTab: string;
+  onChange: (value: string) => void;
+  children: React.ReactNode;
+  divProps?: React.HTMLAttributes<HTMLDivElement>;
 }
 
 interface TabsContentProps {
-  value: string
-  activeTab: string
-  children: React.ReactNode
+  value: string;
+  activeTab: string;
+  children: React.ReactNode;
 }
 
 export const Tabs = ({ tabs, activeTab, onChange, children, divProps }: TabsProps) => {
-  const tabRefs = React.useRef<(HTMLButtonElement | null)[]>([])
+  const tabRefs = React.useRef<(HTMLButtonElement | null)[]>([]);
 
   // Keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent, idx: number) => {
     if (e.key === 'ArrowRight') {
-      tabRefs.current[(idx + 1) % tabs.length]?.focus()
+      tabRefs.current[(idx + 1) % tabs.length]?.focus();
     } else if (e.key === 'ArrowLeft') {
-      tabRefs.current[(idx - 1 + tabs.length) % tabs.length]?.focus()
+      tabRefs.current[(idx - 1 + tabs.length) % tabs.length]?.focus();
     }
-  }
+  };
 
   return (
     <div {...divProps}>
@@ -38,9 +38,9 @@ export const Tabs = ({ tabs, activeTab, onChange, children, divProps }: TabsProp
         {tabs.map((tab, idx) => (
           <button
             key={tab.value}
-            ref={el => tabRefs.current[idx] = el}
+            ref={(el) => (tabRefs.current[idx] = el)}
             onClick={() => onChange(tab.value)}
-            onKeyDown={e => handleKeyDown(e, idx)}
+            onKeyDown={(e) => handleKeyDown(e, idx)}
             role="tab"
             aria-selected={activeTab === tab.value}
             tabIndex={activeTab === tab.value ? 0 : -1}
@@ -58,8 +58,8 @@ export const Tabs = ({ tabs, activeTab, onChange, children, divProps }: TabsProp
         {children}
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const TabsContent = ({ value, activeTab, children }: TabsContentProps) => {
   return (
@@ -76,5 +76,5 @@ export const TabsContent = ({ value, activeTab, children }: TabsContentProps) =>
         </motion.div>
       )}
     </AnimatePresence>
-  )
-}
+  );
+};

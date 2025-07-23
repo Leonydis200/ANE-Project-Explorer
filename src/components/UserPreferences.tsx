@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
-const UserPreferences: React.FC<any> = props => <div {...props} />
-export default UserPreferences
+const UserPreferences: React.FC<any> = (props) => <div {...props} />;
+export default UserPreferences;

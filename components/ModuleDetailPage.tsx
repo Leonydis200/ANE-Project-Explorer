@@ -1,6 +1,6 @@
-import { useParams, Link } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import { Brain, ActivitySquare, Bot, Radar, Settings2 } from 'lucide-react'
+import { useParams, Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Brain, ActivitySquare, Bot, Radar, Settings2 } from 'lucide-react';
 
 const iconMap: Record<string, JSX.Element> = {
   Brain: <Brain className="w-8 h-8" />,
@@ -8,49 +8,52 @@ const iconMap: Record<string, JSX.Element> = {
   Bot: <Bot className="w-8 h-8" />,
   Radar: <Radar className="w-8 h-8" />,
   Settings2: <Settings2 className="w-8 h-8" />,
-}
+};
 
 type Module = {
-  id: string
-  title: string
-  icon: string
-  description: string
-  color: string
-  metrics: Record<string, string | number>
-}
+  id: string;
+  title: string;
+  icon: string;
+  description: string;
+  color: string;
+  metrics: Record<string, string | number>;
+};
 
 export default function ModuleDetailPage() {
-  const { moduleId } = useParams()
-  const [module, setModule] = useState<Module | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { moduleId } = useParams();
+  const [module, setModule] = useState<Module | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/modules.json')
       .then((res) => res.json())
       .then((data: Module[]) => {
-        const found = data.find((m) => m.id === moduleId)
-        setModule(found || null)
-        setLoading(false)
+        const found = data.find((m) => m.id === moduleId);
+        setModule(found || null);
+        setLoading(false);
       })
       .catch(() => {
-        setError('Failed to load module.')
-        setLoading(false)
-      })
-  }, [moduleId])
+        setError('Failed to load module.');
+        setLoading(false);
+      });
+  }, [moduleId]);
 
-  if (loading) return (
-    <div className="p-6 flex items-center justify-center">
-      <span className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary inline-block mr-2"></span>
-      <span>Loading...</span>
-    </div>
-  )
-  if (error) return <div className="p-6 text-red-500">{error}</div>
-  if (!module) return <div className="p-6 text-muted-foreground">Module not found.</div>
+  if (loading)
+    return (
+      <div className="p-6 flex items-center justify-center">
+        <span className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary inline-block mr-2"></span>
+        <span>Loading...</span>
+      </div>
+    );
+  if (error) return <div className="p-6 text-red-500">{error}</div>;
+  if (!module) return <div className="p-6 text-muted-foreground">Module not found.</div>;
 
   return (
     <div className="p-4 max-w-2xl mx-auto">
-      <Link to="/" className="text-primary underline mb-4 block">&larr; Back to Dashboard</Link>
+      <Link to="/" className="text-primary underline mb-4 block">
+        &larr; Back to Dashboard
+      </Link>
       <div className={`rounded-xl shadow-lg p-6 ${module.color} text-white`}>
         <div className="flex items-center gap-4 mb-4">
           {iconMap[module.icon] || <Brain className="w-8 h-8" />}
@@ -71,5 +74,5 @@ export default function ModuleDetailPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

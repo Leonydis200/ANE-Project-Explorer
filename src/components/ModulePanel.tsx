@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
-const ModulePanel: React.FC<any> = props => <div {...props} />
-export default ModulePanel
+const ModulePanel: React.FC<any> = (props) => <div {...props} />;
+export default ModulePanel;

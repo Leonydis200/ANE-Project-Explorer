@@ -1,46 +1,48 @@
-import { useEffect, useState, useCallback } from 'react'
-import { dataStream, EnhancedSystemMetrics } from '../services/DataStream'
-import { selfDiagnostics } from '../services/SelfDiagnosticsService'
-import { systemImprovement } from '../services/SystemImprovement'
+import { useEffect, useState, useCallback } from 'react';
+import { dataStream, EnhancedSystemMetrics } from '../services/DataStream';
+import { selfDiagnostics } from '../services/SelfDiagnosticsService';
+import { systemImprovement } from '../services/SystemImprovement';
 
 export interface LiveMetrics {
-  id: string
-  metrics: Record<string, string | number>
-  health: number
-  status: 'healthy' | 'degraded' | 'critical'
+  id: string;
+  metrics: Record<string, string | number>;
+  health: number;
+  status: 'healthy' | 'degraded' | 'critical';
 }
 
 export const useLiveMetrics = () => {
-  const [metrics, setMetrics] = useState<LiveMetrics[]>([])
-  const [systemHealth, setSystemHealth] = useState<EnhancedSystemMetrics | null>(null)
-  const [error, setError] = useState<Error | null>(null)
-  const [diagnostics, setDiagnostics] = useState<any>(null)
-  const [improvementStatus, setImprovementStatus] = useState<string>('idle')
-  const [loading, setLoading] = useState(true)
-  const [tab, setTab] = useState('overview')
-  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'error'>('disconnected')
-  const [feedback, setFeedback] = useState<string>('')
-  const [improvementHistory, setImprovementHistory] = useState<any[]>([])
+  const [metrics, setMetrics] = useState<LiveMetrics[]>([]);
+  const [systemHealth, setSystemHealth] = useState<EnhancedSystemMetrics | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [diagnostics, setDiagnostics] = useState<any>(null);
+  const [improvementStatus, setImprovementStatus] = useState<string>('idle');
+  const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState('overview');
+  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'error'>(
+    'disconnected'
+  );
+  const [feedback, setFeedback] = useState<string>('');
+  const [improvementHistory, setImprovementHistory] = useState<any[]>([]);
 
   const refreshData = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const results = await selfDiagnostics.runDiagnostics()
-      setDiagnostics(results)
-      setFeedback('Diagnostics refreshed')
+      const results = await selfDiagnostics.runDiagnostics();
+      setDiagnostics(results);
+      setFeedback('Diagnostics refreshed');
     } catch (err) {
-      console.error('Diagnostics refresh error:', err)
-      setError(err as Error)
+      console.error('Diagnostics refresh error:', err);
+      setError(err as Error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   const updateMetrics = (data: EnhancedSystemMetrics) => {
-    const nlp = data.nlp || {}
-    const emotions = data.emotions || {}
-    const prediction = data.prediction || {}
-    const control = data.control || {}
+    const nlp = data.nlp || {};
+    const emotions = data.emotions || {};
+    const prediction = data.prediction || {};
+    const control = data.control || {};
 
     const newMetrics: LiveMetrics[] = [
       {
@@ -91,31 +93,31 @@ export const useLiveMetrics = () => {
         health: control.health ?? 0,
         status: control.status ?? 'degraded',
       },
-    ]
+    ];
 
-    setMetrics(newMetrics)
-  }
+    setMetrics(newMetrics);
+  };
 
   useEffect(() => {
     const subscriptions = [
-      dataStream.getMetricsStream().subscribe(data => {
-        setSystemHealth(data)
-        updateMetrics(data)
+      dataStream.getMetricsStream().subscribe((data) => {
+        setSystemHealth(data);
+        updateMetrics(data);
       }),
       selfDiagnostics.getHealthStream().subscribe(setDiagnostics),
       systemImprovement.getStatusStream().subscribe(setImprovementStatus),
       dataStream.getConnectionStatus().subscribe(setConnectionStatus),
       systemImprovement.getFeedbackStream().subscribe(setFeedback),
       systemImprovement.getImprovementHistory().subscribe(setImprovementHistory),
-    ]
+    ];
 
-    selfDiagnostics.startMonitoring()
-    setLoading(false)
+    selfDiagnostics.startMonitoring();
+    setLoading(false);
 
     return () => {
-      subscriptions.forEach(sub => sub.unsubscribe())
-    }
-  }, [])
+      subscriptions.forEach((sub) => sub.unsubscribe());
+    };
+  }, []);
 
   return {
     metrics,
@@ -131,5 +133,5 @@ export const useLiveMetrics = () => {
     feedback,
     improvementHistory,
     triggerUserImprovement: systemImprovement.triggerUserImprovement.bind(systemImprovement),
-  }
-}
+  };
+};

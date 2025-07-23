@@ -53,7 +53,7 @@ export class SelfDiagnosticsService {
 
   public async runDiagnostics(): Promise<DiagnosticResult[]> {
     this.feedbackSubject.next('Running diagnostics...');
-    
+
     const checks = await Promise.all([
       this.checkConnectivity(),
       this.checkPerformance(),
@@ -70,7 +70,7 @@ export class SelfDiagnosticsService {
 
     this.diagnosticsHistory.next([
       ...this.diagnosticsHistory.value,
-      { timestamp: new Date(), results: checks }
+      { timestamp: new Date(), results: checks },
     ]);
 
     this.feedbackSubject.next('Diagnostics complete');
@@ -79,7 +79,7 @@ export class SelfDiagnosticsService {
 
   private async checkConnectivity(): Promise<DiagnosticResult> {
     try {
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       return {
         status: 'success',
         message: 'Connectivity stable',
@@ -100,10 +100,9 @@ export class SelfDiagnosticsService {
     try {
       const metrics = await lastValueFrom(dataStream.getMetricsStream());
       const performanceScore = this.calculatePerformanceScore(metrics);
-      
+
       return {
-        status: performanceScore > 80 ? 'success' : 
-               performanceScore > 60 ? 'warning' : 'error',
+        status: performanceScore > 80 ? 'success' : performanceScore > 60 ? 'warning' : 'error',
         message: `Performance score: ${performanceScore.toFixed(1)}`,
         details: { metrics, score: performanceScore },
         timestamp: Date.now(),
@@ -120,17 +119,17 @@ export class SelfDiagnosticsService {
 
   private calculatePerformanceScore(metrics: any): number {
     return (
-      (metrics.cpu * 0.2) +
-      (metrics.memory * 0.2) +
-      (metrics.network * 0.2) +
-      (metrics.throughput * 0.2) +
+      metrics.cpu * 0.2 +
+      metrics.memory * 0.2 +
+      metrics.network * 0.2 +
+      metrics.throughput * 0.2 +
       (100 - metrics.errorRate * 10) * 0.2
     );
   }
 
   private async checkStorage(): Promise<DiagnosticResult> {
     try {
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
       return {
         status: 'success',
         message: 'Storage OK',
@@ -149,7 +148,7 @@ export class SelfDiagnosticsService {
 
   private async checkModules(): Promise<DiagnosticResult> {
     try {
-      await new Promise(resolve => setTimeout(resolve, 75));
+      await new Promise((resolve) => setTimeout(resolve, 75));
       return {
         status: 'success',
         message: 'Modules operating normally',
@@ -177,7 +176,7 @@ export class SelfDiagnosticsService {
         };
       }
 
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 200));
       return {
         status: 'success',
         message: 'ML diagnostics passed',
@@ -196,7 +195,7 @@ export class SelfDiagnosticsService {
 
   private async checkSecurity(): Promise<DiagnosticResult> {
     try {
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
       return {
         status: 'success',
         message: 'Security checks clean',
@@ -215,9 +214,9 @@ export class SelfDiagnosticsService {
 
   private analyzeResults(results: DiagnosticResult[]) {
     const issues = results
-      .filter(r => r.status !== 'success')
-      .map(r => `${r.message} (${r.status})`);
-    
+      .filter((r) => r.status !== 'success')
+      .map((r) => `${r.message} (${r.status})`);
+
     return { issues };
   }
 
@@ -234,7 +233,7 @@ export class SelfDiagnosticsService {
 
   private async performAutoRepair(issues: string[]) {
     this.feedbackSubject.next('Performing auto-repair...');
-    
+
     for (const issue of issues) {
       try {
         await this.repairIssue(issue);
@@ -244,7 +243,7 @@ export class SelfDiagnosticsService {
         await this.escalateIssue(issue, error);
       }
     }
-    
+
     this.feedbackSubject.next('Auto-repair completed');
   }
 
@@ -259,7 +258,7 @@ export class SelfDiagnosticsService {
       'high-latency': async () => {
         await dataStream.sendCommand('optimize', { target: 'network' });
       },
-      'connectivity': async () => {
+      connectivity: async () => {
         await dataStream.sendCommand('reconnect', {});
       },
     };
@@ -280,23 +279,22 @@ export class SelfDiagnosticsService {
     console.warn(`Escalating issue: ${issue}`, error);
     this.alertsSubject.next([
       ...this.alertsSubject.value,
-      `Failed to repair: ${issue}. Error: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to repair: ${issue}. Error: ${error instanceof Error ? error.message : String(error)}`,
     ]);
   }
 
   private updateSystemHealth(results: DiagnosticResult[]) {
-    const issues = results
-      .filter(r => r.status !== 'success')
-      .map(r => r.message);
-    
-    const healthScore = 100 - (issues.length * 15);
-    
+    const issues = results.filter((r) => r.status !== 'success').map((r) => r.message);
+
+    const healthScore = 100 - issues.length * 15;
+
     this.healthSubject.next({
       overall: Math.max(0, healthScore),
       components: {
-        cpu: results.find(r => r.message.includes('CPU'))?.status === 'success' ? 100 : 50,
-        memory: results.find(r => r.message.includes('Memory'))?.status === 'success' ? 100 : 50,
-        network: results.find(r => r.message.includes('Network'))?.status === 'success' ? 100 : 50,
+        cpu: results.find((r) => r.message.includes('CPU'))?.status === 'success' ? 100 : 50,
+        memory: results.find((r) => r.message.includes('Memory'))?.status === 'success' ? 100 : 50,
+        network:
+          results.find((r) => r.message.includes('Network'))?.status === 'success' ? 100 : 50,
       },
       lastCheck: new Date(),
       issues,
@@ -308,10 +306,10 @@ export class SelfDiagnosticsService {
   }
 
   private handleCriticalIssues(results: DiagnosticResult[]) {
-    const criticals = results.filter(r => r.status === 'error');
+    const criticals = results.filter((r) => r.status === 'error');
     if (criticals.length > 0) {
-      this.alertsSubject.next(criticals.map(r => r.message));
-      this.performAutoRepair(criticals.map(r => r.message));
+      this.alertsSubject.next(criticals.map((r) => r.message));
+      this.performAutoRepair(criticals.map((r) => r.message));
     }
   }
 
@@ -355,33 +353,27 @@ export class SelfDiagnosticsService {
 
     try {
       const metrics = await lastValueFrom(dataStream.getMetricsStream());
-      
+
       const input = tf.tensor2d([
-        [
-          metrics.cpu,
-          metrics.memory,
-          metrics.network,
-          metrics.throughput,
-          metrics.errorRate
-        ]
+        [metrics.cpu, metrics.memory, metrics.network, metrics.throughput, metrics.errorRate],
       ]);
 
       const prediction = this.mlModel.predict(input) as tf.Tensor;
       const predictionData = await prediction.data();
-      
+
       input.dispose();
       prediction.dispose();
 
       const risk = predictionData[0];
       const potentialIssues = [];
-      
+
       if (predictionData[1] > 0.5) potentialIssues.push('CPU overload');
       if (predictionData[2] > 0.5) potentialIssues.push('Memory leak');
       if (predictionData[3] > 0.5) potentialIssues.push('Network congestion');
 
       return {
         risk,
-        issues: potentialIssues
+        issues: potentialIssues,
       };
     } catch (error) {
       console.error('Prediction failed:', error);
@@ -391,7 +383,7 @@ export class SelfDiagnosticsService {
 
   private async preventiveMaintenance(potentialIssues: string[]) {
     this.feedbackSubject.next('Performing preventive maintenance...');
-    
+
     const maintenanceActions: Record<string, () => Promise<void>> = {
       'CPU overload': async () => {
         await dataStream.sendCommand('throttle', { target: 'cpu', level: 0.8 });
@@ -401,7 +393,7 @@ export class SelfDiagnosticsService {
       },
       'Network congestion': async () => {
         await dataStream.sendCommand('optimize', { target: 'network', qos: 'high' });
-      }
+      },
     };
 
     for (const issue of potentialIssues) {
