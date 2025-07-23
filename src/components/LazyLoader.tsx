@@ -1,11 +1,4 @@
-import React from 'react';
-import React, { Suspense } from 'react';
+import React from 'react'
 
-interface LazyLoaderProps {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
-}
-
-export function LazyLoader({ children, fallback = 'Loading...' }: LazyLoaderProps) {
-  return <Suspense fallback={<div>{fallback}</div>}>{children}</Suspense>;
-}
+const LazyLoader: React.FC<any> = props => <div {...props} />
+export default LazyLoader
