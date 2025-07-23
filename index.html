@@ -1,30 +1,152 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
+    <!-- Primary Meta Tags -->
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Cyber Terminal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Cyber Terminal | Futuristic Interface for Modern Development</title>
+    <meta name="description" content="Advanced cyber terminal interface with real-time monitoring, AI integration, and customizable workflows for developers and security professionals." />
+    <meta name="keywords" content="cyber terminal, developer tools, security dashboard, command interface, AI terminal" />
+    <meta name="author" content="Your Company Name" />
+    <meta name="robots" content="index, follow" />
 
-    <!-- Fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" />
+    <!-- Theme and Styling -->
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#e2e8f0" media="(prefers-color-scheme: light)" />
 
-    <!-- Styles -->
+    <!-- Font Preloading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Space+Mono:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Space+Mono:wght@400;700&display=swap" /></noscript>
+
+    <!-- CSS Resources -->
+    <link rel="preload" href="/index.css" as="style" />
     <link rel="stylesheet" href="/index.css" />
 
-    <!-- Icons and Metadata -->
-    <link rel="icon" type="image/png" href="/assets/favicon.png" />
-    <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Cyber Terminal - A futuristic terminal interface for your projects." />
-    <link rel="apple-touch-icon" href="/assets/logo192.png" />
-    <link rel="manifest" href="/assets/manifest.json" />
-    <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#000000" />
-    <meta name="msapplication-TileColor" content="#000000" />
+    <!-- Favicon and App Icons (Modern Approach) -->
+    <link rel="icon" href="/assets/favicon.ico" sizes="any" />
+    <link rel="icon" href="/assets/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+    <link rel="manifest" href="/assets/site.webmanifest" crossorigin="use-credentials" />
+
+    <!-- PWA/Safari Specific -->
+    <meta name="apple-mobile-web-app-title" content="Cyber Terminal" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#00ff88" />
+
+    <!-- Windows Specific -->
+    <meta name="msapplication-TileColor" content="#0f172a" />
     <meta name="msapplication-config" content="/assets/browserconfig.xml" />
 
-    <!-- ✅ Vite Entry Point -->
-    <script type="module" src="/src/main.tsx"></script>
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="Cyber Terminal | Futuristic Developer Interface" />
+    <meta property="og:description" content="Advanced cyber terminal interface with real-time monitoring and AI integration" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://yourdomain.com" />
+    <meta property="og:image" content="/assets/social-preview.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Cyber Terminal" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="@yourhandle" />
+    <meta name="twitter:title" content="Cyber Terminal | Futuristic Developer Interface" />
+    <meta name="twitter:description" content="Advanced cyber terminal interface with real-time monitoring and AI integration" />
+    <meta name="twitter:image" content="/assets/social-preview.jpg" />
+
+    <!-- Preconnect to important origins -->
+    <link rel="preconnect" href="https://api.yourdomain.com" />
+    <link rel="preconnect" href="https://cdn.yourdomain.com" />
+
+    <!-- Preload critical resources -->
+    <link rel="modulepreload" href="/src/main.tsx" />
+    <link rel="preload" href="/src/assets/cyber-bg.mp4" as="video" type="video/mp4" />
+
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+
+    <!-- Performance Monitoring Snippet -->
+    <script>
+      // Initialize performance monitoring
+      (function() {
+        const perf = {
+          navTiming: performance.getEntriesByType('navigation')[0],
+          start: Date.now()
+        };
+        
+        // Store in localStorage for later analysis
+        localStorage.setItem('perf:init', JSON.stringify(perf));
+        
+        // Error tracking
+        window.addEventListener('error', function(e) {
+          const errorData = {
+            error: e.message,
+            stack: e.error?.stack,
+            timestamp: Date.now()
+          };
+          // Send to error tracking service
+          navigator.sendBeacon?.('/api/errors', JSON.stringify(errorData));
+        });
+      })();
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Progressive Enhancement: Basic fallback content -->
+    <noscript>
+      <div class="noscript-warning">
+        <h1>JavaScript Required</h1>
+        <p>Cyber Terminal requires JavaScript to function properly. Please enable JavaScript in your browser settings.</p>
+        <p>Alternatively, you can access our <a href="/legacy">legacy terminal interface</a>.</p>
+      </div>
+    </noscript>
+
+    <!-- Main App Mount Point -->
+    <div id="root">
+      <!-- Loading animation that will be replaced by React -->
+      <div class="app-loading">
+        <div class="cyber-loader">
+          <div class="cyber-loader-bar"></div>
+          <div class="cyber-loader-text">INITIALIZING CYBER SYSTEMS...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Theme Detection Script (Non-blocking) -->
+    <script>
+      // Set theme based on preference
+      function setTheme() {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+      }
+      
+      // Run after load
+      if (document.readyState === 'complete') {
+        setTheme();
+      } else {
+        window.addEventListener('load', setTheme);
+      }
+      
+      // Watch for changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', setTheme);
+    </script>
+
+    <!-- Vite Entry Point (With fallback) -->
+    <script type="module" src="/src/main.tsx"></script>
+    <script nomodule>
+      document.getElementById('root').innerHTML = `
+        <div class="module-warning">
+          <h1>Browser Not Supported</h1>
+          <p>Your browser doesn't support modern JavaScript modules.</p>
+          <p>Please update to the latest version of Chrome, Firefox, Edge, or Safari.</p>
+        </div>
+      `;
+    </script>
   </body>
 </html>
