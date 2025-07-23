@@ -8,3 +8,8 @@ declare const OffscreenCanvas: typeof globalThis.OffscreenCanvas;
 declare const HTMLCanvasElement: typeof globalThis.HTMLCanvasElement;
 declare const HTMLVideoElement: typeof globalThis.HTMLVideoElement;
 declare const HTMLImageElement: typeof globalThis.HTMLImageElement;
+declare class URL {
+  constructor(url: string, base?: string);
+  static createObjectURL(object: any): string;
+  static revokeObjectURL(url: string): void;
+}

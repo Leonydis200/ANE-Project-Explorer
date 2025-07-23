@@ -65,11 +65,11 @@ export class SystemImprovementService {
 
   private async analyzeAndImprove() {
     this.statusStream.next('analyzing');
-    const currentMetrics = await lastValueFrom(dataStream.getMetricsStream());
-    const diagnostics = await selfDiagnostics.runDiagnostics();
+    const _currentMetrics = await lastValueFrom(dataStream.getMetricsStream());
+    const _diagnostics = await selfDiagnostics.runDiagnostics();
 
-    const improvements = this.calculateImprovements(currentMetrics, diagnostics);
-    const optimizations = await this.applyImprovements(improvements);
+    const _improvements = this.calculateImprovements(currentMetrics, diagnostics);
+    const _optimizations = await this.applyImprovements(improvements);
 
     this.metrics.next({
       performanceScore: this.calculatePerformanceScore(currentMetrics),
@@ -82,10 +82,10 @@ export class SystemImprovementService {
   }
 
   private async analyzeAndOptimize() {
-    const metrics = await this.getCurrentMetrics();
-    const model = await this.loadOptimizationModel();
+    const _metrics = await this.getCurrentMetrics();
+    const _model = await this.loadOptimizationModel();
 
-    const suggestions = await model.predict(metrics);
+    const _suggestions = await model.predict(metrics);
     await this.applyOptimizations(suggestions);
 
     this.updateLearningRate(suggestions);
@@ -102,7 +102,7 @@ export class SystemImprovementService {
   }
 
   private calculateImprovements(metrics: any, diagnostics: any) {
-    const improvements = [];
+    const _improvements = [];
 
     if (metrics.cpu > 75) {
       improvements.push({
@@ -135,7 +135,7 @@ export class SystemImprovementService {
   }
 
   private async applyImprovements(improvements: any[]) {
-    const results = {
+    const _results = {
       level: 0,
       suggestions: [] as string[],
     };
@@ -266,4 +266,4 @@ export class SystemImprovementService {
 }
 
 // ✅ Export the singleton
-export const systemImprovement = new SystemImprovementService();
+export const _systemImprovement = new SystemImprovementService();

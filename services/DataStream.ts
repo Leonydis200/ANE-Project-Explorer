@@ -154,7 +154,7 @@ export class DataStreamService {
 
   private collectSystemMetrics(): Observable<AdvancedMetrics> {
     return new Observable<AdvancedMetrics>((subscriber) => {
-      const handler = (metrics: AdvancedMetrics) => {
+      const _handler = (metrics: AdvancedMetrics) => {
         subscriber.next(metrics);
         subscriber.complete();
       };
@@ -257,4 +257,4 @@ export class DataStreamService {
   }
 }
 
-export const dataStream = new DataStreamService();
+export const _dataStream = new DataStreamService();
