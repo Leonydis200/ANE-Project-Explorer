@@ -1,4 +1,24 @@
 #!/usr/bin/env bash
+
+# ========================================
+# Project Repair & Validation Script v3.0+
+# ========================================
+
+# Color definitions — must come before `set -u`
+CYAN='\033[0;36m'
+NC='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+BOLD='\033[1m'
+DIM='\033[2m'
+
+set -euo pipefail
+[[ "${DEBUG:-}" == "true" ]] && set -x
+
+#!/usr/bin/env bash
 set -euo pipefail
 [[ "${DEBUG:-}" == "true" ]] && set -x
 
@@ -1017,4 +1037,5 @@ verify_configs
 fix_permissions_action
 
 success "Project repair and validation completed successfully"
+
 

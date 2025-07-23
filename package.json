@@ -12,6 +12,7 @@
     "dist"
   ],
   "scripts": {
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "prepare": "husky install",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx,.cjs,.mjs --max-warnings 100",
     "lint-staged": "lint-staged",
