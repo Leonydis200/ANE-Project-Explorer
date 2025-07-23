@@ -15,7 +15,6 @@ import {
   type ReactNode,
   type ErrorInfo,
   type FC
-} from 'react';
 import { 
   BrowserRouter as Router, 
   Routes, 
@@ -23,22 +22,11 @@ import {
   Navigate,
   useLocation,
   useNavigate
-} from 'react-router-dom';
 import { 
   QueryClient, 
   QueryClientProvider, 
   QueryErrorResetBoundary,
-  import { QueryCache } from '@tanstack/react-query',
-  import { MutationCache } from '@tanstack/react-query',
   type Query
-} from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
-import { ThemeProvider } from '@/components/ThemeProvider';
-import { ErrorBoundaryFallback } from '@/components/common/ErrorBoundary';
-import { useOnlineStatus } from '@/hooks/useOnlineStatus';
-import { useAppError } from '@/hooks/useAppError';
-import { logger } from '@/lib/logger';
 
 // Import environment variables with type safety
 const isDev = import.meta.env.DEV;
@@ -109,7 +97,6 @@ const RoutePreloader: FC<{ path: string }> = ({ path }) => {
  * Create a configured QueryClient with optimized defaults
  */
 const createQueryClient = () => {
-  const queryCache = new QueryCache({
     onError: (error, query) => {
       // Only show error toasts if we already have data in the cache
       // which indicates a failed background update
@@ -123,7 +110,6 @@ const createQueryClient = () => {
     },
   });
 
-  const mutationCache = new MutationCache({
     onError: (error, _variables, _context, mutation) => {
       // If this mutation has an onError defined, skip global error handling
       if (mutation.options.onError) return;
@@ -567,3 +553,4 @@ const App: FC = () => {
 };
 
 export default App;
+import { QueryCache, MutationCache } from '@tanstack/react-query';

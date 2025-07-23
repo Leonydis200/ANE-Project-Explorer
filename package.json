@@ -3,20 +3,29 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "author": "Juan-louw",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "clean": "rimraf dist node_modules/.vite",
+    "prepare": "husky install",
+    "lint": "eslint . --ext .ts,.tsx --fix",
+    "lint-staged": "lint-staged",
+    "type-check": "tsc --noEmit",
     "prebuild": "npm run type-check && npm run lint",
+    "check": "npm run type-check && npm run lint",
+    "clean": "rimraf dist node_modules/.vite",
     "build": "vite build",
     "preview": "vite preview --port 4173",
+    "dev": "vite --port 3000",
+    "dev:inspect": "cross-env NODE_OPTIONS='--inspect' vite",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "lint": "eslint . --ext .ts,.tsx --fix",
-    "lint:fix": "eslint . --ext .ts,.tsx --fix",
-    "type-check": "tsc --noEmit",
-    "dev": "vite --port 3000",
-    "dev:inspect": "cross-env NODE_OPTIONS='--inspect' vite",
-    "prepare": "husky install",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,md}\"",
     "analyze": "cross-env ANALYZE=true vite build"
   },
@@ -35,7 +44,9 @@
     "chart.js": "^4.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "commander": "^14.0.0",
     "framer-motion": "^12.0.6",
+    "lru-cache": "^11.1.0",
     "lucide-react": "^0.525.0",
     "node": "^20.19.4",
     "react": "^19.1.0",
@@ -69,7 +80,6 @@
     "@types/minimist": "^1.2.5",
     "@types/node": "^24.1.0",
     "@types/react": "^19.1.8",
-    "@types/react-chartjs-2": "^2.5.7",
     "@types/react-dom": "^19.1.6",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
@@ -97,7 +107,7 @@
     "postcss": "^8.4.33",
     "postcss-import": "^16.0.0",
     "postcss-nesting": "^13.0.2",
-    "prettier": "^3.1.1",
+    "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
     "rollup-plugin-visualizer": "^6.0.3",
     "tailwindcss": "^4.1.11",
@@ -112,22 +122,6 @@
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
   },
-  "author": "Juan-louw",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
-  "keywords": [
-    "react",
-    "typescript",
-    "vite",
-    "tailwindcss",
-    "cyberpunk",
-    "dashboard"
-  ],
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
@@ -173,5 +167,13 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Juan-louw/ANE-Project-Explorer.git"
-  }
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "vite",
+    "tailwindcss",
+    "cyberpunk",
+    "dashboard"
+  ]
 }
