@@ -1,3 +1,4 @@
+/* eslint-env browser */
 const terminal = {
     init() {
         this.output = document.querySelector('.terminal-output');

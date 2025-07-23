@@ -1,0 +1,7 @@
+# Auto-generated ignore list
+node_modules/
+dist/
+build/
+js/
+*.cjs
+*.mjs

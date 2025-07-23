@@ -1,3 +1,4 @@
+/* eslint-env browser */
 class CyberGraph {
     constructor(elementId, values, color) {
         this.canvas = document.getElementById(elementId);

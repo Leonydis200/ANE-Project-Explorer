@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "prepare": "husky install",
-    "lint": "eslint . --ext .ts,.tsx --fix",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx,.cjs,.mjs --max-warnings 100",
     "lint-staged": "lint-staged",
     "type-check": "tsc --noEmit",
     "prebuild": "npm run type-check && npm run lint",

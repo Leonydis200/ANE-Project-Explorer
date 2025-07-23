@@ -1,3 +1,4 @@
+/* eslint-env node */
 #!/usr/bin/env node
 
 import { exec } from "child_process";

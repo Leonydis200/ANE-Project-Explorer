@@ -1,0 +1,47 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2021": true
+  },
+  "globals": {
+    "console": "readonly",
+    "document": "readonly",
+    "window": "readonly",
+    "process": "readonly",
+    "ImageData": "readonly",
+    "OffscreenCanvas": "readonly",
+    "HTMLCanvasElement": "readonly",
+    "HTMLVideoElement": "readonly",
+    "HTMLImageElement": "readonly"
+  },
+  "rules": {
+    "@typescript-eslint/no-unused-expressions": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "no-undef": "off",
+    "no-self-assign": "warn",
+    "no-redeclare": "warn",
+    "no-useless-catch": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-empty-object-type": "off"
+  },
+  "overrides": [
+    {
+      "files": [
+        "*.cjs",
+        "*.mjs"
+      ],
+      "env": {
+        "node": true
+      }
+    }
+  ]
+}

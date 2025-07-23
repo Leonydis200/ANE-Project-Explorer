@@ -1,3 +1,4 @@
+/* eslint-env browser */
 class SoundFX {
     constructor() {
         this.sounds = {
