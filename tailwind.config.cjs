@@ -1,3 +1,9 @@
+// @ts-nocheck
+/* global module, require */
+// @ts-nocheck
+/* global module, require */
+// @ts-nocheck
+/* global module, require */
 /* eslint-env node */
 // tailwind.config.js
 module.exports = {

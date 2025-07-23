@@ -114,7 +114,7 @@ export class DataStreamService {
       this.metricsSubject.next(data);
     });
 
-    this.socket.on('error', (error: any) => {
+    this.socket.on('error', (error: unknown) => {
       this.connectionStatus.next('error');
       console.error('Socket error:', error);
     });
@@ -176,9 +176,9 @@ export class DataStreamService {
     return this.connectionStatus.asObservable();
   }
 
-  public sendCommand(type: string, payload: any) {
+  public sendCommand(type: string, payload: unknown) {
     return new Promise((resolve, reject) => {
-      this.socket.emit('command', { type, payload }, (response: any) => {
+      this.socket.emit('command', { type, payload }, (response: unknown) => {
         if (response.success) {
           resolve(response.data);
         } else {

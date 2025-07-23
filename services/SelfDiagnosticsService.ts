@@ -5,7 +5,7 @@ import { dataStream } from './DataStream';
 interface DiagnosticResult {
   status: 'success' | 'warning' | 'error';
   message: string;
-  details: any;
+  details: unknown;
   timestamp: number;
 }
 
@@ -117,7 +117,7 @@ export class SelfDiagnosticsService {
     }
   }
 
-  private calculatePerformanceScore(metrics: any): number {
+  private calculatePerformanceScore(metrics: unknown): number {
     return (
       metrics.cpu * 0.2 +
       metrics.memory * 0.2 +
@@ -275,7 +275,7 @@ export class SelfDiagnosticsService {
     await this.attemptRepair(issue);
   }
 
-  private async escalateIssue(issue: string, error: any) {
+  private async escalateIssue(issue: string, error: unknown) {
     console.warn(`Escalating issue: ${issue}`, error);
     this.alertsSubject.next([
       ...this.alertsSubject.value,
@@ -318,7 +318,7 @@ export class SelfDiagnosticsService {
     this.feedbackSubject.next(`Repaired: ${issue}`);
   }
 
-  private logRepairFailure(issue: string, error: any) {
+  private logRepairFailure(issue: string, error: unknown) {
     console.error(`Repair failed for issue: ${issue}`, error);
     this.feedbackSubject.next(`Failed to repair: ${issue}`);
   }

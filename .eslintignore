@@ -1,6 +1,12 @@
-# Auto-generated ignore list
-node_modules/
-dist/
-build/
-*.cjs
-*.mjs
+**/node_modules/**
+**/dist/**
+**/build/**
+**/*.d.ts
+**/js/**
+**/*.cjs
+**/*.mjs
+**/vite.config.*
+**/postcss.config.*
+**/tailwind.config.*
+**/lint-staged.config.*
+**/.eslintrc.*

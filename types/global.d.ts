@@ -51,6 +51,6 @@ declare interface ImportMeta {
 // JSX types for React
 declare namespace JSX {
   interface IntrinsicElements {
-    [elemName: string]: any;
+    [elemName: string]: unknown;
   }
 }

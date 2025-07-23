@@ -10,7 +10,7 @@ export interface DiagnosticEntry {
   results: Array<{
     status: 'success' | 'warning' | 'error';
     message: string;
-    details?: any;
+    details?: unknown;
   }>;
 }
 

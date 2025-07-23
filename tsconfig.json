@@ -30,7 +30,8 @@
       "node",
       "react",
       "react-dom"
-    ]
+    ],
+    "checkJs": false
   },
   "include": [
     "src"

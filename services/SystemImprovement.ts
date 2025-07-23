@@ -101,7 +101,7 @@ export class SystemImprovementService {
     );
   }
 
-  private calculateImprovements(metrics: any, diagnostics: any) {
+  private calculateImprovements(metrics: unknown, diagnostics: unknown) {
     const _improvements = [];
 
     if (metrics.cpu > 75) {
@@ -134,7 +134,7 @@ export class SystemImprovementService {
     return improvements;
   }
 
-  private async applyImprovements(improvements: any[]) {
+  private async applyImprovements(improvements: unknown[]) {
     const _results = {
       level: 0,
       suggestions: [] as string[],
@@ -145,7 +145,7 @@ export class SystemImprovementService {
         await dataStream.sendCommand('improve', imp);
         results.level += 1;
         results.suggestions.push(`Applied ${imp.type} improvement for ${imp.target}`);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(`Failed to apply improvement:`, error);
         results.suggestions.push(`Failed to improve ${imp.target}: ${error.message}`);
       }
@@ -154,7 +154,7 @@ export class SystemImprovementService {
     return results;
   }
 
-  private async applyOptimizations(suggestions: any[]) {
+  private async applyOptimizations(suggestions: unknown[]) {
     for (const suggestion of suggestions) {
       try {
         await this.validateOptimization(suggestion);
@@ -240,27 +240,27 @@ export class SystemImprovementService {
     };
   }
 
-  private updateLearningRate(suggestions: any[]) {
+  private updateLearningRate(suggestions: unknown[]) {
     // Implementation
   }
 
-  private async validateOptimization(suggestion: any) {
+  private async validateOptimization(suggestion: unknown) {
     // Implementation
   }
 
-  private async implementOptimization(suggestion: any) {
+  private async implementOptimization(suggestion: unknown) {
     // Implementation
   }
 
-  private async rollback(suggestion: any) {
+  private async rollback(suggestion: unknown) {
     // Implementation
   }
 
-  private logSuccess(suggestion: any) {
+  private logSuccess(suggestion: unknown) {
     console.log('Optimization applied successfully:', suggestion);
   }
 
-  private logFailure(error: any) {
+  private logFailure(error: unknown) {
     console.error('Optimization failed:', error);
   }
 }

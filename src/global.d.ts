@@ -10,6 +10,6 @@ declare const HTMLVideoElement: typeof globalThis.HTMLVideoElement;
 declare const HTMLImageElement: typeof globalThis.HTMLImageElement;
 declare class URL {
   constructor(url: string, base?: string);
-  static createObjectURL(object: any): string;
+  static createObjectURL(object: unknown): string;
   static revokeObjectURL(url: string): void;
 }

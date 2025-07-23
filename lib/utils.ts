@@ -42,7 +42,7 @@ export function isObjectEmpty(obj: object) {
   return Object.keys(obj).length === 0;
 }
 
-export function debounce<T extends (...args: any[]) => void>(
+export function debounce<T extends (...args: unknown[]) => void>(
   fn: T,
   delay: number
 ): (...args: Parameters<T>) => void {
@@ -54,7 +54,7 @@ export function debounce<T extends (...args: any[]) => void>(
   };
 }
 
-export function throttle<T extends (...args: any[]) => void>(
+export function throttle<T extends (...args: unknown[]) => void>(
   fn: T,
   limit: number
 ): (...args: Parameters<T>) => void {

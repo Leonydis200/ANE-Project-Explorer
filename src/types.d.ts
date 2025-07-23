@@ -4,8 +4,8 @@ declare module '@/lib/logger';
 declare module '@/components/ui/*';
 
 type SystemHealth = {
-  indicators: any[];
-  issues: any[];
+  indicators: unknown[];
+  issues: unknown[];
 };
 
 type SystemAlert = {
