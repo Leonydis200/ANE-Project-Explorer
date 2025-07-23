@@ -6,26 +6,26 @@ declare module '*.svg' {
 }
 
 // Browser globals
-declare var document: Document;
-declare var window: Window;
-declare var console: Console;
-declare var ImageData: {
+declare let document: Document;
+declare let window: Window;
+declare let console: Console;
+declare let ImageData: {
   new (width: number, height: number): ImageData;
   prototype: ImageData;
 };
-declare var HTMLVideoElement: {
+declare let HTMLVideoElement: {
   prototype: HTMLVideoElement;
   new (): HTMLVideoElement;
 };
-declare var HTMLImageElement: {
+declare let HTMLImageElement: {
   prototype: HTMLImageElement;
   new (): HTMLImageElement;
 };
-declare var HTMLCanvasElement: {
+declare let HTMLCanvasElement: {
   prototype: HTMLCanvasElement;
   new (): HTMLCanvasElement;
 };
-declare var OffscreenCanvas: {
+declare let OffscreenCanvas: {
   prototype: OffscreenCanvas;
   new (width: number, height: number): OffscreenCanvas;
 };
