@@ -6,6 +6,10 @@
 /* global module, require */
 // @ts-nocheck
 /* global module, require */
+// @ts-nocheck
+/* global module, require */
+// @ts-nocheck
+/* global module, require */
 import { fileURLToPath } from 'url';
 import path from 'path';
 /* eslint-env node */
